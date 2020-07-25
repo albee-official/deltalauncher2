@@ -49,7 +49,7 @@
     "win": {
       "publish": {
         "provider": "github",
-        "token": "d6d3f45b98e13e806c463142649869ef384060b6"
+        "token": "0381823ede07419cd46d5c5bb70adc5506d5ed3c"
       }
     },
     "nsis": {
