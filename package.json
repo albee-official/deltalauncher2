@@ -1,6 +1,6 @@
 {
   "name": "delta-launcher",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "aaaaaaa",
   "main": "main.js",
   "scripts": {
@@ -50,7 +50,7 @@
     "win": {
       "publish": {
         "provider": "github",
-        "token": "66e67a2b7c3497552b92e15abe5192fb04dc7eeb"
+        "token": "f6fdfb73ea5fd61e8b8eb8139ba983d44e7f8621"
       }
     },
     "publish": [
