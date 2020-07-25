@@ -97,10 +97,6 @@ function createTray() {
 
 app.whenReady().then(createWindow);
 
-app.on('ready', function()  {
-  autoUpdater.checkForUpdatesAndNotify();
-});
-
 // Quit when all windows are closed.
 app.on("window-all-closed", () => {
   // On macOS it is common for applications and their menu bar
@@ -215,7 +211,7 @@ ipcMain.on('rich-presence-disconnect', (event, reason) => {
 //#region //. Auto Updater
 function sendStatusToWindow(text) {
   log.info(text);
-  win.webContents.send('message', text);
+  win.webContents.send('update-message', text);
 }
 
 ipcMain.on('check-for-updates', (event, src) => {

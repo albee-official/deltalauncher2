@@ -5,8 +5,8 @@ const win = remote.getCurrentWindow();
 
 ipcRenderer.send('check-for-updates');
 
-ipcRenderer.on('update-available', event => {
-    console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA');
+ipcRenderer.on('update-message', (event, text) => {
+    console.log(text);
 });
 
 const body = document.body;
