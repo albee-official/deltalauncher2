@@ -53,15 +53,13 @@
         "token": "66e67a2b7c3497552b92e15abe5192fb04dc7eeb"
       }
     },
-    "build": {
-      "publish": [
-        {
-          "provider": "github",
-          "owner": "SuperMegaKeks",
-          "repo": "Delta-Launcher"
-        }
-      ]
-    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "SuperMegaKeks",
+        "repo": "Delta-Launcher"
+      }
+    ],
     "nsis": {
       "oneClick": false,
       "perMachine": false,
