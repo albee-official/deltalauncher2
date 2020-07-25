@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Delta</title>
+
+    <link rel="stylesheet" href="../global.css" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <script src="../../includes/downloader_inc.js"></script>
+    <script src="../../includes/modpack_manager_inc.js"></script>
+    <script src="../../includes/settings_manager_inc.js"></script>
+
+    <div class="bg-filter"></div>
+    <div class="menu">
+        <div class="menu-panel"></div>
+        <div class="menu-buttons">
+            <div id="minimize-btn" class="minimize">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12">
+                    <g id="Component_53_1" data-name="Component 53 – 1" transform="translate(1)">
+                      <line id="minimize-icon" data-name="Line 40" x2="10" transform="translate(0 11)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2"/>
+                      <line id="Line_41" data-name="Line 41" x2="10" fill="none"/>
+                    </g>
+                </svg>
+            </div>
+            <div id="reload-btn" class="reload">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13.307" height="13" viewBox="0 0 13.307 13">
+                    <path id="reload-icon" data-name="Path 232" d="M2054.988,1820.09a6.482,6.482,0,0,1-9.19,0c-.01-.01-.02-.03-.03-.04l-.91.91a.748.748,0,0,1-1.28-.53v-3.22a.755.755,0,0,1,.75-.75h3.22a.75.75,0,0,1,.53,1.28l-.91.91c.01.01.03.02.04.03a4.5,4.5,0,1,0,0-6.37,1,1,0,0,1-1.41-1.41,6.506,6.506,0,0,1,9.19,0A6.512,6.512,0,0,1,2054.988,1820.09Z" transform="translate(-2043.578 -1809)" fill="#fff"/>
+                </svg>          
+            </div>
+            <div id="close-btn" class="exit">
+                <svg xmlns="http://www.w3.org/2000/svg" width="11.582" height="11.583" viewBox="0 0 11.582 11.583">
+                    <g data-name="Component 51 – 1" transform="translate(0.707 0.707)">
+                        <line id="exit-icon1" x2="10.168" y2="10.168" fill="none" stroke="#fff" stroke-linecap="round"
+                            stroke-width="2" />
+                        <line id="exit-icon2" x1="10" y2="10" transform="translate(0.02 0.149)" fill="none"
+                            stroke="#fff" stroke-linecap="round" stroke-width="2" />
+                    </g>
+                </svg>
+            </div>
+        </div>
+    </div>
+    <div class="circles noselect">
+        <div class="layers">
+            <div id="top" class="top">
+                <img id="top-lines" class="lines" src="../../res/lines.svg" alt="lines" />
+                <div id="auth-container" class="auth-container">
+                    <form method="post">
+                        <p class="login-text">Войти</p>
+                        <input id="login" class="text-field" type="text" placeholder="Логин" />
+                        <div id="login-line" class="sub-line">
+                            <div class="sub-line-filler"></div>
+                        </div>
+                        <input id="password" class="text-field" type="password" placeholder="Пароль" />
+                        <div id="password-line" class="sub-line">
+                            <div class="sub-line-filler"></div>
+                        </div>
+                        <div class="buttons">
+                            <input id="login-button" class="login-button" type="button" value="Войти" />
+                            <input class="forgot-button" type="button" value="Забыли пароль" />
+                        </div>
+                    </form>
+                </div>
+                <div id="main-container" class="progress-container-container">
+                    <div id="top-container" class="container">
+                        <div id="update-progress-container" class="progress-container active">
+                            <p id="update-progress-label" class="progress-label">
+                                Проверка обновлений: 20%
+                            </p>
+                            <div class="progress-bar">
+                                <div id="update-progress-bar" class="progress-filler"></div>
+                            </div>
+                        </div>
+                        <div id="auth-progress-container" class="progress-container">
+                            <p id="auth-progress-label" class="progress-label">
+                                Ожидание авторизации
+                            </p>
+                            <div class="progress-bar">
+                                <div id="auth-progress-bar" class="progress-filler"></div>
+                            </div>
+                        </div>
+                        <div id="finish-progress-container" class="progress-container">
+                            <p id="finish-progress-label" class="progress-label">
+                                Запуск...
+                            </p>
+                            <div class="progress-bar">
+                                <div id="finish-progress-bar" class="progress-filler"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <img class="logo noselect" src="../../res/logo.svg" alt="logo" />
+    
+    <script defer>
+        document
+            .getElementById("login")
+            .addEventListener("input", (e) => {
+                checkLogin(e);
+            });
+
+        document
+            .getElementById("login")
+            .addEventListener("focus", (e) => {
+                checkLogin(e);
+            });
+
+        document.getElementById("login").addEventListener("blur", (e) => {
+            checkLogin(e);
+        });
+
+        document
+            .getElementById("password")
+            .addEventListener("input", (e) => {
+                checkPassword(e);
+            });
+
+        document
+            .getElementById("password")
+            .addEventListener("focus", (e) => {
+                checkPassword(e);
+            });
+
+        document
+            .getElementById("password")
+            .addEventListener("blur", (e) => {
+                checkPassword(e);
+            });
+
+        function checkLogin(e) {
+            let login = document.getElementById("login");
+            if (
+                (login.value != "" &&
+                    document.getElementById("login-line").children[0].classList.contains("active-text-line")) ||
+                e.currentTarget == document.activeElement
+            ) {
+                document.getElementById("login-line").children[0].classList.add("active-text-line");
+                document.getElementById("login").classList.add("active-text-field");
+            } else if (
+                (login.value == "" &&
+                    !document.getElementById("login-line").children[0].classList.contains("active-text-line")) ||
+                e.currentTarget != document.activeElement
+            ) {
+                document.getElementById("login-line").children[0].classList.remove("active-text-line");
+                document.getElementById("login").classList.remove("active-text-field");
+            }
+        }
+
+        function checkPassword(e) {
+            let password = document.getElementById("password");
+            if (
+                (password.value != "" &&
+                    document.getElementById("password-line").children[0].classList.contains("active-text-line")) ||
+                e.currentTarget == document.activeElement
+            ) {
+                document.getElementById("password-line").children[0].classList.add("active-text-line");
+                document.getElementById("password").classList.add("active-text-field");
+            } else if (
+                (password.value == "" &&
+                    !document.getElementById("password-line").children[0].classList.contains("active-text-line")) ||
+                e.currentTarget != document.activeElement
+            ) {
+                document.getElementById("password-line").children[0].classList.remove("active-text-line");
+                document.getElementById("password").classList.remove("active-text-field");
+            }
+        }
+    </script>
+    <script defer src="renderer.js"></script>
+</body>
+
+</html>

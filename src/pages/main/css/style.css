@@ -1,0 +1,33 @@
+body{
+    background-image: url("../../../res/bg.jpg");
+    background-size: cover;
+    height: 100vh;
+    background-position: center center;
+    background-repeat: no-repeat;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.filler{
+    pointer-events: none;
+    position: absolute;
+    z-index: 9;
+    height: 100vh;
+    opacity: 0;
+    width: 100%;
+    background-color: #fff;
+    animation: open-window 1.6s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+@keyframes open-window
+{
+    0%{
+        opacity: 1;
+    }
+
+    100%{
+        opacity: 0;
+    }
+}

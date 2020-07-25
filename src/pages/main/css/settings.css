@@ -1,0 +1,566 @@
+.settings-section {
+    height: 100%;
+    width: 100%;
+}
+
+.settings-section .mCustomScrollBox {
+    height: 100%;
+    width: 100%;
+}
+
+.setting-container {
+    width: 100%;
+    display: grid;
+    grid-column-gap: 164px;
+    grid-row-gap: 48px;
+
+    grid-template-columns: repeat(auto-fill, 412px);
+    grid-auto-flow: row;
+}
+
+.settings-element {
+    /* border: white solid 2px; */
+    max-width: 416px;
+}
+
+.settings-element-header {
+    margin-bottom: 32px;
+    cursor: default;
+}
+
+/* //. RANGE START  -----------------------------------*/
+
+.range {
+    width: 100%;
+}
+
+.range-stops {
+    display: flex;
+    justify-content: space-between;
+}
+
+.range-stop {
+    font-size: 12px;
+    font-weight: bold;
+    opacity: .35;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+}
+
+.range-stop-markers {
+    margin-top: 4px;
+    height: 30px;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    transition: all .5s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.marker {
+    width: 4px;
+    height: 8px;
+    background-color: #fff;
+    opacity: .5;
+    border-radius: 2px;
+}
+
+.active-stop .marker {
+    height: 5px;
+}
+
+.empty-stop .range-stop-markers {
+    position: relative;
+    top: 10px;
+    opacity: .5;
+}
+
+.range-bar {
+    width: 100%;
+    position: relative;
+    top: -31px;
+    padding: 0 14px;
+    box-sizing: border-box;
+}
+
+.range-slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 3px;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, .25);
+    outline: none;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+    transition: all .5s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.range-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+}
+
+.range-slider::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+}
+
+.range .tip{
+    font-size: 12px;
+    font-weight: bold;
+    opacity: .4;
+    cursor: default;
+}
+
+.range .tip span{
+    opacity: .6;
+}
+
+.range:hover .range-slider{
+    background: rgba(255, 255, 255, .4);
+}
+
+.range:hover .range-stop {
+    opacity: .4;
+}
+
+/* //. RANGE END  -----------------------------------*/
+
+.controll-settings-container {
+    display: grid;
+    grid-column-gap: 32px;
+    grid-row-gap: 8px;
+
+    grid-template-columns: repeat(2, auto);
+    grid-auto-flow: row;
+}
+
+.controll-setting {
+    display: flex;
+    width: unset;
+
+    color: white;
+    font-size: 17px;
+    font-weight: 700;
+    opacity: .35;
+    cursor: default;
+
+    transition: all .1s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.controll-setting:hover {
+    opacity: .5;
+}
+
+.controll-setting-name {
+    width: 128px;
+}
+
+.controll-setting-input {
+    width: 52px;
+    background: none;
+    border: none;
+    text-align: start;
+    cursor: pointer;
+}
+
+.settings-java-parameters-input {
+    width: 100%;
+
+    background: none;
+    border: none;
+    border-bottom: white solid 3px;
+    padding: 6px;
+
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+
+    opacity: .35;
+
+    transition: all .1s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.settings-java-parameters-input:focus {
+    opacity: .5;
+}
+
+.settings-java-parameters-input:hover {
+    opacity: .5;
+}
+
+.settings-java-parameters-input::placeholder {
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.additional-settings-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.additional-setting {
+    width: fit-content;
+}
+
+.additional-setting p{
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    opacity: .35;
+    position: relative;
+    top: 16px;
+    cursor: pointer;
+
+    transition: all .1s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.additional-setting:hover p{
+    opacity: .5;
+}
+
+.additional-setting-name {
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    opacity: .35;
+
+    transition: all .1s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.additional-setting:hover .additional-setting-name {
+    opacity: .5;
+}
+
+.directories-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.modpack-directory {
+    display: flex;
+    margin-bottom: 8px;
+
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.directory-modpack-name {
+    min-width: 86px;
+    opacity: .35;
+    cursor: default;
+
+    transition: all .1s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.directory-modpack-name:hover {
+    opacity: .7;
+}
+
+.directory-path {
+    margin-right: 16px;
+    opacity: .35;
+    cursor: pointer;
+
+    transition: all .1s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.directory-path:hover {
+    opacity: .5;
+}
+
+.updating .directory-path {
+    margin-right: 16px;
+    opacity: .17;
+}
+
+.directory-modpack-update {
+    opacity: 0;
+    cursor: default;
+}
+
+.updating .directory-modpack-update {
+    opacity: 1;
+}
+
+.handy-functions-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.handy-function {
+    margin-bottom: 8px;
+    opacity: .35;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+
+    transition: all .1s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.handy-function:hover {
+    opacity: .5;
+}
+
+.settings-element-p{
+    margin-bottom: 8px;
+    opacity: .35;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+
+    transition: all .1s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.settings-element-p:hover{
+    opacity: .5;
+}
+
+.key-select-menu{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(45, 19, 44, .75);
+    z-index: 10;
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    pointer-events: none;
+
+    transition: all 1s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.key-select-container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    position: relative;
+    top: 64px;
+
+    transition: all 1s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.key-select-container h1{
+    color: #fff;
+    font-weight: bold;
+    font-size: 32px;
+    cursor: pointer;
+}
+
+.key-select-container p{
+    margin-top: 4px;
+    color: #fff;
+    font-weight: bold;
+    font-size: 24px;
+    opacity: .25;
+    cursor: pointer;
+}
+
+.modpack-select-menu{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(45, 19, 44, .75);
+    z-index: 20;
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    pointer-events: none;
+
+    transition: all 1s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.modpack-select-container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    transition: all 1s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.modpack-select-container h1{
+    color: #fff;
+    font-weight: bold;
+    font-size: 32px;
+    cursor: pointer;
+}
+
+.modpack-select-container p{
+    margin-bottom: 4px;
+    color: #fff;
+    font-weight: bold;
+    font-size: 24px;
+    opacity: .25;
+    cursor: pointer;
+
+    transition: all .4s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.modpack-select-container p:hover{
+    margin-bottom: 8px;
+    font-size: 32px;
+    opacity: .5;
+}
+
+.theme-select-menu{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(45, 19, 44, .75);
+    z-index: 20;
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    pointer-events: none;
+
+    transition: all 1s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.theme-select-container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    width: 100%;
+
+    transition: all 1s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.theme-select-options{
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    width: 100%;
+    height: 100%;
+}
+
+.theme-select-option{
+    margin-bottom: 4px;
+    width: 20%;
+    height: 200px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transform: scale(1);
+    transition: all .1s cubic-bezier(0.23, 1, 0.320, 1);
+    cursor: pointer;
+}
+
+.theme-select-option:hover{
+    transform: scale(1.1);
+}
+
+.theme-select-option p{
+    color: #fff;
+    font-weight: bold;
+    font-size: 24px;
+
+    transition: all .4s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.theme-select-option img{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+}
+
+.theme-bg-preview-filter{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+    background: linear-gradient(to right bottom, #C72C41, #801336);
+    opacity: .75;
+}
+
+.theme-select-container h1{
+    margin-bottom: 38px;
+    color: #fff;
+    font-weight: bold;
+    font-size: 32px;
+}
+
+.launch-menu{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(45, 19, 44, .75);
+    z-index: 10;
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    pointer-events: none;
+
+    transition: all 1s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.launch-container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    transition: all 1s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.launch-container h1{
+    color: #fff;
+    font-weight: bold;
+    font-size: 32px;
+    cursor: pointer;
+}
+
+.open{
+    opacity: 1;
+    pointer-events: all;
+}
+
+.open .key-select-container{
+    top: 0;
+}
+
+.open .modpack-select-container{
+    top: 0;
+}

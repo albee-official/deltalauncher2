@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delta</title>
+
+    <link rel="stylesheet" href="../global.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/settings.css">
+
+    <link rel="stylesheet" href="../../../node_modules\malihu-custom-scrollbar-plugin\jquery.mCustomScrollbar.css" />
+</head>
+
+<body>
+    <script src="../../includes/downloader_inc.js"></script>
+    <script src="../../includes/modpack_manager_inc.js"></script>
+    <script src="../../includes/settings_manager_inc.js"></script>
+
+    <div class="bg-filter"></div>
+
+    <div id="key-select-menu" class="key-select-menu">
+        <div class="key-select-container">
+            <h1 id="key-select-h">ААА</h1>
+            <p id="key-select-p">Нажмите любую клавишу</p>
+            <input class="invisible" type="text" id="key-select-input">
+        </div>
+    </div>
+
+    <div id="modpack-select-menu" class="modpack-select-menu">
+        <div class="modpack-select-container">
+            <h1 id="modpack-select-h">Выберите сборку</h1>
+            <p id="modpack-select-p" data-name="magicae">Magicae</p>
+            <p id="modpack-select-p" data-name="fabrica">Fabrica</p>
+            <p id="modpack-select-p" data-name="statera">Statera</p>
+            <p id="modpack-select-p" data-name="insula">Insula</p>
+            <input class="invisible" type="text" id="modpack-select-input">
+        </div>
+    </div>
+
+    <div id="theme-select-menu" class="theme-select-menu">
+        <div class="theme-select-container">
+            <h1 id="theme-select-h">Выберите тему</h1>
+            <div class="theme-select-options">
+                <div id="theme-select-option" class="theme-select-option" data-name="default">
+                    <p>Default</p>
+                    <img src="../../res/bg.jpg" alt="">
+                    <div class="theme-bg-preview-filter"></div>
+                </div>
+                <div id="theme-select-option" class="theme-select-option" data-name="night sky">
+                    <p>Night Sky</p>
+                    <img src="../../res/bg_nightsky.jpg" alt="">
+                    <div class="theme-bg-preview-filter"></div>
+                </div>
+                <div id="theme-select-option" class="theme-select-option" data-name="green hills">
+                    <p>Green Hills</p>
+                    <img src="../../res/bg_greenhills.jpg" alt="">
+                    <div class="theme-bg-preview-filter"></div>
+                </div>
+                <div id="theme-select-option" class="theme-select-option" data-name="red sunset">
+                    <p>Red Sunset</p>
+                    <img src="../../res/bg_redsunset.jpg" alt="">
+                    <div class="theme-bg-preview-filter"></div>
+                </div>
+            </div>
+            <input class="invisible" type="text" id="theme-select-input">
+        </div>
+    </div>
+
+    <div id="launch-menu" class="launch-menu">
+        <div class="launch-container">
+            <h1 id="launch-h">Запуск: Jojo</h1>
+        </div>
+    </div>
+
+    <div class="menu">
+        <div class="menu-panel">
+
+        </div>
+        <div class="menu-buttons">
+            <div id="minimize-btn" class="minimize">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12">
+                    <g id="Component_53_1" data-name="Component 53 – 1" transform="translate(1)">
+                      <line id="minimize-icon" data-name="Line 40" x2="10" transform="translate(0 11)" fill="none" stroke="#2D132C" stroke-linecap="round" stroke-width="2"/>
+                      <line id="Line_41" data-name="Line 41" x2="10" fill="none"/>
+                    </g>
+                </svg>
+            </div>
+            <div id="reload-btn" class="reload">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13.307" height="13" viewBox="0 0 13.307 13">
+                    <path id="reload-icon" data-name="Path 232" d="M2054.988,1820.09a6.482,6.482,0,0,1-9.19,0c-.01-.01-.02-.03-.03-.04l-.91.91a.748.748,0,0,1-1.28-.53v-3.22a.755.755,0,0,1,.75-.75h3.22a.75.75,0,0,1,.53,1.28l-.91.91c.01.01.03.02.04.03a4.5,4.5,0,1,0,0-6.37,1,1,0,0,1-1.41-1.41,6.506,6.506,0,0,1,9.19,0A6.512,6.512,0,0,1,2054.988,1820.09Z" transform="translate(-2043.578 -1809)" fill="#2D132C"/>
+                </svg>   
+            </div>
+            <div id="close-btn" class="exit">
+                <svg xmlns="http://www.w3.org/2000/svg" width="11.582" height="11.583" viewBox="0 0 11.582 11.583">
+                    <g data-name="Component 51 – 1" transform="translate(0.707 0.707)">
+                        <line id="exit-icon1" x2="10.168" y2="10.168" fill="none" stroke="#2D132C" stroke-linecap="round"
+                            stroke-width="2" />
+                        <line id="exit-icon2" x1="10" y2="10" transform="translate(0.02 0.149)" fill="none"
+                            stroke="#2D132C" stroke-linecap="round" stroke-width="2" />
+                    </g>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <div class="filler"></div>
+
+    <header>
+        <div class="nav noselect">
+            <div id="play-nav" class="nav-element">
+                <div></div>
+                <p class="nav-text">Играть</p>
+
+                <div class="nav-line"></div>
+            </div>
+            <div id="news-nav" class="nav-element">
+                <div></div>
+                <p class="nav-text">Новости</p>
+
+                <div class="nav-line"></div>
+            </div>
+            <div id="settings-nav" class="nav-element active">
+                <div></div>
+                <p class="nav-text">Настройки</p>
+
+                <div class="nav-line"></div>
+            </div>
+            <div id="shop-nav" class="nav-element">
+                <div></div>
+                <p class="nav-text">Магазин</p>
+
+                <div class="nav-line"></div>
+            </div>
+        </div>
+
+        <div class="profile">
+            <div class="profile-picture noselect">
+                <img src="../../res/user.png" alt="">
+            </div>
+            <div class="profile-details">
+                <div id="profile-name" class="profile-name">
+                    null
+                </div>
+
+                <div id="profile-sub" class="profile-sub">
+                    Выйти
+                </div>
+            </div>
+        </div>
+
+    </header>
+
+    <main>
+        <section id="play-section" class="main-section closed-settings main-left">
+            <div class="hide-settings" id="hide-settings-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                    <g id="Group_22" data-name="Group 22" transform="translate(-1206 -189)">
+                      <circle id="Ellipse_340" data-name="Ellipse 340" cx="16" cy="16" r="16" transform="translate(1206 189)" fill="#fff" opacity="0.04"/>
+                      <line id="Line_56" data-name="Line 56" x2="13" transform="translate(1215.5 205.5)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2"/>
+                      <line id="Line_57" data-name="Line 57" x1="5" y1="5" transform="translate(1223.5 200.5)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2"/>
+                      <line id="Line_58" data-name="Line 58" y1="5" x2="5" transform="translate(1223.5 205.5)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2"/>
+                    </g>
+                </svg>
+            </div>
+            <div class="servers-container mCustomScrollbar" style="overflow: auto;" data-mcs-theme="light-thick">
+                <div class="servers">
+                    <div class="server">
+                        <p class="server-name">Magicae</p>
+                        <div class="server-pros">
+                            <p>- ПвП</p>
+                            <p>- Магическая сборка</p>
+                            <p>- Кастомная система квестов</p>
+                        </div>
+                        <p class="server-vipe">- Вайп каждые 12 месяцев</p>
+                        <button id="magicae-select" class="select-button">Выбрать</button>
+                    </div>
+                    <div class="server">
+                        <p class="server-name">Fabrica</p>
+                        <div class="server-pros">
+                            <p>- ПвП</p>
+                            <p>- Магическая сборка</p>
+                            <p>- Кастомная система квестов</p>
+                        </div>
+                        <p class="server-vipe">- Вайп каждые 12 месяцев</p>
+                        <button id="fabrica-select" class="select-button">Выбрать</button>
+                    </div>
+                    <div class="server">
+                        <p class="server-name">Statera</p>
+                        <div class="server-pros">
+                            <p>- ПвП</p>
+                            <p>- Магическая сборка</p>
+                            <p>- Кастомная система квестов</p>
+                        </div>
+                        <p class="server-vipe">- Вайп каждые 12 месяцев</p>
+                        <button id="statera-select" class="select-button">Выбрать</button>
+                    </div>
+                    <div class="server">
+                        <p class="server-name">Insula</p>
+                        <div class="server-pros">
+                            <p>- ПвП</p>
+                            <p>- СкайБлок сборка</p>
+                            <p>- Кастомная система квестов</p>
+                        </div>
+                        <p class="server-vipe">- Вайп каждые 12 месяцев</p>
+                        <button id="insula-select" class="select-button">Выбрать</button>
+                    </div>
+                </div>
+            </div>
+            <div class="play-settings">
+
+                <p class="play-settings-header">Выделение памяти</p>
+                <div class="play-set-ram-container">
+
+                </div>
+                <p class="play-settings-header">Дополнительные настройки</p>
+                <div class="play-settings-checkboxes">
+                    <label class="checkbox">
+                        <input type="checkbox">
+                        <div class="checkmark">
+                            <div class="checkmark-fill"></div>
+                        </div>
+                        Dynamic souroundings
+                    </label>
+                    <label class="checkbox">
+                        <input type="checkbox">
+                        <div class="checkmark">
+                            <div class="checkmark-fill"></div>
+                        </div>
+                        Mode Name
+                    </label>
+                    <label class="checkbox">
+                        <input type="checkbox">
+                        <div class="checkmark">
+                            <div class="checkmark-fill"></div>
+                        </div>
+                        Loshara Ipsum
+                    </label>
+                    <label class="checkbox">
+                        <input type="checkbox">
+                        <div class="checkmark">
+                            <div class="checkmark-fill"></div>
+                        </div>
+                        Record
+                    </label>
+                </div>
+
+                <p class="play-settings-header">Директория игры</p>
+                <input id="play-game-dir-input" class="play-game-dir-input" type="text">
+            </div>
+        </section>
+        <section id="news-section" class="news-section mCustomScrollbar main-left" style="overflow: auto;">
+            <div class="news-element">
+                <h1 class="news-header">Технические работы</h1>
+                <div class="news-paragraph">
+                    Команда разработчиков дельты извиняется за предоставленные неудобства на время технических работ на
+                    серверах Harmonia
+                </div>
+                <div class="news-changes">
+                    <h1 class="changes-header">Предстоящие изменения:</h1>
+                    <ul class="changes-list">
+                        <li>
+                            - Пытаемся всунуть EnderIO так, что бы IndustrialCraft 2 не ругался
+                        </li>
+                        <li>
+                            - Запрет Brain
+                        </li>
+                        </ol>
+                </div>
+            </div>
+            <div class="news-element">
+                <h1 class="news-header">Вайп! И все же вайп...</h1>
+                <div class="news-paragraph">
+                    Произошел первый за историю проекта Дельта вайп на серверах: Magicae, Fabrica, Harmonia. В честь
+                    такого события,
+                    мы устраиваем голосвание, где вы можете проголосовать за мод, который бдет добавлен с запуском
+                    серверов
+                </div>
+                <div class="news-voting">
+                    <h1 class="voting-header">Что добавляем на Fabrica?</h1>
+                    <ul class="voting-options">
+                        <li>
+                            Mekanism
+                            <div class="voting-option-progress">
+                                <div class="voting-option-progress-filler" style="width: 0%;"></div>
+                            </div>
+                        </li>
+                        <li>
+                            EnderIO
+                            <div class="voting-option-progress">
+                                <div class="voting-option-progress-filler" style="width: 0%;"></div>
+                            </div>
+                        </li>
+                        </ol>
+                </div>
+            </div>
+        </section>
+        <section id="settings-section" class="settings-section mCustomScrollbar" style="overflow: auto;">
+            <div class="setting-container">
+                <div class="settings-element">
+                    <h1 class="settings-element-header">Выделение памяти</h1>
+                    <div id="memory-range" class="range settings-range">
+                        <div class="range-visuals">
+                            <div class="range-stops">
+                                <div class="range-stop active-stop">
+                                    1Gb
+                                    <div class="range-stop-markers">
+                                        <div class="marker"></div>
+                                        <div class="marker"></div>
+                                    </div>
+                                </div>
+                                <div class="range-stop empty-stop">
+                                    <div class="range-stop-markers">
+                                        <div class="marker"></div>
+                                        <div class="marker"></div>
+                                    </div>
+                                </div>
+                                <div class="range-stop">
+                                    4Gb
+                                    <div class="range-stop-markers">
+                                        <div class="marker"></div>
+                                        <div class="marker"></div>
+                                    </div>
+                                </div>
+                                <div class="range-stop empty-stop">
+                                    <div class="range-stop-markers">
+                                        <div class="marker"></div>
+                                        <div class="marker"></div>
+                                    </div>
+                                </div>
+                                <div class="range-stop">
+                                    8Gb
+                                    <div class="range-stop-markers">
+                                        <div class="marker"></div>
+                                        <div class="marker"></div>
+                                    </div>
+                                </div>
+                                <div class="range-stop empty-stop">
+                                    <div class="range-stop-markers">
+                                        <div class="marker"></div>
+                                        <div class="marker"></div>
+                                    </div>
+                                </div>
+                                <div class="range-stop">
+                                    12Gb
+                                    <div class="range-stop-markers">
+                                        <div class="marker"></div>
+                                        <div class="marker"></div>
+                                    </div>
+                                </div>
+                                <div class="range-stop empty-stop">
+                                    <div class="range-stop-markers">
+                                        <div class="marker"></div>
+                                        <div class="marker"></div>
+                                    </div>
+                                </div>
+                                <div class="range-stop">
+                                    16Gb
+                                    <div class="range-stop-markers">
+                                        <div class="marker"></div>
+                                        <div class="marker"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="range-bar">
+                                <input class="range-slider" id="memory-input" list="memlist" type="range" name="memory"
+                                    min="0" max="16" step="1">
+                            </div>
+                            <div class="tip">
+                                Внимание!<br>
+                                <span>Значения ниже 4 Гигабайтов, могут повлечь проблемы с запуском! <br>
+                                    Не советуем играть при таких значениях</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-element">
+                    <h1 class="settings-element-header">Степень оптимизации</h1>
+                    <div id="optimization-range" class="range settings-range">
+                        <div class="range-visuals">
+                            <div class="range-stops">
+                                <div class="range-stop active-stop">
+                                    Низкая
+                                    <div class="range-stop-markers">
+                                        <div class="marker"></div>
+                                        <div class="marker"></div>
+                                    </div>
+                                </div>
+                                <div class="range-stop">
+                                    Средняя-
+                                    <div class="range-stop-markers">
+                                        <div class="marker"></div>
+                                        <div class="marker"></div>
+                                    </div>
+                                </div>
+                                <div class="range-stop">
+                                    Средняя
+                                    <div class="range-stop-markers">
+                                        <div class="marker"></div>
+                                        <div class="marker"></div>
+                                    </div>
+                                </div>
+                                <div class="range-stop">
+                                    Средняя+
+                                    <div class="range-stop-markers">
+                                        <div class="marker"></div>
+                                        <div class="marker"></div>
+                                    </div>
+                                </div>
+                                <div class="range-stop">
+                                    Высокая
+                                    <div class="range-stop-markers">
+                                        <div class="marker"></div>
+                                        <div class="marker"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="range-bar">
+                                <input class="range-slider" id="optimization-input" list="optimization_levels"
+                                    type="range" name="memory" min="0" max="4" step="1">
+                            </div>
+                            <div class="tip">
+                                Внимание!<br>
+                                <span>Данная степень оптимизации отключает всевозможные графические улучшения по типу:
+                                    тени, динамическое освещение и т.д.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                </script>
+
+                <div class="settings-element">
+                    <h1 class="settings-element-header">Настройки управления</h1>
+                    <div class="controll-settings-container">
+                        <div class="controll-setting">
+                            <p class="controll-setting-name" id="crouch">Присесть</p>
+                            <p class="controll-setting-input">SHIFT</p>
+                        </div>
+                        <div class="controll-setting">
+                            <p class="controll-setting-name" id="run">Бег</p>
+                            <p class="controll-setting-input">CONTROL</p>
+                        </div>
+                        <div class="controll-setting">
+                            <p class="controll-setting-name" id="forward">Вперед</p>
+                            <p class="controll-setting-input">W</p>
+                        </div>
+                        <div class="controll-setting">
+                            <p class="controll-setting-name" id="back">Назад</p>
+                            <p class="controll-setting-input">S</p> 
+                        </div>
+                        <div class="controll-setting">
+                            <p class="controll-setting-name" id="right">Направо</p>
+                            <p class="controll-setting-input">D</p>
+                        </div>
+                        <div class="controll-setting">
+                            <p class="controll-setting-name" id="left">Налево</p>
+                            <p class="controll-setting-input">A</p>
+                        </div>
+                        <div class="controll-setting">
+                            <p class="controll-setting-name" id="zoom">Приблизить</p>
+                            <p class="controll-setting-input">R</p>
+                        </div>
+                        <div class="controll-setting">
+                            <p class="controll-setting-name" id="quests">Квесты</p>
+                            <p class="controll-setting-input">T</p>
+                        </div>
+                        <div class="controll-setting">
+                            <p class="controll-setting-name" id="excavate">Excavate</p>
+                            <p class="controll-setting-input">T</p>
+                        </div>
+                        <div class="controll-setting">
+                            <p class="controll-setting-name" id="shop">Магазин</p>
+                            <p class="controll-setting-input">T</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-element">
+                    <h1 class="settings-element-header">Параметры запуска Java</h1>
+                    <input class="settings-java-parameters-input" type="text" name="java-parameters"
+                        id="java-parameters" placeholder="Не указаны">
+                </div>
+
+                <div class="settings-element">
+                    <h1 class="settings-element-header">Дополнительные настройки</h1>
+                    <div class="additional-settings-list">
+                        <div class="additional-setting">
+                            <label class="checkbox">
+                                <span class="additional-setting-name">Replay</span>
+                                <input type="checkbox"
+                                    checked="checked">
+                                <div class="checkmark">
+                                    <div class="checkmark-fill"></div>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="additional-setting">
+                            <label class="checkbox">
+                                <span class="additional-setting-name">Dynamic Souroundings</span>
+                                <input type="checkbox"
+                                    checked="checked">
+                                <div class="checkmark">
+                                    <div class="checkmark-fill"></div>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="additional-setting">
+                            <p>Выбрать шейдер по умолчанию</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-element">
+                    <h1 class="settings-element-header">Директории сборок</h1>
+                    <div class="directories-list">
+                        <div id="modpack-dir" data-name="magicae" class="modpack-directory">
+                            <p class="directory-modpack-name">Magicae</p>
+                            <p class="directory-path">C:/Users/Albee/.delta/modpacks/Magicae</p>
+                            <p class="directory-modpack-update noselect">Обновляется...</p>
+                        </div>
+
+                        <div id="modpack-dir" data-name="fabrica" class="modpack-directory">
+                            <p class="directory-modpack-name">Fabrica</p>
+                            <p class="directory-path">C:/Users/Albee/.delta/modpacks/Fabrica</p>
+                            <p class="directory-modpack-update noselect">Обновляется...</p>
+                        </div>
+
+                        <div id="modpack-dir" data-name="statera" class="modpack-directory">
+                            <p class="directory-modpack-name">Statera</p>
+                            <p class="directory-path">D:/modpacks/Harmonia</p>
+                            <p class="directory-modpack-update noselect">Обновляется...</p>
+                        </div>
+
+                        <div id="modpack-dir" data-name="insula" class="modpack-directory">
+                            <p class="directory-modpack-name">Insula</p>
+                            <p class="directory-path">Не скачана</p>
+                            <p class="directory-modpack-update noselect">Обновляется...</p>
+                        </div>
+                    </div>
+                    <script defer>
+                        let modpack_dirs = document.querySelectorAll('#modpack-dir');
+
+                        for (let jojo of modpack_dirs)
+                        {
+                            jojo.children[1].innerHTML = verify_and_get_modpack_folder(jojo.children[0].innerHTML.toLowerCase());
+
+                            jojo.addEventListener('click', e => {
+                                let current_modpack_dir = e.currentTarget;
+                                let modpack_dir_p = current_modpack_dir.children[1];
+                                console.log(modpack_dir_p);
+
+                                if (current_modpack_dir.classList.contains('updating')) return;
+
+                                const win = BrowserWindow.getFocusedWindow();
+                                dialog.showOpenDialog(win, {
+                                    title: 'Выберите Папку',
+                                    defaultPath: '',
+                                    buttonLabel: 'Выбрать',
+                                    properties: ['openDirectory']
+                                }).then(async res => {
+                                    if (res.canceled) return;
+                                    let path = res.filePaths[0];
+                                    let current_modpack = current_modpack_dir.children[0].innerHTML.toLowerCase();
+
+                                    modpack_dir_p.innerHTML = path + '\\' + current_modpack;
+
+                                    path = path.replace(dir_root, '|ROOT|');
+                                    settings['modpack_dirs'][current_modpack] = path;
+                                    update_settings();
+                                });
+                            });
+                        }
+
+                        let modpack_update_paragraphs = document.querySelectorAll('.directory-modpack-update');
+                        let counter = 0;
+                        let launch_update_counter = 0;
+                        let update_animator = setInterval(() => {
+                            for (let modpack_update_p of modpack_update_paragraphs) {
+                                if (counter % 4 == 0) {
+                                    modpack_update_p.innerHTML = 'Обновляется';
+                                    counter = 0;
+                                } else {
+                                    modpack_update_p.innerHTML += '.';
+                                }
+                            }
+                            counter++;
+                        }, 1000);
+
+                        let launch_animator = setInterval(() => {
+                            if (launch_update_counter % 3 == 0) {
+                                document.querySelector('#launch-h').innerHTML = 'Запуск: ' + Capitalize_First_Letter(modpack_name) + '.';
+                                launch_update_counter = 0;
+                            } else {
+                                document.querySelector('#launch-h').innerHTML += '.';
+                            }
+                            launch_update_counter++;
+                        }, 1000);
+                    </script>
+                </div>
+
+                <div class="settings-element">
+                    <h1 class="settings-element-header">Полезные функции</h1>
+                    <div class="handy-functions-list">
+                        <div class="handy-function">
+                            <p>Очистка кэша</p>
+                        </div>
+                        <div id="open-root-folder" class="handy-function">
+                            <p>Открыть корневую папку</p>
+                        </div>
+                        <div id="open-modpack-folder" class="handy-function">
+                            <p>Открыть папку сборки</p>
+                        </div>
+                        <div id="delete-settings" class="handy-function">
+                            <p>Сбросить настройки</p>
+                        </div>
+                        <div id="delete-configs" class="handy-function">
+                            <p>Сбросить конфиги</p>
+                        </div>
+                        <div id="reset-folder" class="handy-function">
+                            <p>Восстановить папку</p>
+                        </div>
+                        <div id="delete-additional-files" class="handy-function">
+                            <p>Удаление второстепенных файлов</p>
+                        </div>
+                        <div id="delete-reserved-files" class="handy-function">
+                            <p>Удаление резервных файлов и папок</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-element">
+                    <h1 class="settings-element-header">Настройки лаунчера</h1>
+                    <p class="settings-element-p" id="bg-select-input">Сменить задний фон</p>
+                    <p class="settings-element-p" id="bg-reset-input">Поставить фон по умолчанию</p>
+                    <p class="settings-element-p" id="change-theme-button">Поменять тему</p>
+                </div>
+            </div>
+        </section>
+        <section id="shop-section" class="shop-section main-right">4</section>
+    </main>
+
+    <footer class="noselect">
+        <div class="footer-left">
+            <div class="footer-left-container">
+                <p id="modpack-paragraph">Сервер: Fabrica</p>
+                <div class="download-bar">
+                    <div class="download-filler"></div>
+                </div>
+                <p id="role-par" class="role-par">Бета-тест</p>
+            </div>
+        </div>
+        <div class="footer-center">
+            <button id="play-button" class="play-button">Играть</button>
+        </div>
+        <div class="footer-right">
+            <div class="footer-right-container">
+                <label id="redownload-client-label" class="checkbox unactive">Перекачать клиент
+                    <input type="checkbox" name="redownload-client" id="redownload-client-cb">
+                    <div class="checkmark">
+                        <div class="checkmark-fill"></div>
+                    </div>
+                </label>
+                <label class="checkbox">Автозаход на сервер
+                    <input type="checkbox" name="auto-server" id="auto-server-cb">
+                    <div class="checkmark">
+                        <div class="checkmark-fill"></div>
+                    </div>
+                </label>
+            </div>
+        </div>
+    </footer>
+
+    <script defer src="js/jquery.min.js"></script>
+    <script defer src="js/jquery.mCustomScrollbar.concat.min.js"></script>
+    <script defer src="renderer.js"></script>
+    <script defer src="sections/play.js"></script>
+    <script defer src="sections/news.js"></script>
+    <script defer src="sections/settings.js"></script>
+    <script defer src="sections/shop.js"></script>
+    <script defer>
+        const body = document.body;
+
+        let bg_path = (verify_and_get_resources_folder() + '\\custom_bg.' + settings['bg_extension']).replace(/\\/g, '/');
+        if (settings['bg_extension'] == '') 
+        {
+            switch (settings['theme']) 
+            {
+                case 'night sky':
+                    bg_path = '../../res/bg_nightsky.jpg';
+                    break;
+
+                case 'green hills':
+                    bg_path = '../../res/bg_greenhills.jpg';
+                    break;
+
+                case 'red sunset':
+                    bg_path = '../../res/bg_redsunset.jpg';
+                    break;
+
+                case 'default':
+                    bg_path = '../../res/bg.jpg';
+                    break;
+            
+                default:
+                    bg_path = '../../res/bg.jpg';
+                    break;
+            }
+        }
+
+        body.style.backgroundImage = `url("${bg_path}")`;
+
+        const $ = require('jquery');
+        require("jquery-mousewheel")($);
+        require("malihu-custom-scrollbar-plugin")($);
+
+        (function ($) {
+            $(window).load(function () {
+                $(".horizontalScrollbar").mCustomScrollbar({
+                    scrollButtons: {
+                        enable: false
+                    },
+                    horizontalScroll: true,
+                    advanced: {
+                        autoExpandHorizontalScroll: true
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

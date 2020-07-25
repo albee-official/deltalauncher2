@@ -1,0 +1,349 @@
+body{
+    background-image: url("../../res/bg.png");
+    background-size: cover;
+    height: 100vh;
+    background-position: center center;
+    background-repeat: no-repeat;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: bg-start 1s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+@keyframes bg-start
+{
+    0%{
+        opacity: 0;
+    }
+
+    100%{
+        opacity: 1;
+    }
+}
+
+@keyframes logo-start
+{
+    0%{
+        margin-left: 0;
+        height: 128px;
+        opacity: 0;
+    }
+
+    34%{
+        margin-left: 0;
+        height: 128px;
+    }
+
+    50%{
+        opacity: 1;
+    }
+
+    100%{
+        margin-left: 25%;
+        height: 96px;
+    }
+}
+
+.logo{
+    position: absolute;
+    animation: logo-start 2s cubic-bezier(0.645, 0.045, 0.355, 1);
+    margin-left: 25%;
+    height: 96px;
+    width: auto;
+}
+
+@keyframes top-start
+{
+    0%{
+        clip-path: circle(25% at -50% 50%);
+    }
+
+    34%{
+        clip-path: circle(200% at -163% 50%);
+    }
+
+    100%{
+        clip-path: circle(60% at 6% 50%);
+    }
+}
+
+.circles{
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+.top{
+    position: relative;
+    height: 100vh;
+    animation:  top-start 2s cubic-bezier(0.645, 0.045, 0.355, 1);
+    clip-path: circle(60% at 6% 50%);
+    background-color: #fff;
+}
+
+@keyframes show-content
+{
+    0%{
+        opacity: 0;
+    }
+
+    34%{
+        opacity: 0;
+    }
+
+    100%{
+        opacity: 1;
+    }
+}
+
+@keyframes smooth-shake {
+    10%, 90% {
+      transform: translate3d(-1px, 0, -3px);
+    }
+    
+    20%, 80% {
+      transform: translate3d(2px, -5px, 0);
+    }
+  
+    30%, 50%, 70% {
+      transform: translate3d(-4px, 0, 4px);
+    }
+  
+    40%, 60% {
+      transform: translate3d(6px, 1px, 0);
+    }
+  }
+
+.lines{
+    overflow: hidden;
+    position: absolute;
+    margin-top: 5px;
+    height: 90vh;
+    width: 90%;
+    z-index: -2;
+    object-fit: cover;
+    opacity: 1;
+    animation:  show-content 3s, 
+                smooth-shake 16s ease-in-out infinite, 
+                finished-top-contents 1s paused;
+}
+
+.container{
+    height: 100vh;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 50%;
+    opacity: 1;
+    animation:  show-content 4s, 
+                finished-top-contents 1s paused;
+}
+
+.progress-container-container{
+    position: relative;
+    opacity: 1;
+    right: 0;
+
+    transition: all 1s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+.close-container{
+    opacity: 0;
+    right: 480px;
+}
+
+.progress-container{
+    height: 32px;
+    width: 380px;
+    font-size: 20px;
+    font-weight: 900;
+
+    transition: all .4s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.progress-label{
+    color: #DBDBDB;
+}
+
+.progress-bar{
+    margin-top: 12px;
+    height: 0px;
+    width: 380px;
+
+    background-color: #DBDBDB;
+    border-radius: 3px;
+}
+
+.progress-filler{
+    width: 20%;
+    height: 100%;
+    border-radius: 3px;
+    
+    background-color: #000;
+    background: linear-gradient(to left bottom, #EE4540, #C72C41);
+}
+
+.active{
+    margin-top: 12px;
+    margin-bottom: 14px;
+    height: 55px;
+}
+
+.active .progress-label{
+    color: #2D132C;
+    font-size: 24px;
+}
+
+.active .progress-bar{
+    height: 6px;
+}
+
+@keyframes finished-top-contents{
+    from{
+        opacity: 1;
+    }
+
+    to{
+        opacity: 0;
+    }
+}
+
+@keyframes open-circle{
+    from{
+        clip-path: circle(60% at 6% 50%);
+    }
+
+    to{
+        clip-path: circle(128% at 6% 50%);
+    }
+}
+
+.auth-container{
+    position: absolute;
+    left: 480px;
+    opacity: 0;
+    z-index: 3;
+    height: 100vh;
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    transition: all 1s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+.auth-locked{
+    left: 24px;
+    opacity: .55;
+    pointer-events: none;
+}
+
+.open-auth{
+    left: 24px;
+    opacity: 1;
+}
+
+.auth-container form{
+    width: 420px;
+    height: 297px;
+}
+
+.login-text{
+    color: #2D132C;
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 32px;
+}
+
+.text-field{
+    padding: 13px;
+    font-size: 18px;
+    font-weight: bold;
+    width: 100%;
+    background: none;
+    border: none;
+    color: #DBDBDB;
+}
+
+.active-text-field{
+    color: #EE4540;
+}
+
+.active-text-field::placeholder{
+    color: #EE4540;
+}
+
+.text-field::placeholder{
+    color: #DBDBDB;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.sub-line{
+    background-color: #DBDBDB;
+    height: 4px;
+    width: 100%;
+    margin-bottom: 38px;
+    border-radius: 2px;
+}
+
+.sub-line-filler{
+    background: linear-gradient(to left bottom, #FF6126, #EE4540);
+    width: 0;
+    height: 100%;
+    border-radius: 2px;
+    transition: width 1s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+.active-text-line{
+    width: 80%;
+}
+
+.buttons{
+    margin-top: 13px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.login-button{
+    width: 180px;
+    height: 40px;
+    border: none;
+    border-radius: 11px;
+    background: rgba(238, 69, 64, 1);
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+
+    transition: all .2s;
+}
+
+.login-button:hover{
+    color: #EE4540;
+    background: rgba(238, 69, 64, 0);
+    border: #EE4540 3px solid;
+}
+
+.forgot-button{
+    width: 180px;
+    height: 40px;
+    border: none;
+    background: none;
+    color: #D6D6D6;
+    font-weight: bold;
+    font-size: 18px;
+    margin-right: 16px;
+    cursor: pointer;
+
+    transition: all .2s;
+}
+
+.forgot-button:hover{
+    color: #EE4540;
+}
