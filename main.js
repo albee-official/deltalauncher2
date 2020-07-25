@@ -1,13 +1,10 @@
-const { app, BrowserWindow, ipcMain, autoUpdater, Tray, Menu } = require("electron");
+const { app, BrowserWindow, ipcMain, Tray, Menu } = require("electron");
 const electronDl = require('electron-dl');
 const { download } = require("electron-dl");
 if(require('electron-squirrel-startup')) return;
 const keytar = require('keytar');
 
-const server = 'https://update.electronjs.org';
-const feed = `${server}/SuperMegaKeks/Delta-Launcher/${process.platform}-${process.arch}/${app.getVersion()}`;
-
-autoUpdater.setFeedURL(feed);
+const { autoUpdater } = require("electron-updater")
 
 const client = require('discord-rich-presence')('732236615153483877');
 let presence = {
@@ -208,7 +205,11 @@ ipcMain.on('rich-presence-disconnect', (event, reason) => {
 
 //#region //. Auto Updater
 ipcMain.on('check-for-updates', (event, src) => {
-  autoUpdater.checkForUpdates();
+  autoUpdater.checkForUpdatesAndNotify();
+});
+
+autoUpdater.on('update-available', () => {
+  BrowserWindow.getFocusedWindow().send('update-available');
 });
 //#endregion
 

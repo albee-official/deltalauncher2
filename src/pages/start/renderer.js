@@ -3,6 +3,12 @@ const { ajax } = require('jquery');
 const { remote, ipcRenderer } = require('electron');
 const win = remote.getCurrentWindow();
 
+ipcRenderer.send('check-for-updates');
+
+ipcRenderer.on('update-available', event => {
+    console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA');
+});
+
 const body = document.body;
 
 let bg_path = (verify_and_get_resources_folder() + '\\custom_bg.' + settings['bg_extension']).replace(/\\/g, '/');
