@@ -164,7 +164,7 @@ function checkUpdate() {
         });
 
         ipcRenderer.on('download-progress', (event, progressObj) => {
-            document.getElementById('update-progress-label').innerHTML = `Скачивание обновления: ${progressObj.percent}`;
+            document.getElementById('update-progress-label').innerHTML = ` Загрузка обновления: ${progressObj.percent.toPrecision(2)}`;
             document.getElementById('update-progress-bar').style.width = progressObj.percent + '%';
         });
 
@@ -172,11 +172,11 @@ function checkUpdate() {
             setTimeout(() => {
                 document.getElementById('update-progress-label').innerHTML = `Подготовка к установке...`;
                 setTimeout(() => {
-                    document.getElementById('update-progress-label').innerHTML = `Выключаю лаунчер...`;
+                    document.getElementById('update-progress-label').innerHTML = `Выключение лаунчер...`;
                     ipcRenderer.send('install-update');
                     resolve();
-                }, 1000);
-            }, 200);
+                }, 4500);
+            }, 500);
         });
     });
 }

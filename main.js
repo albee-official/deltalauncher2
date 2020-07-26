@@ -7,6 +7,8 @@ const keytar = require('keytar');
 const log = require('electron-log');
 const { autoUpdater } = require("electron-updater")
 
+autoUpdater.doCheckForUpdates
+
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
 log.info('App starting...');
@@ -226,9 +228,7 @@ ipcMain.on('download-update', (event, src) => {
 
 ipcMain.on('install-update', (event, src) => {
   autoUpdater.quitAndInstall();
-  app.exit();
 });
-
 
 autoUpdater.on('checking-for-update', () => {
   sendStatusToWindow('Checking for update...');

@@ -280,20 +280,20 @@ async function show_key_select(el) {
                 let display_key = e.key.toUpperCase();
                 if (display_key == ' ') display_key = 'SPACE';
 
-                // if we pressed ecape, we want to exit and not asign it.
-                if (display_key == 'ESCAPE') {
-                    close_menu(menu);
-                    changing_some_key = false;
-                    key_parapraph.innerHTML = 'Нажмите любую клавишу';
-                    key_header.innerHTML = 'Отмена';
-                    reject('user closed');
-                }
-
                 // notify user that everyghing worked and close menu
                 key_parapraph.innerHTML = display_key;
                 key_header.innerHTML = 'Готово';
                 close_menu(menu);
                 changing_some_key = false;
+
+                // if we pressed ecape, we want to exit and not asign it.
+                if (display_key == 'ESCAPE') {
+                    changing_some_key = false;
+                    key_parapraph.innerHTML = 'Нажмите любую клавишу';
+                    key_header.innerHTML = 'Отмена';
+                    display_key = 'NONE';
+                    reject('user closed');
+                }
                 
                 // Updates settings with new key
                 settings['controls'][el.previousSibling.previousSibling.id]['key_name'] = display_key;
@@ -375,7 +375,7 @@ function ascii_to_dumbass(keycode) {
         case 192: return 41; // GRAVE ( ` )
         case 32: return 57; // SPACE ( )
         //#endregion
-        default: return -1;
+        default: return 0;
     }
 }
 

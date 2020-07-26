@@ -13,7 +13,7 @@ const pattern = {
         "back": { "minecraft_key": "key_key.back", "minecraft_code": 31, "key_code": 83, "key_name": "S" },
         "left": { "minecraft_key": "key_key.left", "minecraft_code": 30, "key_code": 12, "key_name": "A" },
         "right": { "minecraft_key": "key_key.right", "minecraft_code": 32, "key_code": 12, "key_name": "D" },
-        "zoom": { "minecraft_key": "key_of.key.zoom", "minecraft_code": -1, "key_code": -1, "key_name": " " },
+        "zoom": { "minecraft_key": "key_of.key.zoom", "minecraft_code": -1, "key_code": -1, "key_name": "NONE" },
         "quests": { "minecraft_key": "key_key.ftbquests.quests", "minecraft_code": 20, "key_code": 12, "key_name": "T" },
         "excavate": { "minecraft_key": "key_oreexcavation.key.excavate", "minecraft_code": 34, "key_code": 12, "key_name": "G" },
         "shop": { "minecraft_key": "key_key.ftbmoney.shop", "minecraft_code": 35, "key_code": 12, "key_name": "H" }
