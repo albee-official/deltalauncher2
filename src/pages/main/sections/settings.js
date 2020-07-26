@@ -1,10 +1,19 @@
-const { shell } = require('electron');
-const { BrowserWindow, dialog } = require('electron').remote;
+const { dialog } = require('electron').remote;
 const { electron } = require('process');
 
 let memory_range = document.querySelector('#memory-range');
 let optimization_range = document.querySelector('#optimization-range');
 let controll_inputs = document.querySelectorAll('.controll-setting-input');
+let java_parameters = document.querySelector('#java-parameters');
+
+java_parameters.addEventListener('input', e => {
+    settings['java_parameters'] = java_parameters.value;
+});
+
+java_parameters.addEventListener('change', e => {
+    settings['java_parameters'] = java_parameters.value;
+    update_settings();
+});
 
 document.querySelector('#open-root-folder').addEventListener('click', e => {
     shell.openItem(dir_root);
@@ -51,7 +60,7 @@ document.querySelector('#delete-settings').addEventListener('click', async e => 
 
     if (fs.pathExistsSync(path + '\\knownkeys.txt'))
         fs.unlinkSync(path + '\\knownkeys.txt');
-})
+});
 
 document.querySelector('#delete-configs').addEventListener('click', async e => {
     let selected_modpack = await show_modpack_selection_menu();

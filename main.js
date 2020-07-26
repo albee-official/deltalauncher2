@@ -7,8 +7,6 @@ const keytar = require('keytar');
 const log = require('electron-log');
 const { autoUpdater } = require("electron-updater")
 
-autoUpdater.doCheckForUpdates
-
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
 log.info('App starting...');
