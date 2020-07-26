@@ -214,8 +214,14 @@ function sendStatusToWindow(text) {
   win.webContents.send('update-message', text);
 }
 
+let update_requester;
 ipcMain.on('check-for-updates', (event, src) => {
   autoUpdater.checkForUpdates();
+  update_requester = event.sender;
+});
+
+ipcMain.on('download-and-install-update', (event, src) => {
+  autoUpdater.downloadUpdate();
 });
 
 autoUpdater.on('checking-for-update', () => {
@@ -224,10 +230,12 @@ autoUpdater.on('checking-for-update', () => {
 
 autoUpdater.on('update-available', (info) => {
   sendStatusToWindow('Update available.');
+  win.webContents.send('update-available');
 });
 
 autoUpdater.on('update-not-available', (info) => {
   sendStatusToWindow('Update not available.');
+  win.webContents.send('update-not-available');
 });
 
 autoUpdater.on('error', (err) => {
@@ -243,6 +251,7 @@ autoUpdater.on('download-progress', (progressObj) => {
 
 autoUpdater.on('update-downloaded', (info) => {
   sendStatusToWindow('Update downloaded');
+  autoUpdater.quitAndInstall();
 });
 //#endregion
 

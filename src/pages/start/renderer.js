@@ -3,8 +3,6 @@ const { ajax } = require('jquery');
 const { remote, ipcRenderer } = require('electron');
 const win = remote.getCurrentWindow();
 
-ipcRenderer.send('check-for-updates');
-
 ipcRenderer.on('update-message', (event, text) => {
     console.log(text);
 });
@@ -152,25 +150,18 @@ function hideTopContent() {
 }
 
 function checkUpdate() {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         verify_root_dirs();
 
-        let updateProgress = 0;
-        let updateProgress_interval = setInterval(() => {
-            if (updateProgress < 100)
-            {
-                updateProgress++;
-                document.getElementById('update-progress-label').innerHTML = 'Проверка обновлений: ' + updateProgress + '%';
-                document.getElementById('update-progress-bar').style.width = updateProgress.toString() + '%';
-            }
-            else
-            {
-                document.getElementById('update-progress-container').classList.remove('active');
-                document.getElementById('auth-progress-container').classList.add('active');
-                clearInterval(updateProgress_interval);
-                resolve();
-            }
-        }, 20);
+        ipcRenderer.send('check-for-updates');
+        
+        ipcRenderer.on('update-available', (event, args) => {
+            ipcRenderer.send('download-and-install-update');
+        });
+
+        ipcRenderer.on('update-not-available', (event, args) => {
+            resolve();
+        });
     });
 }
 
