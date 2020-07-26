@@ -62,8 +62,8 @@ function createWindow() {
 let show_minimized_in_taskbar = true;
 
 ipcMain.on('minimize-to-tray', (event, args) => {
-  win.setSkipTaskbar(true);
-  show_minimized_in_taskbar = false;
+  // win.setSkipTaskbar(true);
+  // show_minimized_in_taskbar = false;
   win.minimize();
   tray = createTray();
 });
@@ -91,6 +91,7 @@ function createTray() {
     tray.destroy();
     show_minimized_in_taskbar = true;
   });
+  
   appIcon.setToolTip('Delta');
   appIcon.setTitle('Delta');
   appIcon.setContextMenu(contextMenu);
