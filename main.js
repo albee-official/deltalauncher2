@@ -220,9 +220,15 @@ ipcMain.on('check-for-updates', (event, src) => {
   update_requester = event.sender;
 });
 
-ipcMain.on('download-and-install-update', (event, src) => {
+ipcMain.on('download-update', (event, src) => {
   autoUpdater.downloadUpdate();
 });
+
+ipcMain.on('install-update', (event, src) => {
+  autoUpdater.quitAndInstall();
+  app.exit();
+});
+
 
 autoUpdater.on('checking-for-update', () => {
   sendStatusToWindow('Checking for update...');
@@ -246,12 +252,13 @@ autoUpdater.on('download-progress', (progressObj) => {
   let log_message = "Download speed: " + progressObj.bytesPerSecond;
   log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
   log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
+  win.webContents.send('download-progress', progressObj);
   sendStatusToWindow(log_message);
 });
 
 autoUpdater.on('update-downloaded', (info) => {
   sendStatusToWindow('Update downloaded');
-  autoUpdater.quitAndInstall();
+  win.webContents.send('update-downloaded');
 });
 //#endregion
 

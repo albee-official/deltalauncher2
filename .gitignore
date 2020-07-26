@@ -6,6 +6,19 @@ yarn-debug.log
 yarn-error.log
 lerna-debug.log
 
+.mixin.out
+asm/
+astralsorcery/
+config/
+local/
+scripts/
+concheckrmd
+crafttweaker.log
+delta-launcher-1.0.0.tgz
+OpenComputersMod-1.7.5.192-lua52-native.64.dll
+OpenComputersMod-1.7.5.192-lua53-native.64.dll
+options.txt
+
 electron-builder.yml
 
 # Diagnostic reports (httpsnodejs.orgapireport.html)
