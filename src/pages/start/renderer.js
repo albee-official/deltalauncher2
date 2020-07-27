@@ -149,6 +149,8 @@ function hideTopContent() {
     }, 2000);
 }
 
+let update_required = false;
+
 function checkUpdate() {
     return new Promise(async (resolve, reject) => {
         verify_root_dirs();
@@ -157,6 +159,7 @@ function checkUpdate() {
         
         ipcRenderer.on('update-available', (event, args) => {
             ipcRenderer.send('download-update');
+            update_required = true;
         });
 
         ipcRenderer.on('update-not-available', (event, args) => {
@@ -248,6 +251,7 @@ function finish() {
 checkUpdate().then(() => {
     let user_credentials = ipcRenderer.sendSync('get-user-credentials');
 
+    if (update_required) return;
     if (user_credentials == {})
     {
         openLogin(); 
@@ -261,8 +265,6 @@ checkUpdate().then(() => {
             finish();
         });
     }
-
-    ipcRenderer.send('check-for-updates');
 });
 
 document.getElementById('login-button').addEventListener('click', () => {
