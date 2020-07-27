@@ -2,6 +2,8 @@ const { app, BrowserWindow, ipcMain, Tray, Menu } = require("electron");
 const electronDl = require('electron-dl');
 const { download } = require("electron-dl");
 const keytar = require('keytar');
+let os = require('os').release()
+console.log(os);
 
 const log = require('electron-log');
 const { autoUpdater } = require("electron-updater")
