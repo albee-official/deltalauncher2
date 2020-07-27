@@ -214,7 +214,7 @@ function integrate_java_parameters(command)
         else if (parameter.includes('-uuid')) { continue; }
         else
         {
-            command += parameter;
+            command += ' ' + parameter;
         }
     }
     
