@@ -192,53 +192,32 @@ function integrate_java_parameters(command)
 
     for (let parameter of pars_arr)
     {
-        let parameter
+        if (parameter.charAt(0) != '-') continue;
 
-        let start_index = command.indexOf(parameter);
-        console.log(parameter);
-        console.log(start_index);
-        let finish_index
-        
-        // Two Scenarious:
-        // one dash - ends with a space
-        // two dashes - have space seperating value
-        if (command.charAt(start_index + 1) == '-')
+        if (parameter.includes('-Xmx'))
         {
-            let dash_counter = 0;
-            // Search for the end of two dashes parameter. Example: '--Xmx 100M';
-            for (let i = start_index; i < command.length; i++)
-            {
-                if ((command.charAt(i) == ' ' || command.charAt(i) == '\n') && dash_counter > 0)
-                {
-                    finish_index = i;
-                    dash_counter++;
-                    break;
-                }
-            }
+            let par_prototype = `-Xmx${settings['allocated_memory'] * 1024}M`;
+            console.log(par_prototype);
+            console.log(parameter);
+            command = command.replace(par_prototype, parameter);
+            continue;
         }
+        else if (parameter.includes('-Xms'))
+        {
+            let par_prototype = `-Xms1000M`;
+            console.log(par_prototype);
+            console.log(parameter);
+            command = command.replace(par_prototype, parameter);
+            continue;
+        }
+        else if (parameter.includes('-username')) { continue; }
+        else if (parameter.includes('-uuid')) { continue; }
         else
         {
-            // Search for the end of one dash parameter. Example: '-Xmx=100M';
-            for (let i = start_index; i < command.length; i++)
-            {
-                if (command.charAt(i) == ' ' || command.charAt(i) == '\n')
-                {
-                    finish_index = i;
-                    break;
-                }
-            }
+            command += parameter;
         }
-
-        let replace_prototype = '';
-        // Construct replace prototype
-        for (let i = start_index; i < finish_index; i++)
-        {
-            replace_prototype += command.charAt(i);
-        }
-
-        console.log(replace_prototype);
     }
-
+    
     return command;
 }
 
