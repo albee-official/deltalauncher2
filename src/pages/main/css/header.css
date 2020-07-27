@@ -1,7 +1,7 @@
 header{
     z-index: 5;
 
-    background-color: #fff;
+    background-color: rgb(var(--white));
     height: 96px;
     width: 100%;
 
@@ -37,7 +37,7 @@ header{
     position: relative;
     bottom: 0;
 
-    color: #C9C9C9;
+    color: rgb(var(--white-contrast));
     transition: all .2s cubic-bezier(0.215, 0.610, 0.355, 1);
 }
 
@@ -47,7 +47,7 @@ header{
     position: relative;
     bottom: 0;
 
-    background-color: #C9C9C9;
+    background-color: rgb(var(--white-contrast));
     opacity: 0;
     
     transition: all .4s cubic-bezier(0.215, 0.610, 0.355, 1);
@@ -63,11 +63,11 @@ header{
 }
 
 .active .nav-text{
-    color: #C72C41;
+    color: rgb(var(--mid));
 }
 
 .active .nav-line{
-    background: linear-gradient(to left bottom, #EE4540, #C72C41);
+    background: linear-gradient(to left bottom, rgb(var(--light)), rgb(var(--mid)));
     opacity: 1;
 }
 
@@ -85,14 +85,14 @@ header{
     justify-content: center;
 
     border-radius: 100%;
-    border: #EE4540 4px solid;
+    border: rgb(var(--light)) 4px solid;
 }
 
 .profile-picture img{
     height: 32px;
     width: 32px;
     border-radius: 100%;
-    border: white 4px solid;
+    border: rgb(var(--white)) 4px solid;
 }
 
 .profile-details{
@@ -104,11 +104,11 @@ header{
 .profile-name{
     font-size: 20px;
     font-weight: bold;
-    color: #EE4540;
+    color: rgb(var(--light));
 }
 
 .profile-sub{
-    color: #CECECE;
+    color: rgb(var(--white-contrast));
     font-size: 14px;
     font-weight: bold;
     cursor: pointer;
@@ -116,5 +116,5 @@ header{
 }
 
 .profile-sub:hover{
-    color: #EE4540;
+    color: rgb(var(--light));
 }

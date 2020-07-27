@@ -1,6 +1,6 @@
 footer{
     z-index: 8;
-    background-color: rgba(45, 19, 44, .4);
+    background-color: rgba(var(--darkest), .4);
     height: 96px;
     width: 100%;
     display: flex;
@@ -24,7 +24,7 @@ footer{
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    color: #fff;
+    color: rgb(var(--white));
     font-size: 16px;
     font-weight: bold;
     width: fit-content;
@@ -108,7 +108,7 @@ footer{
 .download-bar{
     opacity: 0;
     height: 0px;
-    background-color: #511E3B;
+    background-color: rgba(var(--white), .3);;
     border-radius: 4px;
     width: 100%;
     margin-top: 0;
@@ -119,6 +119,6 @@ footer{
     height: 100%;
     border-radius: 4px;
     width: 0%;
-    background: linear-gradient(to right, #EE4540, #C72C41);
+    background: linear-gradient(to right, var(--light), var(--mid));
     transition: width .2s linear;
 }
