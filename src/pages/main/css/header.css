@@ -92,7 +92,6 @@ header{
     height: 40px;
     width: 40px;
     border-radius: 100%;
-    border: rgb(var(--white)) 4px solid;
 }
 
 .profile-details{
