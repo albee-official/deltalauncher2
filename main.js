@@ -16,7 +16,6 @@ let presence = {
   state: 'Разработка',
   details: 'Запуск',
   startTimestamp: Date.now(),
-  endTimestamp: Date.now() + 1,
   largeImageKey: 'rp_start_2',
   instance: false,
   spectateSecret: 'MTIzNDV8MTIzNDV8MTMyNDU0'
