@@ -16,6 +16,7 @@ for (let item of theme_select_options)
     });
 }
 
+java_parameters.value = settings['java_parameters'];
 java_parameters.addEventListener('input', e => {
     settings['java_parameters'] = java_parameters.value;
 });
