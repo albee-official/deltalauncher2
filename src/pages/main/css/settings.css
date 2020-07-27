@@ -493,6 +493,10 @@
     background: linear-gradient(to right bottom, #801336, #2D132C);
 }
 
+.theme-select-option[data-name="eternal void"] .theme-bg-preview-filter{
+    background: linear-gradient(to right bottom, #262626, #000000);
+}
+
 .theme-select-option:hover{
     transform: scale(1.1);
 }

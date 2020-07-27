@@ -185,8 +185,8 @@ play_button.addEventListener('click', async () => {
 
                     console.log(`Download speed: ${speed_in_mbps} Mb / s`);
 
-                    document.querySelector('#modpack-paragraph').innerHTML = `Загрузка сборки ${modpack_name}: ${(progress.percent * 100).toFixed()}%`
-                    document.querySelector('#role-par').innerHTML = `Скорость: ${speed_in_mbps * 8} Мб в секунду`;
+                    document.querySelector('#modpack-paragraph').innerHTML = `Загрузка сборки ${Capitalize_First_Letter(modpack_name)}: ${(progress.percent * 100).toFixed()}%`
+                    document.querySelector('#role-par').innerHTML = `Скорость: ${speed_in_mbps} Мб в секунду`;
                     document.querySelector('.download-filler').style.width = `${progress.percent * 100}%`;
                 }
             );

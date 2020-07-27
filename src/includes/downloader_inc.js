@@ -43,7 +43,8 @@ async function download_from_github_illegally(folder, item_name, onProgress) {
             // Sends message to MAIN to download modpack from url
             ipcRenderer.send('download-from-link', {
                 path: folder,
-                url: modlinks[item_name]
+                url: modlinks[item_name],
+                filename: 'modpack.zip'
             });
 
             // Redirects reply on progress to caller of the function

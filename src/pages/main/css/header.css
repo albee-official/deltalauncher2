@@ -1,7 +1,7 @@
 header{
     z-index: 5;
 
-    background-color: rgb(var(--white));
+    background-color: rgb(var(--header-bg));
     height: 96px;
     width: 100%;
 
@@ -37,7 +37,7 @@ header{
     position: relative;
     bottom: 0;
 
-    color: rgb(var(--white-contrast));
+    color: rgb(var(--header-contrast));
     transition: all .2s cubic-bezier(0.215, 0.610, 0.355, 1);
 }
 
@@ -47,7 +47,7 @@ header{
     position: relative;
     bottom: 0;
 
-    background-color: rgb(var(--white-contrast));
+    background-color: rgb(var(--header-contrast));
     opacity: 0;
     
     transition: all .4s cubic-bezier(0.215, 0.610, 0.355, 1);
@@ -89,8 +89,8 @@ header{
 }
 
 .profile-picture img{
-    height: 32px;
-    width: 32px;
+    height: 40px;
+    width: 40px;
     border-radius: 100%;
     border: rgb(var(--white)) 4px solid;
 }
@@ -108,7 +108,7 @@ header{
 }
 
 .profile-sub{
-    color: rgb(var(--white-contrast));
+    color: rgb(var(--header-contrast));
     font-size: 14px;
     font-weight: bold;
     cursor: pointer;

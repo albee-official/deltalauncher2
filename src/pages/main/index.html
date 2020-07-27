@@ -61,9 +61,9 @@
                     <img src="../../res/bg_greenhills.jpg" alt="">
                     <div class="theme-bg-preview-filter"></div>
                 </div>
-                <div id="theme-select-option" class="theme-select-option" data-name="red sunset">
-                    <p>Red Sunset</p>
-                    <img src="../../res/bg_redsunset.jpg" alt="">
+                <div id="theme-select-option" class="theme-select-option" data-name="eternal void">
+                    <p>Eternal Void</p>
+                    <img src="../../res/bg_eternalvoid.png" alt="">
                     <div class="theme-bg-preview-filter"></div>
                 </div>
             </div>
@@ -85,23 +85,23 @@
             <div id="minimize-btn" class="minimize">
                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12">
                     <g id="Component_53_1" data-name="Component 53 – 1" transform="translate(1)">
-                      <line id="minimize-icon" data-name="Line 40" x2="10" transform="translate(0 11)" fill="none" stroke="#2D132C" stroke-linecap="round" stroke-width="2"/>
+                      <line id="minimize-icon" data-name="Line 40" x2="10" transform="translate(0 11)" fill="none" stroke="rgb(var(--header-contrast-ultra))" stroke-linecap="round" stroke-width="2"/>
                       <line id="Line_41" data-name="Line 41" x2="10" fill="none"/>
                     </g>
                 </svg>
             </div>
             <div id="reload-btn" class="reload">
                 <svg xmlns="http://www.w3.org/2000/svg" width="13.307" height="13" viewBox="0 0 13.307 13">
-                    <path id="reload-icon" data-name="Path 232" d="M2054.988,1820.09a6.482,6.482,0,0,1-9.19,0c-.01-.01-.02-.03-.03-.04l-.91.91a.748.748,0,0,1-1.28-.53v-3.22a.755.755,0,0,1,.75-.75h3.22a.75.75,0,0,1,.53,1.28l-.91.91c.01.01.03.02.04.03a4.5,4.5,0,1,0,0-6.37,1,1,0,0,1-1.41-1.41,6.506,6.506,0,0,1,9.19,0A6.512,6.512,0,0,1,2054.988,1820.09Z" transform="translate(-2043.578 -1809)" fill="#2D132C"/>
+                    <path id="reload-icon" data-name="Path 232" d="M2054.988,1820.09a6.482,6.482,0,0,1-9.19,0c-.01-.01-.02-.03-.03-.04l-.91.91a.748.748,0,0,1-1.28-.53v-3.22a.755.755,0,0,1,.75-.75h3.22a.75.75,0,0,1,.53,1.28l-.91.91c.01.01.03.02.04.03a4.5,4.5,0,1,0,0-6.37,1,1,0,0,1-1.41-1.41,6.506,6.506,0,0,1,9.19,0A6.512,6.512,0,0,1,2054.988,1820.09Z" transform="translate(-2043.578 -1809)" fill="rgb(var(--header-contrast-ultra))"/>
                 </svg>   
             </div>
             <div id="close-btn" class="exit">
                 <svg xmlns="http://www.w3.org/2000/svg" width="11.582" height="11.583" viewBox="0 0 11.582 11.583">
                     <g data-name="Component 51 – 1" transform="translate(0.707 0.707)">
-                        <line id="exit-icon1" x2="10.168" y2="10.168" fill="none" stroke="#2D132C" stroke-linecap="round"
+                        <line id="exit-icon1" x2="10.168" y2="10.168" fill="none" stroke="rgb(var(--header-contrast-ultra))" stroke-linecap="round"
                             stroke-width="2" />
                         <line id="exit-icon2" x1="10" y2="10" transform="translate(0.02 0.149)" fill="none"
-                            stroke="#2D132C" stroke-linecap="round" stroke-width="2" />
+                            stroke="rgb(var(--header-contrast-ultra))" stroke-linecap="round" stroke-width="2" />
                     </g>
                 </svg>
             </div>
@@ -140,7 +140,7 @@
 
         <div class="profile">
             <div class="profile-picture noselect">
-                <img src="../../res/user.png" alt="">
+                <img id="profile-img" src="../../res/user.png" alt="">
             </div>
             <div class="profile-details">
                 <div id="profile-name" class="profile-name">
@@ -696,6 +696,10 @@
                     document.body.style.setProperty('--light', '68, 64, 99');
                     document.body.style.setProperty('--lightest', '107, 87, 120');
 
+                    document.body.style.setProperty('--header-bg', '255, 255, 255');
+                    document.body.style.setProperty('--header-contrast', '201, 201, 201');
+                    document.body.style.setProperty('--header-contrast-ultra', '14, 19, 39');
+
                     document.body.style.setProperty('--white', '255, 255, 255');
                     document.body.style.setProperty('--white-contrast', '201, 201, 201');
                     break;
@@ -706,6 +710,10 @@
                     document.body.style.setProperty('--mid', '28, 140, 88');
                     document.body.style.setProperty('--light', '44, 191, 123');
                     document.body.style.setProperty('--lightest', '54, 217, 141');
+
+                    document.body.style.setProperty('--header-bg', '255, 255, 255');
+                    document.body.style.setProperty('--header-contrast', '201, 201, 201');
+                    document.body.style.setProperty('--header-contrast-ultra', '8, 38, 38');
 
                     document.body.style.setProperty('--white', '255, 255, 255');
                     document.body.style.setProperty('--white-contrast', '201, 201, 201');
@@ -718,6 +726,25 @@
                     document.body.style.setProperty('--light', '238, 69, 64');
                     document.body.style.setProperty('--lightest', '255, 97, 38');
 
+                    document.body.style.setProperty('--header-bg', '255, 255, 255');
+                    document.body.style.setProperty('--header-contrast', '201, 201, 201');
+                    document.body.style.setProperty('--header-contrast-ultra', '45, 19, 44');
+
+                    document.body.style.setProperty('--white', '255, 255, 255');
+                    document.body.style.setProperty('--white-contrast', '201, 201, 201');
+                    break;
+
+                case 'eternal void':
+                    document.body.style.setProperty('--darkest', '0, 0, 0');
+                    document.body.style.setProperty('--dark', '38, 38, 38');
+                    document.body.style.setProperty('--mid', '97, 97, 97');
+                    document.body.style.setProperty('--light', '164, 164, 164');
+                    document.body.style.setProperty('--lightest', ' 193, 193, 193');
+
+                    document.body.style.setProperty('--header-bg', '16, 16, 16');
+                    document.body.style.setProperty('--header-contrast', '72, 72, 72');
+                    document.body.style.setProperty('--header-contrast-ultra', '255, 255, 255');
+
                     document.body.style.setProperty('--white', '255, 255, 255');
                     document.body.style.setProperty('--white-contrast', '201, 201, 201');
                     break;
@@ -729,6 +756,10 @@
                     document.body.style.setProperty('--light', '238, 69, 64');
                     document.body.style.setProperty('--lightest', '255, 97, 38');
 
+                    document.body.style.setProperty('--header-bg', '255, 255, 255');
+                    document.body.style.setProperty('--header-contrast', '201, 201, 201');
+                    document.body.style.setProperty('--header-contrast-ultra', '45, 19, 44');
+                    
                     document.body.style.setProperty('--white', '255, 255, 255');
                     document.body.style.setProperty('--white-contrast', '201, 201, 201');
                     break;
@@ -739,6 +770,10 @@
                     document.body.style.setProperty('--mid', '199, 44, 65');
                     document.body.style.setProperty('--light', '238, 69, 64');
                     document.body.style.setProperty('--lightest', '255, 97, 38');
+
+                    document.body.style.setProperty('--header-bg', '255, 255, 255');
+                    document.body.style.setProperty('--header-contrast', '201, 201, 201');
+                    document.body.style.setProperty('--header-contrast-ultra', '45, 19, 44');
 
                     document.body.style.setProperty('--white', '255, 255, 255');
                     document.body.style.setProperty('--white-contrast', '201, 201, 201');
@@ -763,6 +798,10 @@
 
                 case 'red sunset':
                     bg_path = '../../res/bg_redsunset.jpg';
+                    break;
+
+                case 'eternal void':
+                    bg_path = '../../res/bg_eternalvoid.png';
                     break;
 
                 case 'default':

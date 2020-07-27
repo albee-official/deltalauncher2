@@ -7,6 +7,8 @@ ipcRenderer.on('update-message', (event, text) => {
     console.log(text);
 });
 
+
+
 const body = document.body;
 
 let bg_path = (verify_and_get_resources_folder() + '\\custom_bg.' + settings['bg_extension']).replace(/\\/g, '/');
@@ -24,6 +26,10 @@ if (settings['bg_extension'] == '')
 
         case 'red sunset':
             bg_path = '../../res/bg_redsunset.jpg';
+            break;
+
+        case 'eternal void':
+            bg_path = '../../res/bg_eternalvoid.png';
             break;
             
         case 'default':
@@ -43,34 +49,67 @@ switch (settings['theme'])
         document.body.style.setProperty('--dark', '23, 29, 55');
         document.body.style.setProperty('--mid', '49, 50, 81');
         document.body.style.setProperty('--light', '68, 64, 99');
-        document.body.style.setProperty('--lightest', '107, 87, 120');
+        document.body.style.setProperty('--lightest', '107, 87, 120');  
+
+        document.body.style.setProperty('--header-bg', '255, 255, 255');
+        document.body.style.setProperty('--header-contrast', '201, 201, 201');  
+
         document.body.style.setProperty('--white', '255, 255, 255');
         document.body.style.setProperty('--white-contrast', '201, 201, 201');
-        break;
+        break;  
+
     case 'green hills':
         document.body.style.setProperty('--darkest', '8, 38, 38');
         document.body.style.setProperty('--dark', '21, 89, 77');
         document.body.style.setProperty('--mid', '28, 140, 88');
         document.body.style.setProperty('--light', '44, 191, 123');
-        document.body.style.setProperty('--lightest', '54, 217, 141');
+        document.body.style.setProperty('--lightest', '54, 217, 141');  
+
+        document.body.style.setProperty('--header-bg', '255, 255, 255');
+        document.body.style.setProperty('--header-contrast', '201, 201, 201');  
+
         document.body.style.setProperty('--white', '255, 255, 255');
         document.body.style.setProperty('--white-contrast', '201, 201, 201');
-        break;
+        break;  
+
     case 'red sunset':
         document.body.style.setProperty('--darkest', '45, 19, 44');
         document.body.style.setProperty('--dark', '128, 19, 54');
         document.body.style.setProperty('--mid', '199, 44, 65');
         document.body.style.setProperty('--light', '238, 69, 64');
-        document.body.style.setProperty('--lightest', '255, 97, 38');
+        document.body.style.setProperty('--lightest', '255, 97, 38');   
+
+        document.body.style.setProperty('--header-bg', '255, 255, 255');
+        document.body.style.setProperty('--header-contrast', '201, 201, 201');  
+
         document.body.style.setProperty('--white', '255, 255, 255');
         document.body.style.setProperty('--white-contrast', '201, 201, 201');
-        break;
+        break;  
+
+    case 'eternal void':
+        document.body.style.setProperty('--darkest', '0, 0, 0');
+        document.body.style.setProperty('--dark', '38, 38, 38');
+        document.body.style.setProperty('--mid', '97, 97, 97');
+        document.body.style.setProperty('--light', '164, 164, 164');
+        document.body.style.setProperty('--lightest', ' 193, 193, 193');    
+
+        document.body.style.setProperty('--header-bg', '255, 255, 255');
+        document.body.style.setProperty('--header-contrast', '201, 201, 201');  
+        
+        document.body.style.setProperty('--white', '255, 255, 255');
+        document.body.style.setProperty('--white-contrast', '201, 201, 201');
+        break;  
+
     case 'default':
         document.body.style.setProperty('--darkest', '45, 19, 44');
         document.body.style.setProperty('--dark', '128, 19, 54');
         document.body.style.setProperty('--mid', '199, 44, 65');
         document.body.style.setProperty('--light', '238, 69, 64');
-        document.body.style.setProperty('--lightest', '255, 97, 38');
+        document.body.style.setProperty('--lightest', '255, 97, 38');   
+
+        document.body.style.setProperty('--header-bg', '255, 255, 255');
+        document.body.style.setProperty('--header-contrast', '201, 201, 201');
+
         document.body.style.setProperty('--white', '255, 255, 255');
         document.body.style.setProperty('--white-contrast', '201, 201, 201');
         break;
@@ -80,7 +119,11 @@ switch (settings['theme'])
         document.body.style.setProperty('--dark', '128, 19, 54');
         document.body.style.setProperty('--mid', '199, 44, 65');
         document.body.style.setProperty('--light', '238, 69, 64');
-        document.body.style.setProperty('--lightest', '255, 97, 38');
+        document.body.style.setProperty('--lightest', '255, 97, 38');   
+
+        document.body.style.setProperty('--header-bg', '255, 255, 255');
+        document.body.style.setProperty('--header-contrast', '201, 201, 201');  
+
         document.body.style.setProperty('--white', '255, 255, 255');
         document.body.style.setProperty('--white-contrast', '201, 201, 201');
         break;
@@ -156,12 +199,12 @@ function hideTopContent() {
     document.getElementById('reload-btn').removeEventListener('mouseover', reloadLisHover);
     document.getElementById('reload-btn').removeEventListener('mouseleave', reloadLisLeave);
 
-    document.getElementById('exit-icon1').style.stroke = 'rgb(var(--darkest))';
-    document.getElementById('exit-icon2').style.stroke = 'rgb(var(--darkest))';
+    document.getElementById('exit-icon1').style.stroke = 'rgb(var(--header-contrast-ultra))';
+    document.getElementById('exit-icon2').style.stroke = 'rgb(var(--header-contrast-ultra))';
 
-    document.getElementById('minimize-icon').style.stroke = 'rgb(var(--darkest))';
+    document.getElementById('minimize-icon').style.stroke = 'rgb(var(--header-contrast-ultra))';
 
-    document.getElementById('reload-icon').style.fill = 'rgb(var(--darkest))';
+    document.getElementById('reload-icon').style.fill = 'rgb(var(--header-contrast-ultra))';
 
     document.getElementById('close-btn').addEventListener('mouseover', () => {
         document.getElementById('close-btn').style.backgroundColor = 'rgb(var(--mid))';
@@ -170,11 +213,11 @@ function hideTopContent() {
     });
     
     document.getElementById('close-btn').addEventListener('mouseleave', () => {
-        document.getElementById('close-btn').style.backgroundColor = 'rgba(var(--mid), 0)';
-        document.getElementById('exit-icon1').style.stroke = 'rgb(var(--darkest))';
-        document.getElementById('exit-icon2').style.stroke = 'rgb(var(--darkest))';
+        document.getElementById('close-btn').style.backgroundColor = 'rgba(var(--header-contrast-ultra), 0)';
+        document.getElementById('exit-icon1').style.stroke = 'rgb(var(--header-contrast-ultra))';
+        document.getElementById('exit-icon2').style.stroke = 'rgb(var(--header-contrast-ultra))';
     });
-
+    
     document.getElementById('minimize-btn').addEventListener('mouseover', () => {
         document.getElementById('minimize-btn').style.backgroundColor = 'rgb(var(--mid))';
         document.getElementById('minimize-icon').style.stroke = 'rgb(var(--white))';
@@ -182,9 +225,9 @@ function hideTopContent() {
     
     document.getElementById('minimize-btn').addEventListener('mouseleave', () => {
         document.getElementById('minimize-btn').style.backgroundColor = 'rgba(var(--mid), 0)';
-        document.getElementById('minimize-icon').style.stroke = 'rgb(var(--darkest))';
+        document.getElementById('minimize-icon').style.stroke = 'rgb(var(--header-contrast-ultra))';
     });
-
+    
     document.getElementById('reload-btn').addEventListener('mouseover', () => {
         document.getElementById('reload-btn').style.backgroundColor = 'rgb(var(--mid))';
         document.getElementById('reload-icon').style.fill = 'rgb(var(--white))';
@@ -192,7 +235,7 @@ function hideTopContent() {
     
     document.getElementById('reload-btn').addEventListener('mouseleave', () => {
         document.getElementById('reload-btn').style.backgroundColor = 'rgba(var(--mid), 0)';
-        document.getElementById('reload-icon').style.fill = 'rgb(var(--darkest))';
+        document.getElementById('reload-icon').style.fill = 'rgb(var(--header-contrast-ultra))';
     });
 
     setInterval(() => {
@@ -201,6 +244,7 @@ function hideTopContent() {
 }
 
 let update_required = false;
+let downloading_update = false;
 
 function checkUpdate() {
     return new Promise(async (resolve, reject) => {
@@ -211,20 +255,33 @@ function checkUpdate() {
         ipcRenderer.on('update-available', (event, args) => {
             ipcRenderer.send('download-update');
             update_required = true;
+            downloading_update = true;
+        });
+
+        ipcRenderer.on('update-error', () => {
+            document.getElementById('update-progress-container').classList.remove('active');
+            document.getElementById('auth-progress-container').classList.add('active');
+            resolve();
         });
 
         ipcRenderer.on('update-not-available', (event, args) => {
+            document.getElementById('update-progress-container').classList.remove('active');
+            document.getElementById('auth-progress-container').classList.add('active');
             resolve();
         });
 
         ipcRenderer.on('download-progress', (event, progressObj) => {
-            document.getElementById('update-progress-label').innerHTML = ` Загрузка обновления: ${progressObj.percent.toPrecision(2)}%`;
-            document.getElementById('update-progress-bar').style.width = progressObj.percent + '%';
+            if (downloading_update)
+            {
+                document.getElementById('update-progress-label').innerHTML = ` Загрузка обновления: ${progressObj.percent.toPrecision(2)}%`;
+                document.getElementById('update-progress-bar').style.width = progressObj.percent + '%';
+            }
         });
 
         ipcRenderer.on('update-downloaded', (event) => {
             setTimeout(() => {
                 document.getElementById('update-progress-label').innerHTML = `Подготовка к установке...`;
+                downloading_update = false;
                 setTimeout(() => {
                     document.getElementById('update-progress-label').innerHTML = `Выключение лаунчер...`;
                     ipcRenderer.send('install-update');
@@ -260,13 +317,15 @@ function login() {
                 console.log('Login Succesfull!');
                 console.log(result['uid']);
 
-                ipcRenderer.sendSync('update-user-info', { 
+                ipcRenderer.send('update-user-info', { 
                     info: result, 
                     password: document.getElementById('password').value 
                 });
 
-                closeLogin();
-                resolve();
+                ipcRenderer.on('user-info-updated', (event, args) => {
+                    closeLogin();
+                    resolve();
+                });
             }   
         });
     });
@@ -285,15 +344,27 @@ function finish() {
                 uid: document.getElementById('login').value,
             },
             dataType: 'json'
-        }).done((data) => {
+        }).done(async (data) => {
             ipcRenderer.send('update-user-server-info', data);
 
-            document.getElementById('finish-progress-container').classList.remove('active');
-            console.log('done');
+            ipcRenderer.send('download-from-link', {
+                path: verify_and_get_resources_folder(),
+                url: `https://deltaminecraft.000webhostapp.com/uploads/profileImgs/${document.getElementById('login').value}.png`,
+                filename: 'user.png'
+            });
 
-            hideTopContent();
-            resolve();
-        })
+            ipcRenderer.on('download-progress', (event, progress) => {
+                document.getElementById('finish-progress-bar').style.width = progress.procentage * 100 + '%';
+            });
+
+            ipcRenderer.on('download-completed', (event, args) => {
+                document.getElementById('finish-progress-container').classList.remove('active');
+                console.log('done');
+
+                hideTopContent();
+                resolve();
+            });
+        });
     });
 }
 

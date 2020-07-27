@@ -29,6 +29,7 @@ ipcRenderer.sendSync('rich-presence-to', {
 //? APPLY
 
 document.getElementById('profile-name').innerHTML = userData['uid'];
+document.getElementById('profile-img').setAttribute('src', verify_and_get_resources_folder() + '\\user.png');
 //#endregion
 
 let hide_settings_button = document.querySelector('#hide-settings-btn');
@@ -61,9 +62,9 @@ document.getElementById('close-btn').addEventListener('mouseover', () => {
 });
 
 document.getElementById('close-btn').addEventListener('mouseleave', () => {
-    document.getElementById('close-btn').style.backgroundColor = 'rgba(var(--mid), 0)';
-    document.getElementById('exit-icon1').style.stroke = 'rgb(var(--darkest))';
-    document.getElementById('exit-icon2').style.stroke = 'rgb(var(--darkest))';
+    document.getElementById('close-btn').style.backgroundColor = 'rgba(var(--header-contrast-ultra), 0)';
+    document.getElementById('exit-icon1').style.stroke = 'rgb(var(--header-contrast-ultra))';
+    document.getElementById('exit-icon2').style.stroke = 'rgb(var(--header-contrast-ultra))';
 });
 
 document.getElementById('minimize-btn').addEventListener('mouseover', () => {
@@ -73,7 +74,7 @@ document.getElementById('minimize-btn').addEventListener('mouseover', () => {
 
 document.getElementById('minimize-btn').addEventListener('mouseleave', () => {
     document.getElementById('minimize-btn').style.backgroundColor = 'rgba(var(--mid), 0)';
-    document.getElementById('minimize-icon').style.stroke = 'rgb(var(--darkest))';
+    document.getElementById('minimize-icon').style.stroke = 'rgb(var(--header-contrast-ultra))';
 });
 
 document.getElementById('reload-btn').addEventListener('mouseover', () => {
@@ -83,7 +84,7 @@ document.getElementById('reload-btn').addEventListener('mouseover', () => {
 
 document.getElementById('reload-btn').addEventListener('mouseleave', () => {
     document.getElementById('reload-btn').style.backgroundColor = 'rgba(var(--mid), 0)';
-    document.getElementById('reload-icon').style.fill = 'rgb(var(--darkest))';
+    document.getElementById('reload-icon').style.fill = 'rgb(var(--header-contrast-ultra))';
 });
 
 document.getElementById('close-btn').addEventListener('click', () => {

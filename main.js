@@ -118,7 +118,7 @@ app.on("activate", () => {
 //#region //. Download 
 let downloading_item = null;
 
-ipcMain.on('download-from-link', async (event, {path, url}) => {
+ipcMain.on('download-from-link', async (event, {path, url, filename}) => {
     console.log(`downloading: ${url}`);
     const win = BrowserWindow.getFocusedWindow();
     let prev_transferredBytes = 0;
@@ -126,7 +126,7 @@ ipcMain.on('download-from-link', async (event, {path, url}) => {
     // Start download using eletron-dl
     download(win, url, {
       directory: path,
-      filename: 'modpack.zip',
+      filename: filename,
 
       // send 'download-progress' event back to the evoker.
       // conatins progress info
@@ -177,7 +177,7 @@ ipcMain.on('update-user-info', (event, { info, password }) => {
     // overwrites userInfo variable to info
     userInfo = info;
     keytar.setPassword('Delta', info['uid'], password);
-    event.returnValue = 0;
+    event.reply('user-info-updated');
 });
 
 ipcMain.on('update-user-server-info', (event, info) => {
@@ -214,10 +214,13 @@ function sendStatusToWindow(text) {
   win.webContents.send('update-message', text);
 }
 
-let update_requester;
+let already_checking = false;
 ipcMain.on('check-for-updates', (event, src) => {
-  autoUpdater.checkForUpdates();
-  update_requester = event.sender;
+  if (!already_checking)
+  {
+    autoUpdater.checkForUpdates();
+    already_checking = true;
+  }
 });
 
 ipcMain.on('download-update', (event, src) => {
@@ -240,10 +243,13 @@ autoUpdater.on('update-available', (info) => {
 autoUpdater.on('update-not-available', (info) => {
   sendStatusToWindow('Update not available.');
   win.webContents.send('update-not-available');
+
+  already_checking = false;
 });
 
 autoUpdater.on('error', (err) => {
   sendStatusToWindow('Error in auto-updater. ' + err);
+  win.webContents.send('update-error');
 });
 
 autoUpdater.on('download-progress', (progressObj) => {
