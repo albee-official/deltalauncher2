@@ -78,7 +78,34 @@ function UpdateServer() {
 UpdateServer();
 
 function UpdateRole() {
-    document.querySelector('#role-par').innerHTML = `Бета-тест`;
+    let admin_role = userData['servers_info'][modpack_name]['adminrole'];
+    let privilege = userData['servers_info'][modpack_name]['privilege'];
+    if (privilege == 'Player') privilege = 'Игрок';
+    if (admin_role == 'Delta') privilege = 'Разработчик';
+    if (admin_role == 'Rho') privilege = 'Разработчик';
+    if (admin_role == 'Iota') privilege = 'Разработчик';
+    if (admin_role == 'Lambda') privilege = 'Разработчик';
+    if (admin_role == 'Kappa') privilege = 'Разработчик';
+    if (admin_role == 'Epsilon') privilege = 'Разработчик';
+    if (admin_role == 'Omikron') privilege = 'Разработчик';
+    if (admin_role == 'Psi') privilege = 'Разработчик';
+
+    switch (admin_role) {
+        case 'Delta': privilege = 'Разработчик'; break;
+        case 'Psi': privilege = 'Проверяющий'; break;
+        case 'Omikron': privilege = 'Управляющий'; break;
+        case 'Epsilon': privilege = 'Менеджер'; break;
+        case 'Kappa': privilege = 'Администратор'; break;
+        case 'Lambda': privilege = 'Модератор'; break;
+        case 'Iota': privilege = 'Помощник'; break;
+        case 'Rho': privilege = 'Стажер'; break;
+    }
+
+    if (admin_role == 'Player') {
+        document.getElementById('role-par').innerHTML = `${privilege}`;
+    } else {
+        document.getElementById('role-par').innerHTML = `${privilege} [${admin_role}]`;
+    }
 }
 
 function UpdateRedownloadCheckBox() {

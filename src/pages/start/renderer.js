@@ -218,7 +218,7 @@ function checkUpdate() {
         });
 
         ipcRenderer.on('download-progress', (event, progressObj) => {
-            document.getElementById('update-progress-label').innerHTML = ` Загрузка обновления: ${progressObj.percent.toPrecision(2)}`;
+            document.getElementById('update-progress-label').innerHTML = ` Загрузка обновления: ${progressObj.percent.toPrecision(2)}%`;
             document.getElementById('update-progress-bar').style.width = progressObj.percent + '%';
         });
 

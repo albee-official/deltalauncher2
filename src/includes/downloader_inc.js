@@ -74,7 +74,7 @@ async function download_from_github_illegally(folder, item_name, onProgress) {
                     // FINISH IT! (puts mods where they should be and deletes extras)
                     modpack_p.innerHTML = 'Завершение: Перенос файлов...';
                     await process_libs(folder);
-                    modpack_p.innerHTML = 'Завершение: Завершение...';
+                    modpack_p.innerHTML = 'Завершение: Удаление архива загрузки...';
                     await clean_up(folder + `\\Libraries-master`, zip_path);
                     resolve(folder);
                 }
@@ -83,7 +83,7 @@ async function download_from_github_illegally(folder, item_name, onProgress) {
                     // FINISH IT! (puts mods where they should be and deletes extras)
                     modpack_p.innerHTML = 'Завершение: Перенос файлов...';
                     await process_modpack(folder, item_name);
-                    modpack_p.innerHTML = 'Завершение: Завершение...';
+                    modpack_p.innerHTML = 'Завершение: Удаление архива загрузки...';
                     await clean_up(folder + `\\${item_name}-master`, zip_path);
                     resolve(folder);
                 }
