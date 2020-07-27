@@ -1,11 +1,12 @@
 const { app, BrowserWindow, ipcMain, Tray, Menu } = require("electron");
 const electronDl = require('electron-dl');
 const { download } = require("electron-dl");
-if(require('electron-squirrel-startup')) return;
 const keytar = require('keytar');
 
 const log = require('electron-log');
 const { autoUpdater } = require("electron-updater")
+
+autoUpdater.autoDownload = false;
 
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
