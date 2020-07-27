@@ -215,6 +215,7 @@ function sendStatusToWindow(text) {
 }
 
 let already_checking = false;
+let downloading_update = false;
 ipcMain.on('check-for-updates', (event, src) => {
   if (!already_checking)
   {
@@ -224,7 +225,8 @@ ipcMain.on('check-for-updates', (event, src) => {
 });
 
 ipcMain.on('download-update', (event, src) => {
-  autoUpdater.downloadUpdate();
+  if (!downloading_update)
+    autoUpdater.downloadUpdate();
 });
 
 ipcMain.on('install-update', (event, src) => {
@@ -257,6 +259,7 @@ autoUpdater.on('download-progress', (progressObj) => {
   log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
   log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
   win.webContents.send('download-progress', progressObj);
+  downloading_update = true;
   sendStatusToWindow(log_message);
 });
 
