@@ -55,35 +55,35 @@ function updateSettings(open)
 //#region  //. Panel buttons -----------------------------------------------
 
 document.getElementById('close-btn').addEventListener('mouseover', () => {
-    document.getElementById('close-btn').style.backgroundColor = 'rgb(219, 33, 48)';
-    document.getElementById('exit-icon1').style.stroke = '#ffffff';
-    document.getElementById('exit-icon2').style.stroke = '#ffffff';
+    document.getElementById('close-btn').style.backgroundColor = 'rgb(var(--mid))';
+    document.getElementById('exit-icon1').style.stroke = 'rgb(var(--white))';
+    document.getElementById('exit-icon2').style.stroke = 'rgb(var(--white))';
 });
 
 document.getElementById('close-btn').addEventListener('mouseleave', () => {
-    document.getElementById('close-btn').style.backgroundColor = 'rgba(255, 255, 255, 0)';
-    document.getElementById('exit-icon1').style.stroke = '#2D132C';
-    document.getElementById('exit-icon2').style.stroke = '#2D132C';
+    document.getElementById('close-btn').style.backgroundColor = 'rgba(var(--mid), 0)';
+    document.getElementById('exit-icon1').style.stroke = 'rgb(var(--darkest))';
+    document.getElementById('exit-icon2').style.stroke = 'rgb(var(--darkest))';
 });
 
 document.getElementById('minimize-btn').addEventListener('mouseover', () => {
-    document.getElementById('minimize-btn').style.backgroundColor = 'rgb(219, 33, 48)';
-    document.getElementById('minimize-icon').style.stroke = '#ffffff';
+    document.getElementById('minimize-btn').style.backgroundColor = 'rgb(var(--mid))';
+    document.getElementById('minimize-icon').style.stroke = 'rgb(var(--white))';
 });
 
 document.getElementById('minimize-btn').addEventListener('mouseleave', () => {
-    document.getElementById('minimize-btn').style.backgroundColor = 'rgba(255, 255, 255, 0)';
-    document.getElementById('minimize-icon').style.stroke = '#2D132C';
+    document.getElementById('minimize-btn').style.backgroundColor = 'rgba(var(--mid), 0)';
+    document.getElementById('minimize-icon').style.stroke = 'rgb(var(--darkest))';
 });
 
 document.getElementById('reload-btn').addEventListener('mouseover', () => {
-    document.getElementById('reload-btn').style.backgroundColor = 'rgb(219, 33, 48)';
-    document.getElementById('reload-icon').style.fill = '#ffffff';
+    document.getElementById('reload-btn').style.backgroundColor = 'rgb(var(--mid))';
+    document.getElementById('reload-icon').style.fill = 'rgb(var(--white))';
 });
 
 document.getElementById('reload-btn').addEventListener('mouseleave', () => {
-    document.getElementById('reload-btn').style.backgroundColor = 'rgba(255, 255, 255, 0)';
-    document.getElementById('reload-icon').style.fill = '#2D132C';
+    document.getElementById('reload-btn').style.backgroundColor = 'rgba(var(--mid), 0)';
+    document.getElementById('reload-icon').style.fill = 'rgb(var(--darkest))';
 });
 
 document.getElementById('close-btn').addEventListener('click', () => {

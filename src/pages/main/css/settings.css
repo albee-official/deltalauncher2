@@ -477,6 +477,22 @@
     cursor: pointer;
 }
 
+.theme-select-option[data-name="default"] .theme-bg-preview-filter{
+    background: linear-gradient(to right bottom, #801336, #801336);
+}
+
+.theme-select-option[data-name="night sky"] .theme-bg-preview-filter{
+    background: linear-gradient(to right bottom, #171D37, #0E1327);
+}
+
+.theme-select-option[data-name="green hills"] .theme-bg-preview-filter{
+    background: linear-gradient(to right bottom, #15594D, #082626);
+}
+
+.theme-select-option[data-name="red sunset"] .theme-bg-preview-filter{
+    background: linear-gradient(to right bottom, #801336, #2D132C);
+}
+
 .theme-select-option:hover{
     transform: scale(1.1);
 }

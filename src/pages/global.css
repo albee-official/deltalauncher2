@@ -9,17 +9,6 @@
     font-family: -apple-system, BlinkMacSystemFont, segoe ui, Roboto, helvetica neue, Arial, sans-serif,apple color emoji, segoe ui emoji, segoe ui symbol;
 }
 
-body{
-    --darkest: 45, 19, 44;
-    --dark: 128, 19, 54;
-    --mid: 199, 44, 65;
-    --light: 238, 69, 64;
-    --lightest: 255, 97, 38;
-
-    --white: 255, 255, 255;
-    --white-contrast: 201, 201, 201;
-}
-
 .noselect {
     -webkit-touch-callout: none; /* iOS Safari */
       -webkit-user-select: none; /* Safari */

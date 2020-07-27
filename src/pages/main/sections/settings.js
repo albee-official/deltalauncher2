@@ -6,6 +6,15 @@ let memory_range = document.querySelector('#memory-range');
 let optimization_range = document.querySelector('#optimization-range');
 let controll_inputs = document.querySelectorAll('.controll-setting-input');
 let java_parameters = document.querySelector('#java-parameters');
+let theme_select_options = document.querySelectorAll('#theme-select-option');
+
+for (let item of theme_select_options)
+{
+    console.log(theme_select_options);
+    item.addEventListener('mouseover', () => {
+        set_theme_colours(item.getAttribute('data-name'));
+    });
+}
 
 java_parameters.addEventListener('input', e => {
     settings['java_parameters'] = java_parameters.value;
@@ -462,5 +471,4 @@ async function show_theme_selection_menu()
 function close_menu(menu) {
     menu.classList.remove('open');
 }
-
 //#endregion
