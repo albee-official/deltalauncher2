@@ -134,7 +134,7 @@ document.querySelector('#reset-folder').addEventListener('click', async e => {
 
     fs.readdir(path, (err, files) => {
         files.forEach(file => {
-            if (file != 'mods' && file != 'libraries' && file != 'versions' && file != 'assets' && file != 'settings')
+            if (file != 'mods' && file != 'libraries' && file != 'versions' && file != 'assets' && file != 'settings' && file != 'info.json')
             {
                 if (file.toString().split('.').length > 1)
                 {

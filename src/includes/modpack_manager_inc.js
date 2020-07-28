@@ -55,7 +55,7 @@ function verify_and_get_settings_file()
 
 function verify_and_get_modpack_folder(modpack_name)
 {
-    let active_folder = modpack_folders[modpack_name].replace('|ROOT|', dir_root) + '\\' + modpack_name;
+    let active_folder = modpack_folders[modpack_name.toLowerCase()].replace('|ROOT|', dir_root) + '\\' + modpack_name;
     fs.ensureDirSync(active_folder);
     return active_folder;
 }
@@ -225,6 +225,33 @@ function integrate_java_parameters(command)
     return command;
 }
 
+function verify_and_get_path_to_modpack_info(modpack_name)
+{
+    let path = verify_and_get_modpack_folder(modpack_name) + '\\info.json';
+    if (!fs.pathExistsSync(path))
+    {
+        fs.createFileSync(path);
+        fs.writeFileSync(path, '{}');
+    }
+    return path;
+}
+
+function get_modpack_version_from_info(modpack_name)
+{
+    let path = verify_and_get_path_to_modpack_info(modpack_name);
+    let json = JSON.parse(fs.readFileSync(path));
+    return json['version'];
+}
+
+function set_modpack_version_to_info(modpack_name, version)
+{
+    let path = verify_and_get_path_to_modpack_info(modpack_name);
+    console.log(`writing to ${path}`);
+    let json = JSON.parse(fs.readFileSync(path));
+    json['version'] = version;
+    fs.writeFileSync(path, JSON.stringify(json));
+}
+
 function get_latest_java_version_path()
 {
     let folders = fs.readdirSync('C:\\Program Files\\Java');
@@ -311,5 +338,7 @@ if (true == false) {
     modpack_not_installed();
     verify_and_get_settings_file();
     change_settings_preset();
+    set_modpack_version_to_info();
+    get_modpack_version_from_info();
 }
 //#endregion

@@ -1,5 +1,7 @@
 //#region  //.Server selection ------------------------------------------
 
+const { ajax } = require("jquery");
+
 let magicae_select_button = document.querySelector('#magicae-select');
 let fabrica_select_button = document.querySelector('#fabrica-select');
 let statera_select_button = document.querySelector('#statera-select');
@@ -142,124 +144,215 @@ play_button.addEventListener('click', async () => {
     let modpack_folder = verify_and_get_modpack_folder(modpack_name);
 
     if (!download_in_progress) {
-        if (document.querySelector('#redownload-client-cb').checked) {
+        if (document.querySelector('#redownload-client-cb').checked) { 
+            //. ЕСЛИ НЕ УСТАНОВЛЕННА
 
-            // Show progress bar in footer
-            document.querySelector('footer').className = 'noselect downloading';
-            play_button.innerHTML = 'Отмена';
-            download_in_progress = true;
+            show_progress_footer();
+            rimraf.sync(modpack_folder);
 
             console.log(`${modpack_name} is uninstalled. Downloading`);
 
-            document.querySelector(`#modpack-dir[data-name=${modpack_name}]`).classList.add('updating');
-
+            // Если мы уж перекачиваем то уж лучше подчистить все, а то не дай бох чо произойдет
             clear_modpack_folder(modpack_name);
 
-            let core_path = verify_and_get_libs_folder();
-            if (libs_folder_empty()) {
-                console.log(`No libraries found on this computer. Downloading...`);
-                let libs_path = await download_from_github_illegally(
-                    core_path,
-                    'libs',
-                    (progress) => {
-                        let speed_in_mbps = (progress.speed / 1024 / 1024).toPrecision(2);
+            // Скачать либы если их нету
+            await download_libs();
 
-                        console.log(`Download speed: ${speed_in_mbps} Mb / s`);
-
-                        document.querySelector('#modpack-paragraph').innerHTML = `Загрузка библиотек: ${(progress.percent * 100).toFixed()}%`
-                        document.querySelector('#role-par').innerHTML = `Скорость: ${speed_in_mbps * 8} Мб в секунду`;
-                        document.querySelector('.download-filler').style.width = `${progress.percent * 100}%`;
-                    }
-                );
-
-                console.log(`Libraries installed: ${libs_path}`);
-            }
-
-            // Downloads modpack if core is installed
-            // Input function runs every progress update (batch of bytes resieved)
-            let mods_path = await download_from_github_illegally(
-                modpack_folder,
-                modpack_name,
-                (progress) => {
-                    let speed_in_mbps = (progress.speed / 1024 / 1024).toPrecision(2);
-
-                    console.log(`Download speed: ${speed_in_mbps} Mb / s`);
-
-                    document.querySelector('#modpack-paragraph').innerHTML = `Загрузка сборки ${Capitalize_First_Letter(modpack_name)}: ${(progress.percent * 100).toFixed()}%`
-                    document.querySelector('#role-par').innerHTML = `Скорость: ${speed_in_mbps} Мб в секунду`;
-                    document.querySelector('.download-filler').style.width = `${progress.percent * 100}%`;
-                }
-            );
-            console.log(`Modpack installed: ${mods_path}`);
+            // Скачать сборку
+            await download_mods_and_stuff(modpack_folder);
 
             console.log('Checking libs...');
-
+            // Если либов нету то вставить их
             if (!check_libs_in_mod(modpack_name)) {
                 copy_libs_to_modpack(modpack_name);
             }
 
-            // Show normal footer again
+            // Вернуть все на своим места а то чо там кнопка не играть а например загрузка, а?
+            show_normal_footer();
+
+            // Обновить натсройки
+            change_settings_preset(modpack_name, document.querySelector('#optimization-range').children[0].children[1].children[0].value);
+            play_button.click();
+
+        } else { //. ЕСЛИ УСТАНОВЛЕННА
+
+            // Скопировать либы если их нету
+            if (!check_libs_in_mod(modpack_name)) {
+                copy_libs_to_modpack(modpack_name);
+            }
+
+            //! Проверить обновления, если есть, то перезапускаем функцию с перекачиванием
+
+            if ( !(await check_for_updates().catch(err => {console.log(err); return;})))
+            {
+                console.log(`Последняя версия ${Capitalize_First_Letter(modpack_name)} установленна. Запускаем...`);
+
+                // Запустить штуку которая блокирует пользователю возможность запустить сборку еще раз
+                show_launch_menu();
+
+                // Отключить Rich Presence потому что у майна свой
+                ipcRenderer.send('rich-presence-disconnect', 'launching minecraft');
+
+
+                // Запустить майнкрафт. Эта фнукция (Promise) заканчивается когда выключается майнкрафт.
+                let mem_input = document.querySelector('#memory-input');
+                launch_minecraft(1000, mem_input.value * 1024, modpack_folder, userData['uid'], userData['uuid']).then(res => {
+
+                    // Манйкрафт завершился. Если 0, то все заебумба
+                    console.log(`Minecraft exited with code: ${res}`);
+                    UpdateRedownloadCheckBox();
+                }).catch(err => {
+
+                    // Что то пошло не так при запуске.
+                    console.log(`Launch encountered some errors: ${err}`);
+                    UpdateRedownloadCheckBox();
+                });
+            }
+            else
+            {
+                document.querySelector('#redownload-client-cb').checked = true;
+                play_button.click();
+            }
+        }
+    } else {
+        cancel_current_download();
+    }
+});
+
+// True - нада обновлять, False - ненадо
+function check_for_updates()
+{
+    return new Promise(async (resolve, reject) => {
+        let latest_version = (await get_latest_release(modpack_name))['name'].toString().split('v')[1].split('.');
+        let installed_version = get_modpack_version_from_info(modpack_name).toString().split('v')[1];
+
+        if (installed_version == '' || installed_version == undefined || installed_version == null)
+        {
+            resolve(true);
+        }
+
+        installed_version = installed_version.split('.');
+
+        console.log(latest_version);
+        console.log(installed_version);
+
+        for (let i = 0; i < 4; i++)
+        {
+            if (latest_version[i] > installed_version[i])
+            {
+                resolve(true);
+            }
+        }
+
+        resolve(false);
+    });
+}
+
+function show_progress_footer()
+{
+    // Show progress bar in footer
+    document.querySelector('footer').className = 'noselect downloading';
+    play_button.innerHTML = 'Отмена';
+    download_in_progress = true;
+    document.querySelector(`#modpack-dir[data-name=${modpack_name}]`).classList.add('updating');
+}
+
+function show_launch_menu()
+{
+    play_button.innerHTML = 'Запуск...';
+    document.querySelector('#launch-menu').classList.add('open');
+    document.querySelector('#launch-h').innerHTML = `Запуск: ${Capitalize_First_Letter(modpack_name)}...`;
+}
+
+//. Ну чтобы там все выглядело как до скачивания
+function show_normal_footer()
+{
+    // Show normal footer again
+    download_in_progress = false;
+    play_button.innerHTML = 'Играть';
+    UpdateServer();
+    UpdateRole();
+    document.querySelector('.download-filler').style.width = `100%`;
+    document.querySelector('footer').className = 'noselect';
+    document.querySelector(`#modpack-dir[data-name=${modpack_name}]`).classList.remove('updating');
+    document.querySelector('#redownload-client-cb').checked = false;
+}
+
+function download_mods_and_stuff(modpack_folder)
+{
+    return new Promise(async (resolve, reject) => {
+
+        // Downloads modpack if core is installed
+        // Input function runs every progress update (batch of bytes resieved)
+        let mods_path = await download_from_github_illegally(
+            modpack_folder,
+            modpack_name,
+            (progress) => {
+                let speed_in_mbps = (progress.speed / 1024 / 1024).toPrecision(2);
+
+                console.log(`Download speed: ${speed_in_mbps} Mb / s`);
+
+                document.querySelector('#modpack-paragraph').innerHTML = `Загрузка сборки ${Capitalize_First_Letter(modpack_name)}: ${(progress.percent * 100).toFixed()}%`
+                document.querySelector('#role-par').innerHTML = `Скорость: ${speed_in_mbps} Мб в секунду`;
+                document.querySelector('.download-filler').style.width = `${progress.percent * 100}%`;
+            }
+        );
+        
+        // Осведомить о том что все скачалось
+        console.log(`Modpack installed: ${mods_path}`);
+        resolve();
+    });
+}
+
+function download_libs()
+{
+    return new Promise(async (resolve, reject) => {
+        let core_path = verify_and_get_libs_folder();
+        if (libs_folder_empty()) {
+        console.log(`No libraries found on this computer. Downloading...`);
+        let libs_path = await download_from_github_illegally(
+            core_path,
+            'libs',
+            (progress) => {
+                let speed_in_mbps = (progress.speed / 1024 / 1024).toPrecision(2);
+
+                console.log(`Download speed: ${speed_in_mbps} Mb / s`);
+
+                document.querySelector('#modpack-paragraph').innerHTML = `Загрузка библиотек: ${(progress.percent * 100).toFixed()}%`
+                document.querySelector('#role-par').innerHTML = `Скорость: ${speed_in_mbps * 8} Мб в секунду`;
+                document.querySelector('.download-filler').style.width = `${progress.percent * 100}%`;
+            }
+        );
+
+        console.log(`Libraries installed: ${libs_path}`);
+    }
+
+        resolve();
+    });
+}
+
+function cancel_current_download()
+{
+    // Send message to main process to stop download 
+    ipcRenderer.send('cancel-current-download', 'user cancelled');
+
+    // React to reply from main
+    ipcRenderer.on('download-cancelled', (event, status) => {
+
+        //  Statuses:
+        //  success - download cancelled succesfully
+        //  no download in progress - no download in progress
+        console.log(status);
+        if (status == 'success') {
+            document.querySelector(`#modpack-dir[data-name=${modpack_name}]`).classList.remove('updating');
             download_in_progress = false;
             play_button.innerHTML = 'Играть';
             UpdateServer();
             UpdateRole();
-            document.querySelector('.download-filler').style.width = `100%`;
             document.querySelector('footer').className = 'noselect';
-
-            // Update Settings preset after download
-            change_settings_preset(modpack_name, document.querySelector('#optimization-range').children[0].children[1].children[0].value);
-
-            document.querySelector(`#modpack-dir[data-name=${modpack_name}]`).classList.remove('updating');
-            document.querySelector('#redownload-client-cb').checked = false;
-            play_button.click();
-        } else {
-            // Launch minecraft if it is installed
-            if (!check_libs_in_mod(modpack_name)) {
-                copy_libs_to_modpack(modpack_name);
-            }
-
-            //! Not checking for updates yet.
-            console.log(`${modpack_name} is installed. Launching`);
-            play_button.innerHTML = 'Запуск...';
-            document.querySelector('#launch-menu').classList.add('open');
-            document.querySelector('#launch-h').innerHTML = `Запуск: ${Capitalize_First_Letter(modpack_name)}...`;
-
-            let mem_input = document.querySelector('#memory-input');
-
-            ipcRenderer.send('rich-presence-disconnect', 'launching minecraft');
-
-            // Update Settings preset before launch
-            change_settings_preset(modpack_name, document.querySelector('#optimization-range').children[0].children[1].children[0].value);
-            launch_minecraft(1000, mem_input.value * 1024, modpack_folder, userData['uid'], userData['uuid']).then(res => {
-                console.log(`Minecraft exited with code: ${res}`);
-                UpdateRedownloadCheckBox();
-            }).catch(err => {
-                console.log(`Launch encountered some errors: ${err}`);
-                UpdateRedownloadCheckBox();
-            });
+            UpdateRedownloadCheckBox();
         }
-    } else {
-        // Send message to main process to stop download 
-        ipcRenderer.send('cancel-current-download', 'user cancelled');
-
-        // React to reply from main
-        ipcRenderer.on('download-cancelled', (event, status) => {
-
-            //  Statuses:
-            //  success - download cancelled succesfully
-            //  no download in progress - no download in progress
-            console.log(status);
-            if (status == 'success') {
-                document.querySelector(`#modpack-dir[data-name=${modpack_name}]`).classList.remove('updating');
-                download_in_progress = false;
-                play_button.innerHTML = 'Играть';
-                UpdateServer();
-                UpdateRole();
-                document.querySelector('footer').className = 'noselect';
-                UpdateRedownloadCheckBox();
-            }
-        });
-    }
-});
+    });
+}
 
 //#endregion

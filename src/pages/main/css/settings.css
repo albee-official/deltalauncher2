@@ -544,7 +544,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(var(--dark), .75);
+    background-color: rgba(var(--darkest), .75);
     z-index: 10;
     opacity: 0;
     display: flex;

@@ -22,6 +22,19 @@ const modpack_sizes = {
     testsborka: 200000000,
 }
 
+function get_latest_release(item_name)
+{
+    return new Promise((resolve, reject) => {
+        ajax({
+            url: `https://api.github.com/repos/Avandelta/${Capitalize_First_Letter(item_name)}/tags`,
+            method: 'GET',
+            dataType: 'json'
+        }).done(res => {
+            resolve(res[0]);
+        });
+    })
+}
+
 function Capitalize_First_Letter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
@@ -29,13 +42,20 @@ function Capitalize_First_Letter(string) {
 async function download_from_github_illegally(folder, item_name, onProgress) {
     // Returns promise cuz you know.. download isn't instant.
     return new Promise(async (resolve, reject) => {
+
+        let latest_release = await get_latest_release(item_name);
+        console.log(`Downloading release: ${latest_release['name']}`);
+
+        set_modpack_version_to_info(item_name, latest_release['name']);
+
         let zip_path = folder + '\\modpack.zip';
 
         // If zip exists, we don't need to redownload it :D
         if (fs.pathExistsSync(zip_path)) {
             // FINISH IT! (puts mods where they should be and deletes extras)
             await process_modpack(folder, item_name);
-            await clean_up(folder + `\\${item_name}-master`, zip_path);
+            await clean_up(folder + `\\` + fs.readdirSync(folder)[0], zip_path);
+            change_settings_preset();
             resolve(folder);
         }
         else
@@ -43,7 +63,7 @@ async function download_from_github_illegally(folder, item_name, onProgress) {
             // Sends message to MAIN to download modpack from url
             ipcRenderer.send('download-from-link', {
                 path: folder,
-                url: modlinks[item_name],
+                url: latest_release['zipball_url'],
                 filename: 'modpack.zip'
             });
 
@@ -76,7 +96,8 @@ async function download_from_github_illegally(folder, item_name, onProgress) {
                     modpack_p.innerHTML = 'Завершение: Перенос файлов...';
                     await process_libs(folder);
                     modpack_p.innerHTML = 'Завершение: Удаление архива загрузки...';
-                    await clean_up(folder + `\\Libraries-master`, zip_path);
+                    await clean_up(folder + `\\` + fs.readdirSync(folder)[0], zip_path);
+                    change_settings_preset();
                     resolve(folder);
                 }
                 else
@@ -85,7 +106,8 @@ async function download_from_github_illegally(folder, item_name, onProgress) {
                     modpack_p.innerHTML = 'Завершение: Перенос файлов...';
                     await process_modpack(folder, item_name);
                     modpack_p.innerHTML = 'Завершение: Удаление архива загрузки...';
-                    await clean_up(folder + `\\${item_name}-master`, zip_path);
+                    await clean_up(folder + `\\` + fs.readdirSync(folder)[0], zip_path);
+                    change_settings_preset();
                     resolve(folder);
                 }
             });
@@ -113,16 +135,17 @@ async function process_modpack(modpack_folder, modpack_name) {
     return new Promise((resolve, reject) => {
         console.log('Finishing...');
 
-        console.log(`Moving: ${modpack_folder + `\\${modpack_name}-master`} to ${modpack_folder}`);
+        let sub_folder = modpack_folder + `\\` + fs.readdirSync(modpack_folder)[0];
+        console.log(`Moving: ${sub_folder} to ${modpack_folder}`);
 
-        // Copy files from downloaded -master folder to new one
-        fs.moveSync(modpack_folder + `\\${modpack_name}-master\\asm`, modpack_folder + `\\asm`);
-        fs.moveSync(modpack_folder + `\\${modpack_name}-master\\mods`, modpack_folder + `\\mods`);
-        fs.moveSync(modpack_folder + `\\${modpack_name}-master\\resourcepacks`, modpack_folder + `\\resourcepacks`);
-        fs.moveSync(modpack_folder + `\\${modpack_name}-master\\settings`, modpack_folder + `\\settings`);
-        fs.moveSync(modpack_folder + `\\${modpack_name}-master\\config`, modpack_folder + `\\config`);
+        // Copy files from downloaded folder to new one
+        fs.moveSync(sub_folder + `\\asm`, modpack_folder + `\\asm`);
+        fs.moveSync(sub_folder + `\\mods`, modpack_folder + `\\mods`);
+        fs.moveSync(sub_folder + `\\resourcepacks`, modpack_folder + `\\resourcepacks`);
+        fs.moveSync(sub_folder + `\\settings`, modpack_folder + `\\settings`);
+        fs.moveSync(sub_folder + `\\config`, modpack_folder + `\\config`);
 
-        fs.copySync(modpack_folder + `\\${modpack_name}-master\\knownkeys.txt`, modpack_folder + `\\knownkeys.txt`);
+        fs.copySync(sub_folder + `\\knownkeys.txt`, modpack_folder + `\\knownkeys.txt`);
 
         resolve(modpack_folder);
 
@@ -134,13 +157,16 @@ async function process_libs(libs_folder) {
     return new Promise((resolve, reject) => {
         console.log('Finishing...');
 
-        console.log(`Moving libs...`);
-        fs.moveSync(libs_folder + `\\Libraries-master\\assets`, libs_folder + `\\assets`);
-        fs.moveSync(libs_folder + `\\Libraries-master\\libraries`, libs_folder + `\\libraries`);
-        fs.moveSync(libs_folder + `\\Libraries-master\\versions`, libs_folder + `\\versions`);
+        let sub_folder = libs_folder + `\\` + fs.readdirSync(libs_folder)[0];
+        console.log(`Moving: ${sub_folder} to ${libs_folder}`);
+
+        // Copy files from downloaded folder to new one
+        fs.moveSync(sub_folder + `\\assets`, libs_folder + `\\assets`);
+        fs.moveSync(sub_folder + `\\libraries`, libs_folder + `\\libraries`);
+        fs.moveSync(sub_folder + `\\versions`, libs_folder + `\\versions`);
         console.log('All libs moved!');
 
-        resolve(libs_folder);
+        resolve(sub_folder);
 
         console.log('Libs processing done!');
     });
