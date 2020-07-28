@@ -134,91 +134,9 @@
     </div>
 
     <img class="logo noselect" src="../../res/logo.svg" alt="logo" />
+    <script defer src="../global.js"></script>
 
     <script defer>
-        document.getElementById("login").addEventListener("input", (e) => {
-            checkLogin(e);
-        });
-
-        document.getElementById("login").addEventListener("focus", (e) => {
-            checkLogin(e);
-        });
-
-        document.getElementById("login").addEventListener("blur", (e) => {
-            checkLogin(e);
-        });
-
-        document.getElementById("password").addEventListener("input", (e) => {
-            checkPassword(e);
-        });
-
-        document.getElementById("password").addEventListener("focus", (e) => {
-            checkPassword(e);
-        });
-
-        document.getElementById("password").addEventListener("blur", (e) => {
-            checkPassword(e);
-        });
-
-        function checkLogin(e) {
-            let login = document.getElementById("login");
-            if (
-                (login.value != "" &&
-                    document
-                    .getElementById("login-line")
-                    .children[0].classList.contains("active-text-line")) ||
-                e.currentTarget == document.activeElement
-            ) {
-                document
-                    .getElementById("login-line")
-                    .children[0].classList.add("active-text-line");
-                document.getElementById("login").classList.add("active-text-field");
-            } else if (
-                (login.value == "" &&
-                    !document
-                    .getElementById("login-line")
-                    .children[0].classList.contains("active-text-line")) ||
-                e.currentTarget != document.activeElement
-            ) {
-                document
-                    .getElementById("login-line")
-                    .children[0].classList.remove("active-text-line");
-                document
-                    .getElementById("login")
-                    .classList.remove("active-text-field");
-            }
-        }
-
-        function checkPassword(e) {
-            let password = document.getElementById("password");
-            if (
-                (password.value != "" &&
-                    document
-                    .getElementById("password-line")
-                    .children[0].classList.contains("active-text-line")) ||
-                e.currentTarget == document.activeElement
-            ) {
-                document
-                    .getElementById("password-line")
-                    .children[0].classList.add("active-text-line");
-                document
-                    .getElementById("password")
-                    .classList.add("active-text-field");
-            } else if (
-                (password.value == "" &&
-                    !document
-                    .getElementById("password-line")
-                    .children[0].classList.contains("active-text-line")) ||
-                e.currentTarget != document.activeElement
-            ) {
-                document
-                    .getElementById("password-line")
-                    .children[0].classList.remove("active-text-line");
-                document
-                    .getElementById("password")
-                    .classList.remove("active-text-field");
-            }
-        }
     </script>
     <script defer src="renderer.js"></script>
 </body>

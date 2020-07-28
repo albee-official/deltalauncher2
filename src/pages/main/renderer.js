@@ -32,6 +32,7 @@ document.getElementById('profile-name').innerHTML = userData['uid'];
 document.getElementById('profile-img').setAttribute('src', verify_and_get_resources_folder() + '\\user.png');
 //#endregion
 
+//#region //. Side-settings ----------------------------------------------
 let hide_settings_button = document.querySelector('#hide-settings-btn');
 hide_settings_button.addEventListener('click', () => {
     settings['opened_settings'] = !settings['opened_settings'];
@@ -52,6 +53,9 @@ function updateSettings(open)
         document.querySelector('#hide-settings-btn').classList.remove('rotated');
     }
 }
+
+updateSettings(settings['opened_settings']);
+//#endregion
 
 //#region  //. Panel buttons -----------------------------------------------
 
@@ -217,5 +221,3 @@ function update_selected_section()
 
 update_selected_section();
 //#endregion
-
-updateSettings(settings['opened_settings']);

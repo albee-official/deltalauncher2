@@ -5,16 +5,10 @@ const { param } = require('jquery');
 let memory_range = document.querySelector('#memory-range');
 let optimization_range = document.querySelector('#optimization-range');
 let controll_inputs = document.querySelectorAll('.controll-setting-input');
-let java_parameters = document.querySelector('#java-parameters');
-let theme_select_options = document.querySelectorAll('#theme-select-option');
 
-for (let item of theme_select_options)
-{
-    console.log(theme_select_options);
-    item.addEventListener('mouseover', () => {
-        set_theme_colours(item.getAttribute('data-name'));
-    });
-}
+//#region //. ---------------- Java Parameters ---------------------
+
+let java_parameters = document.querySelector('#java-parameters');
 
 java_parameters.value = settings['java_parameters'];
 java_parameters.addEventListener('input', e => {
@@ -25,7 +19,72 @@ java_parameters.addEventListener('change', e => {
     settings['java_parameters'] = java_parameters.value;
     update_settings();
 });
+//#endregion
 
+//#region //. ---------------- Theme selection ---------------------
+
+//#region //. Change Theme
+let theme_select_options = document.querySelectorAll('#theme-select-option');
+
+for (let item of theme_select_options)
+{
+    console.log(theme_select_options);
+    item.addEventListener('mouseover', () => {
+        set_theme_colours(item.getAttribute('data-name'));
+    });
+}
+
+document.querySelector('#change-theme-button').addEventListener('click', async e => {
+    let selected_theme = await show_theme_selection_menu();
+
+    settings['theme'] = selected_theme;
+    update_settings();
+    update_theme();
+
+    // BrowserWindow.getFocusedWindow().reload();
+});
+//#endregion
+
+//#region //. Set Custom BG
+document.querySelector('#bg-select-input').addEventListener('click', e => {
+    const win = BrowserWindow.getFocusedWindow();
+    dialog.showOpenDialog(win, {
+        title: 'Выберите изображение',
+        defaultPath: '',
+        buttonLabel: 'Выбрать',
+        properties: ['openFile']
+    }).then(async res => {
+        if (res.canceled) return;
+
+        let selected_file = res.filePaths[0];
+        let splitted = selected_file.split('.');
+        let extension = splitted[splitted.length - 1];
+        console.log(selected_file);
+        console.log(extension);
+
+        let resources_path = verify_and_get_resources_folder();
+        await fs.copy(selected_file, resources_path + '\\custom_bg.' + extension);
+
+        settings['bg_extension'] = extension;
+        update_settings();
+
+        win.reload();
+    });
+});
+
+//#endregion
+
+//#region //. Remove custom BG
+document.querySelector('#bg-reset-input').addEventListener('click', e => {
+    settings['bg_extension'] = '';
+    update_settings();
+
+    BrowserWindow.getFocusedWindow().reload();
+});
+//#endregion
+//#endregion
+
+//#region //. ---------------- Handy Features ----------------------
 document.querySelector('#open-root-folder').addEventListener('click', e => {
     shell.openItem(dir_root);
 });
@@ -36,22 +95,6 @@ document.querySelector('#open-modpack-folder').addEventListener('click', async e
 
     let path = verify_and_get_modpack_folder(selected_modpack);
     shell.openItem(path);
-});
-
-document.querySelector('#change-theme-button').addEventListener('click', async e => {
-    let selected_theme = await show_theme_selection_menu();
-
-    settings['theme'] = selected_theme;
-    update_settings();
-
-    BrowserWindow.getFocusedWindow().reload();
-});
-
-document.querySelector('#bg-reset-input').addEventListener('click', e => {
-    settings['bg_extension'] = '';
-    update_settings();
-
-    BrowserWindow.getFocusedWindow().reload();
 });
 
 document.querySelector('#delete-settings').addEventListener('click', async e => {
@@ -156,33 +199,9 @@ document.querySelector('#delete-reserved-files').addEventListener('click', async
         fs.unlinkSync(path + '\\crafttweaker.log');
 });
 
-document.querySelector('#bg-select-input').addEventListener('click', e => {
-    const win = BrowserWindow.getFocusedWindow();
-    dialog.showOpenDialog(win, {
-        title: 'Выберите изображение',
-        defaultPath: '',
-        buttonLabel: 'Выбрать',
-        properties: ['openFile']
-    }).then(async res => {
-        if (res.canceled) return;
+//#endregion
 
-        let selected_file = res.filePaths[0];
-        let splitted = selected_file.split('.');
-        let extension = splitted[splitted.length - 1];
-        console.log(selected_file);
-        console.log(extension);
-
-        let resources_path = verify_and_get_resources_folder();
-        await fs.copy(selected_file, resources_path + '\\custom_bg.' + extension);
-
-        settings['bg_extension'] = extension;
-        update_settings();
-
-        win.reload();
-    });
-});
-
-//#region //. memory range ---
+//#region //. ---------------- Memory range ------------------------
 
 // runs when user moves the slider
 memory_range.addEventListener('input', e => {
@@ -215,7 +234,7 @@ memory_range.addEventListener('change', () => {
 
 //#endregion
 
-//#region //. optimization range ---
+//#region //. ---------------- Optimization range ------------------
 
 // runs when user moves the slider
 optimization_range.addEventListener('input', e => {
@@ -249,7 +268,7 @@ optimization_range.addEventListener('change', e => {
 
 //#endregion
 
-//#region //. control settings ---
+//#region //. ---------------- Control settings --------------------
 
 // run through all controll inputs
 for (let input of controll_inputs) {
@@ -401,7 +420,9 @@ function ascii_to_dumbass(keycode) {
 
 //#endregion
 
-//#region //. modpack select ---
+//#region //. ---------------- Select Functions -------------------- 
+
+//#region //. Modpack select ---------
 async function show_modpack_selection_menu()
 {
     return new Promise((resolve, reject) => {
@@ -439,7 +460,7 @@ async function show_modpack_selection_menu()
 }
 //#endregion
 
-//#region //. theme select ---
+//#region //. Theme select -----------
 async function show_theme_selection_menu()
 {
     return new Promise((resolve, reject) => {
@@ -472,4 +493,6 @@ async function show_theme_selection_menu()
 function close_menu(menu) {
     menu.classList.remove('open');
 }
+//#endregion
+
 //#endregion

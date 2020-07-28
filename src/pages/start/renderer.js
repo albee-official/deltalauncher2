@@ -7,132 +7,95 @@ ipcRenderer.on('update-message', (event, text) => {
     console.log(text);
 });
 
-
-
 const body = document.body;
 
-let bg_path = (verify_and_get_resources_folder() + '\\custom_bg.' + settings['bg_extension']).replace(/\\/g, '/');
-if (settings['bg_extension'] == '') 
-{
-    switch (settings['theme']) 
-    {
-        case 'night sky':
-            bg_path = '../../res/bg_nightsky.jpg';
-            break;
+//#region //. -------------------------------- Login Text fields ---------------------
+document.getElementById("login").addEventListener("input", (e) => {
+    checkLogin(e);
+});
 
-        case 'green hills':
-            bg_path = '../../res/bg_greenhills.jpg';
-            break;
+document.getElementById("login").addEventListener("focus", (e) => {
+    checkLogin(e);
+});
 
-        case 'red sunset':
-            bg_path = '../../res/bg_redsunset.jpg';
-            break;
+document.getElementById("login").addEventListener("blur", (e) => {
+    checkLogin(e);
+});
 
-        case 'eternal void':
-            bg_path = '../../res/bg_eternalvoid.png';
-            break;
-            
-        case 'default':
-            bg_path = '../../res/bg.jpg';
-            break;
-    
-        default:
-            bg_path = '../../res/bg.jpg';
-            break;
+document.getElementById("password").addEventListener("input", (e) => {
+    checkPassword(e);
+});
+
+document.getElementById("password").addEventListener("focus", (e) => {
+    checkPassword(e);
+});
+
+document.getElementById("password").addEventListener("blur", (e) => {
+    checkPassword(e);
+});
+
+function checkLogin(e) {
+    let login = document.getElementById("login");
+    if (
+        (login.value != "" &&
+            document
+            .getElementById("login-line")
+            .children[0].classList.contains("active-text-line")) ||
+        e.currentTarget == document.activeElement
+    ) {
+        document
+            .getElementById("login-line")
+            .children[0].classList.add("active-text-line");
+        document.getElementById("login").classList.add("active-text-field");
+    } else if (
+        (login.value == "" &&
+            !document
+            .getElementById("login-line")
+            .children[0].classList.contains("active-text-line")) ||
+        e.currentTarget != document.activeElement
+    ) {
+        document
+            .getElementById("login-line")
+            .children[0].classList.remove("active-text-line");
+        document
+            .getElementById("login")
+            .classList.remove("active-text-field");
     }
 }
 
-switch (settings['theme']) 
-{
-    case 'night sky':
-        document.body.style.setProperty('--darkest', '14, 19, 39');
-        document.body.style.setProperty('--dark', '23, 29, 55');
-        document.body.style.setProperty('--mid', '49, 50, 81');
-        document.body.style.setProperty('--light', '68, 64, 99');
-        document.body.style.setProperty('--lightest', '107, 87, 120');  
-
-        document.body.style.setProperty('--header-bg', '255, 255, 255');
-        document.body.style.setProperty('--header-contrast', '201, 201, 201');  
-
-        document.body.style.setProperty('--white', '255, 255, 255');
-        document.body.style.setProperty('--white-contrast', '201, 201, 201');
-        break;  
-
-    case 'green hills':
-        document.body.style.setProperty('--darkest', '8, 38, 38');
-        document.body.style.setProperty('--dark', '21, 89, 77');
-        document.body.style.setProperty('--mid', '28, 140, 88');
-        document.body.style.setProperty('--light', '44, 191, 123');
-        document.body.style.setProperty('--lightest', '54, 217, 141');  
-
-        document.body.style.setProperty('--header-bg', '255, 255, 255');
-        document.body.style.setProperty('--header-contrast', '201, 201, 201');  
-
-        document.body.style.setProperty('--white', '255, 255, 255');
-        document.body.style.setProperty('--white-contrast', '201, 201, 201');
-        break;  
-
-    case 'red sunset':
-        document.body.style.setProperty('--darkest', '45, 19, 44');
-        document.body.style.setProperty('--dark', '128, 19, 54');
-        document.body.style.setProperty('--mid', '199, 44, 65');
-        document.body.style.setProperty('--light', '238, 69, 64');
-        document.body.style.setProperty('--lightest', '255, 97, 38');   
-
-        document.body.style.setProperty('--header-bg', '255, 255, 255');
-        document.body.style.setProperty('--header-contrast', '201, 201, 201');  
-
-        document.body.style.setProperty('--white', '255, 255, 255');
-        document.body.style.setProperty('--white-contrast', '201, 201, 201');
-        break;  
-
-    case 'eternal void':
-        document.body.style.setProperty('--darkest', '0, 0, 0');
-        document.body.style.setProperty('--dark', '38, 38, 38');
-        document.body.style.setProperty('--mid', '97, 97, 97');
-        document.body.style.setProperty('--light', '164, 164, 164');
-        document.body.style.setProperty('--lightest', ' 193, 193, 193');    
-
-        document.body.style.setProperty('--header-bg', '255, 255, 255');
-        document.body.style.setProperty('--header-contrast', '201, 201, 201');  
-        
-        document.body.style.setProperty('--white', '255, 255, 255');
-        document.body.style.setProperty('--white-contrast', '201, 201, 201');
-        break;  
-
-    case 'default':
-        document.body.style.setProperty('--darkest', '45, 19, 44');
-        document.body.style.setProperty('--dark', '128, 19, 54');
-        document.body.style.setProperty('--mid', '199, 44, 65');
-        document.body.style.setProperty('--light', '238, 69, 64');
-        document.body.style.setProperty('--lightest', '255, 97, 38');   
-
-        document.body.style.setProperty('--header-bg', '255, 255, 255');
-        document.body.style.setProperty('--header-contrast', '201, 201, 201');
-
-        document.body.style.setProperty('--white', '255, 255, 255');
-        document.body.style.setProperty('--white-contrast', '201, 201, 201');
-        break;
-
-    default:
-        document.body.style.setProperty('--darkest', '45, 19, 44');
-        document.body.style.setProperty('--dark', '128, 19, 54');
-        document.body.style.setProperty('--mid', '199, 44, 65');
-        document.body.style.setProperty('--light', '238, 69, 64');
-        document.body.style.setProperty('--lightest', '255, 97, 38');   
-
-        document.body.style.setProperty('--header-bg', '255, 255, 255');
-        document.body.style.setProperty('--header-contrast', '201, 201, 201');  
-
-        document.body.style.setProperty('--white', '255, 255, 255');
-        document.body.style.setProperty('--white-contrast', '201, 201, 201');
-        break;
+function checkPassword(e) {
+    let password = document.getElementById("password");
+    if (
+        (password.value != "" &&
+            document
+            .getElementById("password-line")
+            .children[0].classList.contains("active-text-line")) ||
+        e.currentTarget == document.activeElement
+    ) {
+        document
+            .getElementById("password-line")
+            .children[0].classList.add("active-text-line");
+        document
+            .getElementById("password")
+            .classList.add("active-text-field");
+    } else if (
+        (password.value == "" &&
+            !document
+            .getElementById("password-line")
+            .children[0].classList.contains("active-text-line")) ||
+        e.currentTarget != document.activeElement
+    ) {
+        document
+            .getElementById("password-line")
+            .children[0].classList.remove("active-text-line");
+        document
+            .getElementById("password")
+            .classList.remove("active-text-field");
+    }
 }
+//#endregion
 
-body.style.backgroundImage = `url("${bg_path}")`;
-console.log(bg_path);
-
-//#region //. Top panel -----------------------------
+//#region //. -------------------------------- Top panel -----------------------------
 let exitLisHover = document.getElementById('close-btn').addEventListener('mouseover', () => {
     document.getElementById('close-btn').style.backgroundColor = 'rgba(var(--white), 0.4)';
 });
@@ -171,6 +134,7 @@ document.getElementById('reload-btn').addEventListener('click', () => {
 
 //#endregion
 
+//#region //. -------------------------------- Stage functions -----------------------
 function openLogin() {
     document.getElementById('auth-container').classList.add('open-auth');
     document.getElementById('main-container').classList.add('close-container');
@@ -246,6 +210,7 @@ function hideTopContent() {
 let update_required = false;
 let downloading_update = false;
 
+//#region //. Check for update --------------------------------------
 function checkUpdate() {
     return new Promise(async (resolve, reject) => {
         verify_root_dirs();
@@ -291,7 +256,9 @@ function checkUpdate() {
         });
     });
 }
+//#endregion
 
+//#region //. Login -------------------------------------------------
 function login() {
     return new Promise((resolve, reject) => {
         console.log('Starting login!');
@@ -330,7 +297,9 @@ function login() {
         });
     });
 }
+//#endregion
 
+//#region //. Finishing (downloading and requesting user information)
 function finish() {
     return new Promise((resolve, reject) => {
 
@@ -367,8 +336,12 @@ function finish() {
         });
     });
 }
+//#endregion
+//#endregion
 
-//. CODE -------------------------------------------------------------------------------------------
+//#region //. -------------------------------- CODE ----------------------------------
+
+update_theme();
 
 checkUpdate().then(() => {
     let user_credentials = ipcRenderer.sendSync('get-user-credentials');
@@ -394,3 +367,4 @@ document.getElementById('login-button').addEventListener('click', () => {
         finish();
     });
 });
+//#endregion
