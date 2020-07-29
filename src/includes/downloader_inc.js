@@ -55,15 +55,19 @@ async function download_from_github_illegally(folder, item_name, onProgress) {
             // FINISH IT! (puts mods where they should be and deletes extras)
             await process_modpack(folder, item_name);
             await clean_up(folder + `\\` + fs.readdirSync(folder)[0], zip_path);
-            change_settings_preset();
             resolve(folder);
         }
         else
         {
+            let download_url = 'https://github.com/Avandelta/Libraries/archive/master.zip';
+            if (item_name != 'libs')
+            {
+                download_url = latest_release['zipball_url'];
+            }
             // Sends message to MAIN to download modpack from url
             ipcRenderer.send('download-from-link', {
                 path: folder,
-                url: latest_release['zipball_url'],
+                url: download_url,
                 filename: 'modpack.zip'
             });
 
@@ -97,7 +101,7 @@ async function download_from_github_illegally(folder, item_name, onProgress) {
                     await process_libs(folder);
                     modpack_p.innerHTML = 'Завершение: Удаление архива загрузки...';
                     await clean_up(folder + `\\` + fs.readdirSync(folder)[0], zip_path);
-                    change_settings_preset();
+                    console.log(item_name);
                     resolve(folder);
                 }
                 else
@@ -107,7 +111,7 @@ async function download_from_github_illegally(folder, item_name, onProgress) {
                     await process_modpack(folder, item_name);
                     modpack_p.innerHTML = 'Завершение: Удаление архива загрузки...';
                     await clean_up(folder + `\\` + fs.readdirSync(folder)[0], zip_path);
-                    change_settings_preset();
+                    console.log(item_name);
                     resolve(folder);
                 }
             });

@@ -255,6 +255,10 @@ function set_modpack_version_to_info(modpack_name, version)
 function get_latest_java_version_path()
 {
     let folders = fs.readdirSync('C:\\Program Files\\Java');
+    if (!fs.readdirSync('C:\\Program Files').includes('Java'))
+    {
+        folders = folders = fs.readdirSync('C:\\Program Files (x86)\\Java');
+    }
     console.log(folders);
     return 'C:\\Program Files\\Java\\' + folders[0] + '\\bin\\javaw.exe';
 }

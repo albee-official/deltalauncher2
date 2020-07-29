@@ -161,8 +161,8 @@ play_button.addEventListener('click', async () => {
             // Скачать сборку
             await download_mods_and_stuff(modpack_folder);
 
-            console.log('Checking libs...');
             // Если либов нету то вставить их
+            console.log('Checking libs...');
             if (!check_libs_in_mod(modpack_name)) {
                 copy_libs_to_modpack(modpack_name);
             }
@@ -171,7 +171,7 @@ play_button.addEventListener('click', async () => {
             show_normal_footer();
 
             // Обновить натсройки
-            change_settings_preset(modpack_name, document.querySelector('#optimization-range').children[0].children[1].children[0].value);
+            apply_control_settings();
             play_button.click();
 
         } else { //. ЕСЛИ УСТАНОВЛЕННА
@@ -181,8 +181,7 @@ play_button.addEventListener('click', async () => {
                 copy_libs_to_modpack(modpack_name);
             }
 
-            //! Проверить обновления, если есть, то перезапускаем функцию с перекачиванием
-
+            // Проверка обновления, если есть, то перезапускаем функцию с перекачиванием
             if ( !(await check_for_updates().catch(err => {console.log(err); return;})))
             {
                 console.log(`Последняя версия ${Capitalize_First_Letter(modpack_name)} установленна. Запускаем...`);
