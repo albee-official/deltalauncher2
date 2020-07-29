@@ -316,23 +316,67 @@ function finish() {
         }).done(async (data) => {
             ipcRenderer.send('update-user-server-info', data);
 
-            ipcRenderer.send('download-from-link', {
-                path: verify_and_get_resources_folder(),
-                url: `https://deltaminecraft.000webhostapp.com/uploads/profileImgs/${document.getElementById('login').value}.png`,
-                filename: 'user.png'
-            });
+            await download_user_icon();
+            await download_user_skin();
 
-            ipcRenderer.on('download-progress', (event, progress) => {
-                document.getElementById('finish-progress-bar').style.width = progress.procentage * 100 + '%';
-            });
+            hideTopContent();
+            resolve();
+        });
+    });
+}
 
-            ipcRenderer.on('download-completed', (event, args) => {
+let downloading_icon = false;
+async function download_user_icon()
+{
+    return new Promise((resolve, reject) => {
+        downloading_icon = true;
+        ipcRenderer.send('download-from-link', {
+            path: verify_and_get_resources_folder(),
+            url: `https://deltaminecraft.000webhostapp.com/uploads/profileImgs/${document.getElementById('login').value}.png`,
+            filename: `user.png`
+        });
+    
+        ipcRenderer.on('download-progress', (event, progress) => {
+            document.getElementById('finish-progress-bar').style.width = progress.procentage * 100 + '%';
+        });
+    
+        ipcRenderer.on('download-completed', (event, args) => {
+            if (downloading_icon)
+            {
                 document.getElementById('finish-progress-container').classList.remove('active');
                 console.log('done');
-
+        
                 hideTopContent();
                 resolve();
-            });
+            }
+        });
+    });
+}
+
+let downloading_skin = false;
+async function download_user_skin()
+{
+    return new Promise((resolve, reject) => {
+        downloading_skin = true;
+        ipcRenderer.send('download-from-link', {
+            path: verify_and_get_resources_folder(),
+            url: `https://deltaminecraft.000webhostapp.com/uploads/skins/${document.getElementById('login').value}.png`,
+            filename: `${document.getElementById('login').value}.png`
+        });
+    
+        ipcRenderer.on('download-progress', (event, progress) => {
+            document.getElementById('finish-progress-bar').style.width = progress.procentage * 100 + '%';
+        });
+    
+        ipcRenderer.on('download-completed', (event, args) => {
+            if (downloading_skin)
+            {
+                document.getElementById('finish-progress-container').classList.remove('active');
+                console.log('done');
+        
+                hideTopContent();
+                resolve();
+            }
         });
     });
 }

@@ -268,6 +268,15 @@ function get_latest_java_version_path()
     }
 }
 
+function verify_user_skin(modpack_name)
+{
+    return new Promise((resolve, reject) => {
+        fs.copyFile(verify_and_get_resources_folder() + `\\${userData['uid']}.png`, verify_and_get_modpack_folder(modpack_name) + `\\CustomSkinLoader\\LocalSkin\\skins\\${userData['uid']}.png`).then(res => {
+            resolve();
+        });
+    });
+}
+
 function launch_minecraft(min_mem, max_mem, game_dir, username, uuid)
 {
     return new Promise((resolve, reject) =>

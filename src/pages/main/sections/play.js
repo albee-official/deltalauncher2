@@ -192,6 +192,7 @@ play_button.addEventListener('click', async () => {
                 // Отключить Rich Presence потому что у майна свой
                 ipcRenderer.send('rich-presence-disconnect', 'launching minecraft');
 
+                await verify_user_skin(modpack_name);
 
                 // Запустить майнкрафт. Эта фнукция (Promise) заканчивается когда выключается майнкрафт.
                 let mem_input = document.querySelector('#memory-input');
