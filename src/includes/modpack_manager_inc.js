@@ -258,13 +258,15 @@ function get_latest_java_version_path()
     if (fs.readdirSync('C:\\Program Files').includes('Java'))
     {
         folders = fs.readdirSync('C:\\Program Files\\Java');
+        console.log(folders);
+        return 'C:\\Program Files\\Java\\' + folders[0] + '\\bin\\javaw.exe';
     }
     else
     {
         folders = fs.readdirSync('C:\\Program Files (x86)\\Java');
+        console.log(folders);
+        return 'C:\\Program Files (x86)\\Java\\' + folders[0] + '\\bin\\javaw.exe';
     }
-    console.log(folders);
-    return 'C:\\Program Files\\Java\\' + folders[0] + '\\bin\\javaw.exe';
 }
 
 function launch_minecraft(min_mem, max_mem, game_dir, username, uuid)
