@@ -1,9 +1,10 @@
 const AdmZip = require('adm-zip');
 const rimraf = require('rimraf');
+const { log } = require('electron-log');
 
 // Links to download modpacks. Not very safe, tho it works!
 const modlinks = {
-    libs: 'https://github.com/Avandelta/Libraries/archive/master.zip',
+    libraries: 'https://github.com/Avandelta/Libraries/archive/master.zip',
 
     magicae: "https://github.com/Avandelta/Magicae/archive/master.zip",
     fabrica: "https://github.com/Avandelta/Fabrica/archive/master.zip",
@@ -13,7 +14,7 @@ const modlinks = {
 };
 
 const modpack_sizes = {
-    libs: 220000000,
+    libraries: 220000000,
 
     magicae: 265290751,
     fabrica: 193104345,
@@ -43,29 +44,45 @@ async function download_from_github_illegally(folder, item_name, onProgress) {
     // Returns promise cuz you know.. download isn't instant.
     return new Promise(async (resolve, reject) => {
 
-        let latest_release = await get_latest_release(item_name);
+        console.log(item_name);
+        let latest_release;
+        latest_release = await get_latest_release(item_name);
         console.log(`Downloading release: ${latest_release['name']}`);
 
-        set_modpack_version_to_info(item_name, latest_release['name']);
+        await set_modpack_version_to_info(item_name, latest_release['name']);
 
         let zip_path = folder + '\\modpack.zip';
 
         // If zip exists, we don't need to redownload it :D
-        if (fs.pathExistsSync(zip_path)) {
-            // FINISH IT! (puts mods where they should be and deletes extras)
-            await process_modpack(folder, item_name);
-            await clean_up(folder + `\\` + fs.readdirSync(folder)[0], zip_path);
-            resolve(folder);
+        if ((await fs.pathExists(zip_path))) {
+            if (item_name == 'libraries')
+            {
+                // FINISH IT! (puts mods where they should be and deletes extras)
+                modpack_p.innerHTML = 'Завершение: Перенос файлов...';
+                await process_libs(folder);
+                modpack_p.innerHTML = 'Завершение: Удаление архива загрузки...';
+                await clean_up(folder + `\\` + fs.readdirSync(folder)[0], zip_path);
+                console.log(item_name);
+                resolve(folder);
+            }
+            else
+            {
+                // FINISH IT! (puts mods where they should be and deletes extras)
+                modpack_p.innerHTML = 'Завершение: Перенос файлов...';
+                await process_modpack(folder, item_name);
+                modpack_p.innerHTML = 'Завершение: Удаление архива загрузки...';
+                await clean_up(folder + `\\` + fs.readdirSync(folder)[0], zip_path);
+                console.log(item_name);
+                resolve(folder);
+            }
         }
         else
         {
-            let download_url = 'https://github.com/Avandelta/Libraries/archive/master.zip';
-            if (item_name != 'libs')
-            {
-                download_url = latest_release['zipball_url'];
-            }
+            let download_url = modlinks[item_name];
+
             // Sends message to MAIN to download modpack from url
             ipcRenderer.send('download-from-link', {
+                threads: 16,
                 path: folder,
                 url: download_url,
                 filename: 'modpack.zip'
@@ -94,13 +111,22 @@ async function download_from_github_illegally(folder, item_name, onProgress) {
                 role_p.innerHTML = 'Не выключайте лаунчер!';
                 await extract_zip(zip_path, folder);
 
-                if (item_name == 'libs')
+                if (item_name == 'libraries')
                 {
                     // FINISH IT! (puts mods where they should be and deletes extras)
                     modpack_p.innerHTML = 'Завершение: Перенос файлов...';
-                    await process_libs(folder);
+                    let folders = fs.readdirSync(folder);
+                    let found_folder;
+                    for (let el of folders)
+                    {
+                        if (el.startsWith(Capitalize_First_Letter(item_name)))
+                        {
+                            found_folder = el;
+                        }
+                    }
+                    await process_libs(folder, found_folder);
                     modpack_p.innerHTML = 'Завершение: Удаление архива загрузки...';
-                    await clean_up(folder + `\\` + fs.readdirSync(folder)[0], zip_path);
+                    await clean_up(folder + `\\` + found_folder, zip_path);
                     console.log(item_name);
                     resolve(folder);
                 }
@@ -108,9 +134,18 @@ async function download_from_github_illegally(folder, item_name, onProgress) {
                 {
                     // FINISH IT! (puts mods where they should be and deletes extras)
                     modpack_p.innerHTML = 'Завершение: Перенос файлов...';
-                    await process_modpack(folder, item_name);
+                    let folders = fs.readdirSync(folder);
+                    let found_folder;
+                    for (let el of folders)
+                    {
+                        if (el.startsWith(Capitalize_First_Letter(item_name)))
+                        {
+                            found_folder = el;
+                        }
+                    }
+                    await process_modpack(folder, found_folder);
                     modpack_p.innerHTML = 'Завершение: Удаление архива загрузки...';
-                    await clean_up(folder + `\\` + fs.readdirSync(folder)[0], zip_path);
+                    await clean_up(folder + `\\` + found_folder, zip_path);
                     console.log(item_name);
                     resolve(folder);
                 }
@@ -135,44 +170,62 @@ async function extract_zip(zip_path, to) {
     });
 }
 
-async function process_modpack(modpack_folder, modpack_name) {
-    return new Promise((resolve, reject) => {
+function process_modpack(modpack_folder, found_folder) {
+    return new Promise(async (resolve, reject) => {
         console.log('Finishing...');
 
-        let sub_folder = modpack_folder + `\\` + fs.readdirSync(modpack_folder)[0];
+        let sub_folder = modpack_folder + '\\' + found_folder;
         console.log(`Moving: ${sub_folder} to ${modpack_folder}`);
 
         // Copy files from downloaded folder to new one
-        fs.moveSync(sub_folder + `\\asm`, modpack_folder + `\\asm`);
-        fs.moveSync(sub_folder + `\\mods`, modpack_folder + `\\mods`);
-        fs.moveSync(sub_folder + `\\resourcepacks`, modpack_folder + `\\resourcepacks`);
-        fs.moveSync(sub_folder + `\\settings`, modpack_folder + `\\settings`);
-        fs.moveSync(sub_folder + `\\config`, modpack_folder + `\\config`);
+        console.log('Moving: asm...');
+        await fs.move(sub_folder + `\\asm`, modpack_folder + `\\asm`);
+        
+        console.log('Moving: mods...');
+        await fs.move(sub_folder + `\\mods`, modpack_folder + `\\mods`);
 
-        fs.copySync(sub_folder + `\\knownkeys.txt`, modpack_folder + `\\knownkeys.txt`);
+        console.log('Moving: resourcepacks...');
+        await fs.move(sub_folder + `\\resourcepacks`, modpack_folder + `\\resourcepacks`);
 
+        console.log('Moving: settings...');
+        await fs.move(sub_folder + `\\settings`, modpack_folder + `\\settings`);
+
+        console.log('Moving: config...');
+        await fs.move(sub_folder + `\\config`, modpack_folder + `\\config`);
+
+        console.log('Moving: knownkeys.txt...');
+        await fs.copy(sub_folder + `\\knownkeys.txt`, modpack_folder + `\\knownkeys.txt`);
+
+        console.log('Modes processing done!');
         resolve(modpack_folder);
-
-        console.log('Modes moved');
     });
 }
 
-async function process_libs(libs_folder) {
-    return new Promise((resolve, reject) => {
+function process_libs(libs_folder, found_folder) {
+    return new Promise(async (resolve, reject) => {
         console.log('Finishing...');
 
-        let sub_folder = libs_folder + `\\` + fs.readdirSync(libs_folder)[0];
+        let sub_folder = libs_folder + '\\' + found_folder;
         console.log(`Moving: ${sub_folder} to ${libs_folder}`);
 
         // Copy files from downloaded folder to new one
+        console.log('Moving: assets...');
         fs.moveSync(sub_folder + `\\assets`, libs_folder + `\\assets`);
+
+        console.log(fs.readdirSync(libs_folder));
+
+        console.log('Moving: libraries...');
         fs.moveSync(sub_folder + `\\libraries`, libs_folder + `\\libraries`);
+
+        console.log(fs.readdirSync(libs_folder));
+
+        console.log('Moving: versions...');
         fs.moveSync(sub_folder + `\\versions`, libs_folder + `\\versions`);
-        console.log('All libs moved!');
 
-        resolve(sub_folder);
-
+        console.log(fs.readdirSync(libs_folder));
+        
         console.log('Libs processing done!');
+        resolve(sub_folder);
     });
 }
 
@@ -185,14 +238,13 @@ async function clean_up(downloaded_folder, zip_path)
             console.warn(err);
             reject(err);
         }
-
-        // removes downloaded folder (folder from zip)
-        rimraf.sync(downloaded_folder);
-
-        console.log('All Clear! Ready to launch. Resolving...');
     });
 
-    console.log('All Clear!');
+    console.log(`Removing ${downloaded_folder}`);
+    // removes downloaded folder (folder from zip)
+    rimraf.sync(downloaded_folder);
+
+    console.log('All Clear! Ready to launch. Resolving...');
 }
 
 function init_ipc() {

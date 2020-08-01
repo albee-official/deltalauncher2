@@ -156,7 +156,15 @@ play_button.addEventListener('click', async () => {
             clear_modpack_folder(modpack_name);
 
             // Скачать либы если их нету
-            await download_libs();
+            let libs_installed = await download_libs();
+            if (libs_installed)
+            {
+                console.log('installed libs');
+            }
+            else
+            {
+                console.log('libs are already installed');
+            }
 
             // Скачать сборку
             await download_mods_and_stuff(modpack_folder);
@@ -171,10 +179,28 @@ play_button.addEventListener('click', async () => {
             show_normal_footer();
 
             // Обновить натсройки
-            apply_control_settings();
+            change_settings_preset(modpack_name, document.querySelector('#optimization-input').value);
             play_button.click();
 
         } else { //. ЕСЛИ УСТАНОВЛЕННА
+            console.log(`Найденна ${Capitalize_First_Letter(modpack_name)}. Проверка обновлений...`);
+            if (libs_folder_empty())
+            {
+                show_progress_footer();
+            }
+
+            // Скачать либы если их нету
+            let libs_installed = await download_libs();
+            if (libs_installed)
+            {
+                console.log('installed libs');
+                play_button.click();
+                return;
+            }
+            else
+            {
+                console.log('libs are already installed');
+            }
 
             // Скопировать либы если их нету
             if (!check_libs_in_mod(modpack_name)) {
@@ -182,9 +208,9 @@ play_button.addEventListener('click', async () => {
             }
 
             // Проверка обновления, если есть, то перезапускаем функцию с перекачиванием
-            if ( !(await check_for_updates().catch(err => {console.log(err); return;})))
+            if ( !(await check_for_updates(modpack_name).catch(err => {console.log(err); return;})))
             {
-                console.log(`Последняя версия ${Capitalize_First_Letter(modpack_name)} установленна. Запускаем...`);
+                console.log(`Последняя версия ${Capitalize_First_Letter(modpack_name)} установлена. Запускаем...`);
 
                 // Запустить штуку которая блокирует пользователю возможность запустить сборку еще раз
                 show_launch_menu();
@@ -210,6 +236,7 @@ play_button.addEventListener('click', async () => {
             }
             else
             {
+                console.log('Найдена новая версия, скачавание...');
                 document.querySelector('#redownload-client-cb').checked = true;
                 play_button.click();
             }
@@ -220,11 +247,12 @@ play_button.addEventListener('click', async () => {
 });
 
 // True - нада обновлять, False - ненадо
-function check_for_updates()
+function check_for_updates(_modpack_name)
 {
     return new Promise(async (resolve, reject) => {
-        let latest_version = (await get_latest_release(modpack_name))['name'].toString().split('v')[1].split('.');
-        let installed_version = get_modpack_version_from_info(modpack_name).toString().split('v')[1];
+        let latest_version = (await get_latest_release(_modpack_name))['name'].toString().split('v')[1].split('.');
+        console.log(_modpack_name);
+        let installed_version = get_modpack_version_from_info(_modpack_name).toString().split('v')[1];
 
         if (installed_version == '' || installed_version == undefined || installed_version == null)
         {
@@ -309,25 +337,28 @@ function download_libs()
     return new Promise(async (resolve, reject) => {
         let core_path = verify_and_get_libs_folder();
         if (libs_folder_empty()) {
-        console.log(`No libraries found on this computer. Downloading...`);
-        let libs_path = await download_from_github_illegally(
-            core_path,
-            'libs',
-            (progress) => {
-                let speed_in_mbps = (progress.speed / 1024 / 1024).toPrecision(2);
+            console.log(`No libraries found on this computer. Downloading...`);
+            let libs_path = await download_from_github_illegally(
+                core_path,
+                'libraries',
+                (progress) => {
+                    let speed_in_mbps = (progress.speed / 1024 / 1024).toPrecision(2);
 
-                console.log(`Download speed: ${speed_in_mbps} Mb / s`);
+                    console.log(`Download speed: ${speed_in_mbps} Mb / s`);
 
-                document.querySelector('#modpack-paragraph').innerHTML = `Загрузка библиотек: ${(progress.percent * 100).toFixed()}%`
-                document.querySelector('#role-par').innerHTML = `Скорость: ${speed_in_mbps * 8} Мб в секунду`;
-                document.querySelector('.download-filler').style.width = `${progress.percent * 100}%`;
-            }
-        );
+                    document.querySelector('#modpack-paragraph').innerHTML = `Скачивание Библиотек: ${(progress.percent * 100).toFixed()}%`
+                    document.querySelector('#role-par').innerHTML = `Скорость: ${speed_in_mbps * 8} Мб в секунду`;
+                    document.querySelector('.download-filler').style.width = `${progress.percent * 100}%`;
+                }
+            );
 
-        console.log(`Libraries installed: ${libs_path}`);
-    }
-
-        resolve();
+            console.log(`Libraries installed: ${libs_path}`);
+            resolve(true);
+        }
+        else
+        {
+            resolve(false);
+        }
     });
 }
 

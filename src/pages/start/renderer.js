@@ -331,6 +331,7 @@ async function download_user_icon()
     return new Promise((resolve, reject) => {
         downloading_icon = true;
         ipcRenderer.send('download-from-link', {
+            threads: 2,
             path: verify_and_get_resources_folder(),
             url: `https://deltaminecraft.000webhostapp.com/uploads/profileImgs/${document.getElementById('login').value}.png`,
             filename: `user.png`
@@ -359,6 +360,7 @@ async function download_user_skin()
     return new Promise((resolve, reject) => {
         downloading_skin = true;
         ipcRenderer.send('download-from-link', {
+            threads: 2,
             path: verify_and_get_resources_folder(),
             url: `https://deltaminecraft.000webhostapp.com/uploads/skins/${document.getElementById('login').value}.png`,
             filename: `${document.getElementById('login').value}.png`

@@ -1,12 +1,16 @@
 const { app, BrowserWindow, ipcMain, Tray, Menu } = require("electron");
 const electronDl = require('electron-dl');
 const { download } = require("electron-dl");
+const fs = require('fs-extra');
 const keytar = require('keytar');
+const request = require('request');
+const merge_files = require('merge-files');
 let os = require('os').release()
 console.log(os);
 
 const log = require('electron-log');
-const { autoUpdater } = require("electron-updater")
+const { autoUpdater } = require("electron-updater");
+const { resolve } = require("path");
 
 autoUpdater.autoDownload = false;
 
@@ -121,41 +125,156 @@ app.on("activate", () => {
 //#region //. Download 
 let downloading_item = null;
 
-ipcMain.on('download-from-link', async (event, {path, url, filename}) => {
-    console.log(`downloading: ${url}`);
-    const win = BrowserWindow.getFocusedWindow();
-    let prev_transferredBytes = 0;
+let THREADS = 8;
+let total_download_size = 0;
 
-    // Start download using eletron-dl
-    download(win, url, {
-      directory: path,
-      filename: filename,
+function create_download_thread(start_bytes, finish_bytes, url, path, thread_num, onProgress)
+{ 
+  return new Promise((resolve, reject) => {
+    console.log(`Creating Thread from: ${start_bytes}, to: ${finish_bytes}`);
+    let received_bytes = 0;
+    let total_bytes = 0;
 
-      // send 'download-progress' event back to the evoker.
-      // conatins progress info
-      onProgress: progress => {
-        console.log('download progress: ' + progress.transferredBytes);
-        
-        // Calculate speed and add it to progress var. Why not?
-        let speed = progress.transferredBytes - prev_transferredBytes;
-        prev_transferredBytes = progress.transferredBytes;
-        progress.speed = speed / 2;
-        
-        event.reply('download-progress', progress);
-      },
-
-      // puts DownloadItem object in variable so i can pause / cancel it
-      onStarted: (item) => {
-        downloading_item = item;
-      }
-    }).then(res => {
-
-      // We don't need DownloadItem cuz it already downloaded.
-      // Then it send reply to the evoker containing results
-      downloading_item = null;
-      event.reply('download-completed', res);
-
+    let req = request({
+        headers: {
+          'Range': `bytes=${start_bytes}-${finish_bytes}`
+        },
+        method: 'GET',
+        uri: url
     });
+
+    let out = fs.createWriteStream(path + '\\' + `downloadingthread${thread_num}.thread`);
+    req.pipe(out);
+
+    req.on('response', function ( data ) {
+        // Change the total bytes value to get progress later.
+        total_bytes = parseInt(data.headers['content-length']);
+    });
+
+    req.on('data', function(chunk) {
+        // Update the received bytes
+        received_bytes += chunk.length;
+
+        let progress = {speed: 0, percentage: 0};
+
+        let speed = received_bytes;
+        progress.speed = speed / 2;
+
+        let percentage = (received_bytes * 100) / total_bytes;
+        progress.percentage = percentage;
+
+        onProgress(progress);
+    });
+
+    req.on('end', function() {
+      resolve();
+    });
+  });
+}
+
+function clear_thread_files(path, threads)
+{
+  for (let i = 0; i < threads; i++)
+  {
+    fs.unlinkSync(path + `\\downloadingthread${i}.thread`);
+  }
+}
+
+function get_total_download_size(url)
+{
+  return new Promise(async (resolve, reject) => {
+    let finally_got_that_size_from_github = false;
+    while(!finally_got_that_size_from_github)
+    {
+      let content_length = await new Promise((resolve, reject) => {
+        // Sending fake request to get download size
+        let req = request({
+          headers: {
+            'Range': `bytes=0-1000000000000000000000000`
+          },
+          method: 'GET',
+          uri: url
+        });
+
+        req.on('response', function ( data ) {
+            // Change the total bytes value to get progress later.
+            console.log(data.headers);
+            if (data.headers['content-length'] != undefined && data.headers['content-length'] > 0)
+            {
+              resolve(data.headers['content-length']);
+            }
+            else if (data.headers['content-range'] != undefined)
+            {
+              resolve(data.headers['content-range'].split('/')[1]);
+            }
+            else
+            {
+              resolve(undefined);
+            }
+        });
+      });
+
+      console.log(content_length);
+      if (content_length != undefined)
+      {
+        console.log(content_length);
+        finally_got_that_size_from_github = true;
+        resolve(content_length);
+      } 
+    }
+  });
+}
+
+ipcMain.on('download-from-link', async (event, {threads, path, url, filename}) => {
+    console.log(`downloading: ${url}`);
+    // Save variable to know progress
+    let total_bytes = await get_total_download_size(url);
+    if (threads == undefined || threads == null || threads == 0)
+      threads = 1;
+    let finished = 0;
+    let biggest_percent = 0;
+    for (let i = 0; i < threads; i++)
+    {
+      let chunk_start = Math.floor((total_bytes / threads) * i);
+      if (i > 0) chunk_start++;
+      let chunk_finish = Math.floor((total_bytes / threads) * (i + 1));
+
+      create_download_thread(
+        chunk_start,
+        chunk_finish,
+        url,
+        path,
+        i,
+        function (progress) {
+          if (biggest_percent < progress.percentage)
+          {
+            console.log(progress.percentage);
+            event.reply('download-progress', progress);
+          }
+        }
+      )
+      .then(async res => {
+        console.log(`Thread ${i} finished`);
+        finished++;
+        if(finished == threads)
+        {
+          const outputPath = path + `\\${filename}`;
+
+          let inputPathList = [];
+          for (let i = 0; i < threads; i++)
+          {
+            inputPathList.push(path + `\\downloadingthread${i}.thread`);
+          }
+      
+          const status = await merge_files(inputPathList, outputPath);
+          console.log(status);
+
+          clear_thread_files(path, threads);
+          console.log('download is finished');
+          event.reply('download-completed');
+        }
+      }).catch(err => console.log(err));
+    }
 });
 
 ipcMain.on('cancel-current-download', async (event, reason) => {
