@@ -160,8 +160,11 @@ function create_download_thread(start_bytes, finish_bytes, url, path, thread_num
         let speed = received_bytes;
         progress.speed = speed / 2;
 
-        let percentage = (received_bytes * 100) / total_bytes;
-        progress.percentage = percentage;
+        progress.totalBytes = total_bytes;
+        progress.transferredBytes = received_bytes;
+
+        let percent = (received_bytes) / total_bytes;
+        progress.percent = percent;
 
         onProgress(progress);
     });
@@ -246,9 +249,9 @@ ipcMain.on('download-from-link', async (event, {threads, path, url, filename}) =
         path,
         i,
         function (progress) {
-          if (biggest_percent < progress.percentage)
+          if (biggest_percent < progress.percent)
           {
-            console.log(progress.percentage);
+            console.log(progress.percent);
             event.reply('download-progress', progress);
           }
         }

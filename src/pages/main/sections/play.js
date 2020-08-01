@@ -319,6 +319,7 @@ function download_mods_and_stuff(modpack_folder)
                 let speed_in_mbps = (progress.speed / 1024 / 1024).toPrecision(2);
 
                 console.log(`Download speed: ${speed_in_mbps} Mb / s`);
+                console.log(progress);
 
                 document.querySelector('#modpack-paragraph').innerHTML = `Загрузка сборки ${Capitalize_First_Letter(modpack_name)}: ${(progress.percent * 100).toFixed()}%`
                 document.querySelector('#role-par').innerHTML = `Скорость: ${speed_in_mbps} Мб в секунду`;
