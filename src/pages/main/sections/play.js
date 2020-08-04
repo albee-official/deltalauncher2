@@ -116,7 +116,18 @@ function UpdateRedownloadCheckBox() {
     let label = document.querySelector('#redownload-client-label');
     let modpack_installed_bool = !modpack_not_installed(modpack_name);
 
+    let secondary_text = document.querySelector('#play-button-assist-label span');
+
     cb.checked = !modpack_installed_bool;
+
+    if (!modpack_installed_bool)
+    {
+        secondary_text.innerHTML = 'Быстрое скачивание';
+    }
+    else
+    {
+        secondary_text.innerHTML = 'Автозаход на сервер';
+    }
 
     console.log(cb);
     console.log(label);
@@ -151,9 +162,11 @@ play_button.addEventListener('click', async () => {
             rimraf.sync(modpack_folder);
 
             console.log(`${modpack_name} is uninstalled. Downloading`);
+            
+            document.querySelector('#play-button-assist-label').classList.add('unactive');
 
             // Если мы уж перекачиваем то уж лучше подчистить все, а то не дай бох чо произойдет
-            clear_modpack_folder(modpack_name);
+            await clear_modpack_folder(modpack_name);
 
             // Скачать либы если их нету
             let libs_installed = await download_libs();
@@ -180,6 +193,7 @@ play_button.addEventListener('click', async () => {
 
             // Обновить натсройки
             change_settings_preset(modpack_name, document.querySelector('#optimization-input').value);
+            document.querySelector('#play-button-assist-label').classList.remove('unactive');
             play_button.click();
 
         } else { //. ЕСЛИ УСТАНОВЛЕННА
@@ -316,7 +330,7 @@ function download_mods_and_stuff(modpack_folder)
             modpack_folder,
             modpack_name,
             (progress) => {
-                let speed_in_mbps = (progress.speed / 1024 / 1024).toPrecision(2);
+                let speed_in_mbps = progress.speed;
 
                 console.log(`Download speed: ${speed_in_mbps} Mb / s`);
                 console.log(progress);
@@ -343,7 +357,7 @@ function download_libs()
                 core_path,
                 'libraries',
                 (progress) => {
-                    let speed_in_mbps = (progress.speed / 1024 / 1024).toPrecision(2);
+                    let speed_in_mbps = progress.speed;
 
                     console.log(`Download speed: ${speed_in_mbps} Mb / s`);
 
@@ -376,6 +390,7 @@ function cancel_current_download()
         //  no download in progress - no download in progress
         console.log(status);
         if (status == 'success') {
+            document.querySelector('#play-button-assist-label').classList.remove('unactive');
             document.querySelector(`#modpack-dir[data-name=${modpack_name}]`).classList.remove('updating');
             download_in_progress = false;
             play_button.innerHTML = 'Играть';

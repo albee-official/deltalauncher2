@@ -3,6 +3,7 @@ const { app, BrowserWindow } = require("electron").remote;
 const path = require('path');
 const { exec, spawn, fork } = require('child_process');
 const { shell } = require('electron');
+const hidefile = require('hidefile');
 
 let os = require('os');
 console.log(os);
@@ -80,7 +81,24 @@ function is_directry_empty(path) {
 
 function clear_modpack_folder(modpack_name)
 {
-    rimraf.sync(verify_and_get_modpack_folder(modpack_name));
+    return new Promise((resolve, reject) => {
+        let path = verify_and_get_modpack_folder(modpack_name);
+
+        fs.readdir(path, (err, files) => {
+            files.forEach(file => {
+                if (file.toString().split('.').length > 1)
+                {
+                    fs.unlinkSync(path + '\\' + file);
+                }
+                else
+                {
+                    rimraf.sync(path + '\\' + file);
+                }
+            });
+
+            resolve();
+        });
+    });
 }
 
 function modpack_folder_empty(modpack_name)
@@ -270,6 +288,10 @@ function get_modpack_version_from_info(modpack_name)
     console.log(`reading from ${path}`);
     let json = JSON.parse(fs.readFileSync(path));
     console.log(json);
+    if (json['version'] == undefined || json['version'] == '' || json['version'] == null)
+    {
+        json['version'] = 'v0.0.0.0';
+    }
     return json['version'];
 }
 

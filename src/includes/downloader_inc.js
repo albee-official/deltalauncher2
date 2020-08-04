@@ -46,8 +46,14 @@ async function download_from_github_illegally(folder, item_name, onProgress) {
 
         console.log(item_name);
         let latest_release;
-        latest_release = await get_latest_release(item_name);
+        latest_release = await get_latest_release(Capitalize_First_Letter(item_name));
         console.log(`Downloading release: ${latest_release['name']}`);
+
+        let modpack_p = document.querySelector('#modpack-paragraph');
+        let role_p = document.querySelector('#role-par');
+        
+        modpack_p.innerHTML = `Начинаем загрузку: ${item_name}`;
+        role_p.innerHTML = 'Ожидание ответа сервера';
 
         await set_modpack_version_to_info(item_name, latest_release['name']);
 
@@ -80,31 +86,52 @@ async function download_from_github_illegally(folder, item_name, onProgress) {
         {
             let download_url = modlinks[item_name];
 
+            let threads = 8;
+            if (document.querySelector('#play-button-assist-cb').checked)
+            {
+                threads = 16;
+            }
+
             // Sends message to MAIN to download modpack from url
             ipcRenderer.send('download-from-link', {
-                threads: 16,
+                threads: threads,
                 path: folder,
                 url: download_url,
                 filename: 'modpack.zip'
             });
 
+            let progress = {totalBytes: 0, percent: 0, speed: 0};
+            let speed_update;
+
+            ipcRenderer.on('got-download-size', (event) => {
+                speed_update = setInterval(() => {
+                    progress.speed = (progress.speed / 1024 / 1024 * 8 * 10).toPrecision(2);
+                    onProgress(progress);
+                    progress = {totalBytes: 0, percent: 0, speed: 0};
+                }, 100);
+            }); 
+
+            ipcRenderer.on('download-cancelled', (event) => {
+                clearInterval(speed_update);
+            }); 
+
             // Redirects reply on progress to caller of the function
-            ipcRenderer.on('download-progress', (event, progress) => {
-                if (progress.totalBytes == 0 || progress.totalBytes == undefined || progress.totalBytes == null)
+            ipcRenderer.on('download-progress', (event, _progress) => {
+                progress['totalBytes'] += _progress['totalBytes'];
+                if (_progress['percent'] > progress['percent'])
                 {
-                    progress.totalBytes = modpack_sizes[item_name];
-                    progress.percent = progress.transferredBytes / modpack_sizes[item_name];
+                    progress['percent'] = _progress['percent'];
                 }
-                onProgress(progress);
+                progress['speed'] += _progress['speed'];
             });
 
             // Unzipps after download is completed
             ipcRenderer.on('download-completed', async (event, url) => {
-                let modpack_p = document.querySelector('#modpack-paragraph');
-                let role_p = document.querySelector('#role-par');
                 
                 console.log(`download completed: ${url}`);
                 console.log('Unzipping...');
+
+                clearTimeout(speed_update);
 
                 // Unzip downloaded file
                 modpack_p.innerHTML = 'Завершение: Распаковка файлов...';

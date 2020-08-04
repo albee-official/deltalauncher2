@@ -113,6 +113,10 @@ app.on("window-all-closed", () => {
   }
 });
 
+app.on('before-quit', async () => {
+  await cancel_current_download();
+});
+
 app.on("activate", () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow();
@@ -123,10 +127,25 @@ app.on("activate", () => {
 //#region //. IPC -----------------------------------------
 
 //#region //. Download 
-let downloading_item = null;
-
-let THREADS = 8;
+let downloading_item = false;
+let download_canceled = false;
 let total_download_size = 0;
+let current_num_of_threads = 0;
+let current_download_path = '';
+let requests = [];
+
+function cancel_current_download()
+{
+  return new Promise((resolve, reject) => {
+    download_canceled = true;
+    for (let req of requests)
+    {
+      req.abort();
+    }
+    clear_thread_files(current_download_path, current_num_of_threads);
+    resolve();
+  });
+}
 
 function create_download_thread(start_bytes, finish_bytes, url, path, thread_num, onProgress)
 { 
@@ -143,6 +162,8 @@ function create_download_thread(start_bytes, finish_bytes, url, path, thread_num
         uri: url
     });
 
+    requests.push(req);
+
     let out = fs.createWriteStream(path + '\\' + `downloadingthread${thread_num}.thread`);
     req.pipe(out);
 
@@ -157,8 +178,7 @@ function create_download_thread(start_bytes, finish_bytes, url, path, thread_num
 
         let progress = {speed: 0, percentage: 0};
 
-        let speed = received_bytes;
-        progress.speed = speed / 2;
+        progress.speed = chunk.length;
 
         progress.totalBytes = total_bytes;
         progress.transferredBytes = received_bytes;
@@ -229,9 +249,19 @@ function get_total_download_size(url)
 }
 
 ipcMain.on('download-from-link', async (event, {threads, path, url, filename}) => {
-    console.log(`downloading: ${url}`);
+  if (downloading_item)
+  {
+    console.log('another download is in progress...');
+    event.reply('download-failed', 'download in progress'); 
+  }
+  
+  console.log(`downloading: ${url}`);
     // Save variable to know progress
+    current_num_of_threads = threads;
+    current_download_path = path;
+    
     let total_bytes = await get_total_download_size(url);
+    event.reply('got-download-size');
     if (threads == undefined || threads == null || threads == 0)
       threads = 1;
     let finished = 0;
@@ -252,6 +282,7 @@ ipcMain.on('download-from-link', async (event, {threads, path, url, filename}) =
           if (biggest_percent < progress.percent)
           {
             console.log(progress.percent);
+            console.log((progress.speed / 1024 / 1024).toPrecision(2));
             event.reply('download-progress', progress);
           }
         }
@@ -259,7 +290,7 @@ ipcMain.on('download-from-link', async (event, {threads, path, url, filename}) =
       .then(async res => {
         console.log(`Thread ${i} finished`);
         finished++;
-        if(finished == threads)
+        if(finished == threads && !download_canceled)
         {
           const outputPath = path + `\\${filename}`;
 
@@ -283,16 +314,10 @@ ipcMain.on('download-from-link', async (event, {threads, path, url, filename}) =
 ipcMain.on('cancel-current-download', async (event, reason) => {
 
   // We can't cancel if we don't download anything D:
-  if (downloading_item == null)
-  {
-    event.reply('download-cancelled', 'no download in progress'); 
-  }
-  else
-  {
-    console.log(`Download is cancelled. Reason: ${reason}`);
-    downloading_item.cancel();
-    event.reply('download-cancelled', 'success'); 
-  }
+  console.log(`Download is cancelled. Reason: ${reason}`);
+  await cancel_current_download();
+  download_canceled = false;
+  event.reply('download-cancelled', 'success'); 
 });
 //#endregion
 

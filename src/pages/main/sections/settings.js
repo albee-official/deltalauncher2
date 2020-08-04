@@ -63,12 +63,13 @@ document.querySelector('#bg-select-input').addEventListener('click', e => {
         console.log(extension);
 
         let resources_path = verify_and_get_resources_folder();
-        await fs.copy(selected_file, resources_path + '\\custom_bg.' + extension);
+        let bg_path = resources_path + '\\custom_bg.' + extension;
+        await fs.copy(selected_file, bg_path);
+        console.log(bg_path.replace('\\', '/'));
+        document.body.style.backgroundImage = `url("${bg_path.replace(/\\/g, '/')}?${new Date()}")`;
 
         settings['bg_extension'] = extension;
         update_settings();
-
-        win.reload();
     });
 });
 
@@ -203,6 +204,10 @@ document.querySelector('#delete-reserved-files').addEventListener('click', async
 
 //#region //. ---------------- Memory range ------------------------
 
+let max_setable_ram = Math.floor(os.freemem() / 1024 / 1024 / 1024);
+console.log(max_setable_ram);
+let min_setable_ram = 4; 
+
 // runs when user moves the slider
 memory_range.addEventListener('input', e => {
     // get <input> tag
@@ -210,6 +215,8 @@ memory_range.addEventListener('input', e => {
 
     // get div containing stops (markers)
     let input_stops = e.currentTarget.children[0].children[0].children;
+
+    input_range.value = Math.max(Math.min(input_range.value, max_setable_ram), min_setable_ram);
 
     // loop through all stops
     for (let i = 0; i < input_stops.length; i++) {
@@ -226,7 +233,7 @@ memory_range.addEventListener('input', e => {
 });
 
 // Change from settings or update settings
-memory_range.children[0].children[1].children[0].value = settings['allocated_memory'];
+memory_range.children[0].children[1].children[0].value = Math.max(Math.min(settings['allocated_memory'], max_setable_ram), min_setable_ram);
 memory_range.addEventListener('change', () => {
     settings['allocated_memory'] = memory_range.children[0].children[1].children[0].value;
     update_settings();

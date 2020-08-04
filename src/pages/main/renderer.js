@@ -155,6 +155,15 @@ document.getElementById('shop-nav').addEventListener('click', () => {
     update_settings();
 });
 
+document.getElementById('account-nav').addEventListener('click', () => {
+    console.log('showing [account]');
+    selected_section = 'account';
+    update_selected_section();
+
+    settings['on_page'] = 'account';
+    update_settings();
+});
+
 function update_selected_section()
 {
     switch(selected_section)
@@ -164,12 +173,14 @@ function update_selected_section()
             document.getElementById('news-nav').classList = 'nav-element';
             document.getElementById('settings-nav').classList = 'nav-element';
             document.getElementById('shop-nav').classList = 'nav-element';
+            document.getElementById('account-nav').classList = 'nav-element';
             
             document.getElementById('play-section').classList.remove('main-left');
             document.getElementById('play-section').classList.remove('main-right');
             document.getElementById('news-section').classList = 'news-section mCustomScrollbar main-right';
             document.getElementById('settings-section').classList = 'settings-section mCustomScrollbar main-right';
             document.getElementById('shop-section').classList = 'shop-section main-right';
+            document.getElementById('account-section').classList = 'account-section main-right';
             break;
 
         case 'news':
@@ -177,12 +188,14 @@ function update_selected_section()
             document.getElementById('play-nav').classList = 'nav-element';
             document.getElementById('settings-nav').classList = 'nav-element';
             document.getElementById('shop-nav').classList = 'nav-element';
+            document.getElementById('account-nav').classList = 'nav-element';
             
             document.getElementById('play-section').classList.add('main-left');
             document.getElementById('play-section').classList.remove('main-right');
             document.getElementById('news-section').classList = 'news-section mCustomScrollbar';
             document.getElementById('settings-section').classList = 'settings-section mCustomScrollbar main-right';
             document.getElementById('shop-section').classList = 'shop-section main-right';
+            document.getElementById('account-section').classList = 'account-section main-right';
             break;
 
         case 'settings':
@@ -190,12 +203,14 @@ function update_selected_section()
             document.getElementById('play-nav').classList = 'nav-element';
             document.getElementById('news-nav').classList = 'nav-element';
             document.getElementById('shop-nav').classList = 'nav-element';
+            document.getElementById('account-nav').classList = 'nav-element';
             
             document.getElementById('play-section').classList.add('main-left');
             document.getElementById('play-section').classList.remove('main-right');
             document.getElementById('news-section').classList = 'news-section mCustomScrollbar main-left';
             document.getElementById('settings-section').classList = 'settings-section mCustomScrollbar';
             document.getElementById('shop-section').classList = 'shop-section main-right';
+            document.getElementById('account-section').classList = 'account-section main-right';
             break;
 
         case 'shop':
@@ -203,12 +218,29 @@ function update_selected_section()
             document.getElementById('play-nav').classList = 'nav-element';
             document.getElementById('news-nav').classList = 'nav-element';
             document.getElementById('settings-nav').classList = 'nav-element';
+            document.getElementById('account-nav').classList = 'nav-element';
             
             document.getElementById('play-section').classList.add('main-left');
             document.getElementById('play-section').classList.remove('main-right');
             document.getElementById('news-section').classList = 'news-section mCustomScrollbar main-left';
             document.getElementById('settings-section').classList = 'settings-section mCustomScrollbar main-left';
             document.getElementById('shop-section').classList = 'shop-section';
+            document.getElementById('account-section').classList = 'account-section main-right';
+            break;
+
+        case 'account':
+            document.getElementById('shop-nav').classList = 'nav-element';
+            document.getElementById('play-nav').classList = 'nav-element';
+            document.getElementById('news-nav').classList = 'nav-element';
+            document.getElementById('settings-nav').classList = 'nav-element';
+            document.getElementById('account-nav').classList = 'nav-element active';
+            
+            document.getElementById('play-section').classList.add('main-left');
+            document.getElementById('play-section').classList.remove('main-right');
+            document.getElementById('news-section').classList = 'news-section mCustomScrollbar main-left';
+            document.getElementById('settings-section').classList = 'settings-section mCustomScrollbar main-left';
+            document.getElementById('shop-section').classList = 'shop-section main-left';
+            document.getElementById('account-section').classList = 'account-section';
             break;
 
         default:
@@ -216,12 +248,14 @@ function update_selected_section()
             document.getElementById('news-nav').classList = 'nav-element';
             document.getElementById('settings-nav').classList = 'nav-element';
             document.getElementById('shop-nav').classList = 'nav-element';
+            document.getElementById('account-nav').classList = 'nav-element';
             
             document.getElementById('play-section').classList.add('main-left');
             document.getElementById('play-section').classList.remove('main-right');
             document.getElementById('news-section').classList = 'news-section mCustomScrollbar main-right';
             document.getElementById('settings-section').classList = 'settings-section mCustomScrollbar main-right';
             document.getElementById('shop-section').classList = 'shop-section main-right';
+            document.getElementById('account-section').classList = 'account-section main-right';
             console.log('no section selected. settings to play');
             selected_section = 'play';
             break;
