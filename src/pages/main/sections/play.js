@@ -75,6 +75,10 @@ function UpdateServer() {
     } else {
         document.getElementById('role-par').innerHTML = `${privilege} [${admin_role}]`;
     }
+
+    ipcRenderer.sendSync('rich-presence-to', {
+        partyId: modpack_name,
+    });
 }
 
 UpdateServer();

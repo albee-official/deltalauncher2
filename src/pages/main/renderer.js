@@ -3,6 +3,10 @@ const win = remote.getCurrentWindow();
 
 init_ipc();
 
+ipcRenderer.on('message', (event, message) => {
+    console.log(message);
+});
+
 //#region  //. User Data -------------------------------------------------
 //? LOGOUT
 
@@ -24,6 +28,7 @@ ipcRenderer.sendSync('rich-presence-to', {
     details: 'В меню',
     state: userData['uid'],
     largeImageKey: 'rich_presence_light',
+    joinSecret: userData['uid'].toLowerCase(),
 });
 
 //? APPLY

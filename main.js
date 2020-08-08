@@ -26,20 +26,39 @@ let presence = {
   largeImageKey: 'rp_start_2',
   instance: false,
   spectateSecret: '025ed05c71f639de8bfaa0d679d7c94b2fdce12f',
-  joinSecret: 'ya huesos',
-  partyId: "magicae",
+  joinSecret: 'starting_app',
+  partyId: "starting",
+  partySize: 1,
+  partyMax: 2,
 };
 
-client.on('join', aaa => {
-  console.log(aaa);
+client.on('join', message => {
+  console.log(message);
+  win.webContents.send('message', `RPC join: ${message}`);
 });
 
-client.on('connected', aaa => {
-  console.log('YA EBLAN');
+client.on('connected', message => {
+  console.log('RPC connected');
+  win.webContents.send('message', 'RPC connected');
 });
 
-client.on('joinRequest', aaa => {
-  console.log(aaa);
+client.on('error', err => {
+  console.log(`RPC Error: ${err}`);
+  win.webContents.send('message', `RPC Error: ${err}`);
+});
+
+client.on('joinRequest', message => {
+  console.log(message);
+  win.webContents.send('message', `RPC join request: ${message}`);
+});
+
+client.on('spectate', message => {
+  console.log(message);
+  win.webContents.send('message', `RPC spectate: ${message}`);
+});
+
+ipcMain.on('ping', (event, pong) => {
+  win.webContents.send('message', pong);
 });
 
 
@@ -372,6 +391,10 @@ ipcMain.on('rich-presence-disconnect', (event, reason) => {
   console.log(reason);
   client.disconnect();
   event.returnValue = 0;
+});
+
+ipcMain.on('get-rpc', (event, reason) => {
+  event.returnValue = presence;
 });
 //#endregion
 
