@@ -25,8 +25,23 @@ let presence = {
   startTimestamp: Date.now(),
   largeImageKey: 'rp_start_2',
   instance: false,
-  spectateSecret: 'MTIzNDV8MTIzNDV8MTMyNDU0'
+  spectateSecret: '025ed05c71f639de8bfaa0d679d7c94b2fdce12f',
+  joinSecret: 'ya huesos',
+  partyId: "magicae",
 };
+
+client.on('join', aaa => {
+  console.log(aaa);
+});
+
+client.on('connected', aaa => {
+  console.log('YA EBLAN');
+});
+
+client.on('joinRequest', aaa => {
+  console.log(aaa);
+});
+
 
 client.updatePresence(presence);
 let userInfo = {};
@@ -40,6 +55,8 @@ function createWindow() {
   win = new BrowserWindow({
     width: 1400,
     height: 800,
+    minWidth: 1000,
+    minHeight: 600,
     webPreferences: {
       nodeIntegration: true,
     },
