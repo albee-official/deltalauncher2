@@ -25,6 +25,13 @@ const settings_levels = {
     4: 'ultra'
 };
 
+let modpacks_started = {
+    'magicae': 'no',
+    'fabrica': 'no',
+    'statera': 'no',
+    'insula': 'no',
+}
+
 let modpack_folders = {};
 
 let dir_root = app.getPath("appData") + "\\.delta";
@@ -358,7 +365,7 @@ function get_latest_java_version_path()
     });
 }
 
-function launch_minecraft(min_mem, max_mem, game_dir, username, uuid)
+function launch_minecraft(min_mem, max_mem, game_dir, username, uuid, _modpack_name)
 {
     return new Promise(async (resolve, reject) =>
     {
@@ -368,6 +375,8 @@ function launch_minecraft(min_mem, max_mem, game_dir, username, uuid)
         let cd_path = game_dir;
         let java_path = await get_latest_java_version_path();
         let final_command = `${game_dir[0]}:&&cd "${cd_path}"&&"${java_path}" ${args}`;
+
+        let modpack_name = _modpack_name;
 
         console.log(final_command);
         minecraft = exec(final_command, { 
@@ -393,12 +402,20 @@ function launch_minecraft(min_mem, max_mem, game_dir, username, uuid)
             if (data.toString().split('Starts to replace vanilla recipe ingredients with ore ingredients.').length > 1)
             {
                 minecraftLaunched = true;
-                play_button.innerHTML = 'Запущено';
+                play_button.innerHTML = 'Запущена';
                 document.querySelector('#launch-menu').classList.remove('open');
                 if (BrowserWindow.getFocusedWindow() != undefined && BrowserWindow.getFocusedWindow() != null)
                 {
                     BrowserWindow.getFocusedWindow().minimize();
                 }
+            }
+
+            if (data.toString().split('The game loaded in approximately').length > 1)
+            {
+                console.log('picoc');
+                ipcRenderer.sendSync('rich-presence-to', {
+                    details: `В меню: ${Capitalize_First_Letter(modpack_name)}`,
+                });
             }
         });
     

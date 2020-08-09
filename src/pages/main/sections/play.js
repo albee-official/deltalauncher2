@@ -77,7 +77,7 @@ function UpdateServer() {
     }
 
     ipcRenderer.sendSync('rich-presence-to', {
-        partyId: modpack_name,
+        joinSecret: modpack_name,
     });
 }
 
@@ -148,6 +148,16 @@ UpdateRedownloadCheckBox();
 //#endregion
 
 //#region //. Server Play Button ------------------------------------------
+
+ipcRenderer.on('rpc-join', (event, info) => {
+    modpack_name = info.server;
+    settings['selected_modpack'] = modpack_name;
+    update_settings();
+    UpdateServer();
+    UpdateRedownloadCheckBox();
+    console.log(modpack_name);
+    play_button.click();
+});
 
 let play_button = document.querySelector('#play-button');
 let download_in_progress = false;
@@ -234,13 +244,17 @@ play_button.addEventListener('click', async () => {
                 show_launch_menu();
 
                 // Отключить Rich Presence потому что у майна свой
-                ipcRenderer.send('rich-presence-disconnect', 'launching minecraft');
+                ipcRenderer.send('rich-presence-to', {
+                    details: `Запускает ${Capitalize_First_Letter(modpack_name)}...`,
+                    largeImageKey: `rpc_${modpack_name}`,
+                    smallImageKey: 'rich_presence_light',
+                });
 
                 await verify_user_skin(modpack_name);
 
                 // Запустить майнкрафт. Эта фнукция (Promise) заканчивается когда выключается майнкрафт.
                 let mem_input = document.querySelector('#memory-input');
-                launch_minecraft(1000, mem_input.value * 1024, modpack_folder, userData['uid'], userData['uuid']).then(res => {
+                launch_minecraft(1000, mem_input.value * 1024, modpack_folder, userData['uid'], userData['uuid'], modpack_name).then(res => {
 
                     // Манйкрафт завершился. Если 0, то все заебумба
                     console.log(`Minecraft exited with code: ${res}`);

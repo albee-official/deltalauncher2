@@ -28,7 +28,6 @@ ipcRenderer.sendSync('rich-presence-to', {
     details: 'В меню',
     state: userData['uid'],
     largeImageKey: 'rich_presence_light',
-    joinSecret: userData['uid'].toLowerCase(),
 });
 
 //? APPLY

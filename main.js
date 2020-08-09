@@ -18,51 +18,6 @@ autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
 log.info('App starting...');
 
-const client = require('discord-rich-presence')('732236615153483877');
-let presence = {
-  state: 'Разработка',
-  details: 'Запуск',
-  startTimestamp: Date.now(),
-  largeImageKey: 'rp_start_2',
-  instance: false,
-  spectateSecret: '025ed05c71f639de8bfaa0d679d7c94b2fdce12f',
-  joinSecret: 'starting_app',
-  partyId: "starting",
-  partySize: 1,
-  partyMax: 2,
-};
-
-client.on('join', message => {
-  console.log(message);
-  win.webContents.send('message', `RPC join: ${message}`);
-});
-
-client.on('connected', message => {
-  console.log('RPC connected');
-  win.webContents.send('message', 'RPC connected');
-});
-
-client.on('error', err => {
-  console.log(`RPC Error: ${err}`);
-  win.webContents.send('message', `RPC Error: ${err}`);
-});
-
-client.on('joinRequest', message => {
-  console.log(message);
-  win.webContents.send('message', `RPC join request: ${message}`);
-});
-
-client.on('spectate', message => {
-  console.log(message);
-  win.webContents.send('message', `RPC spectate: ${message}`);
-});
-
-ipcMain.on('ping', (event, pong) => {
-  win.webContents.send('message', pong);
-});
-
-
-client.updatePresence(presence);
 let userInfo = {};
 electronDl();
 
@@ -382,6 +337,51 @@ ipcMain.on('get-user-credentials', async (event) => {
 //#endregion
 
 //#region //. Discord Rich Presence
+let client = require('discord-rich-presence')('732236615153483877');
+let presence = {
+  state: 'Разработка',
+  details: 'Запуск',
+  startTimestamp: Date.now(),
+  largeImageKey: 'rp_start_2',
+  instance: false,
+  joinSecret: 'starting_app',
+  partyId: "delta",
+  partySize: 1,
+  partyMax: 2,
+};
+
+client.on('join', message => {
+  console.log(message);
+  win.webContents.send('message', `RPC join: ${message}`);
+  win.webContents.send('rpc-join', {server: message});
+});
+
+client.on('connected', message => {
+  console.log('RPC connected');
+  win.webContents.send('message', 'RPC connected');
+});
+
+client.on('error', err => {
+  console.log(`RPC Error: ${err}`);
+  win.webContents.send('message', `RPC Error: ${err}`);
+});
+
+client.on('joinRequest', message => {
+  console.log(message);
+  win.webContents.send('message', { 'RPC join request': message });
+});
+
+client.on('spectate', message => {
+  console.log(message);
+  win.webContents.send('message', `RPC spectate: ${message}`);
+});
+
+ipcMain.on('ping', (event, pong) => {
+  win.webContents.send('message', pong);
+});
+
+client.updatePresence(presence);
+
 ipcMain.on('rich-presence-to', (event, key) => {
   client.updatePresence(Object.assign(presence, key));
   event.returnValue = 0;
@@ -390,6 +390,12 @@ ipcMain.on('rich-presence-to', (event, key) => {
 ipcMain.on('rich-presence-disconnect', (event, reason) => {
   console.log(reason);
   client.disconnect();
+  event.returnValue = 0;
+});
+
+ipcMain.on('rich-presence-revive', (event, reason) => {
+  console.log(reason);
+  client = require('discord-rich-presence')('732236615153483877');
   event.returnValue = 0;
 });
 
