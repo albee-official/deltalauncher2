@@ -1,17 +1,17 @@
-**Версия лаунчера:**
+**Launcher version:**
 
-Укажите версию лаунчера.
+Specify the version of the launcher.
  
-**Ссылка на журнал лаунчера:**
+**Link to the launcher log:**
 
-Даже если вы отправили журнал ошибки, рекомендовано отправить вместе с ним файл. Для этого пользуйтесь сервисами типа [Pastebin](https://pastebin.com) и [Hastebin](https://hastebin.com), чтобы выложить файл и отправить ссылку на него сюда. Файл журнала лаунчера находится в папке Roaming/delta-launcher/logs/ и называется main.log.
+Even if you submitted an error log, it is recommended that you submit a file along with it. To do this, use services like [Pastebin] (https://pastebin.com) and [Hastebin] (https://hastebin.com) to upload a file and send a link to it here. The launcher log file is located in the Roaming /delta-launcher/logs/ folder and is called main.log.
 
-**Изображение консоли лаунчера (Ctrl+Shift+I):**
+**Image of the launcher console (Ctrl + Shift + I):**
 
-Сообщения в журнале ошибки помогут разработчикам решить данную проблему и дадут внимательно осмотреть процесс игры, причину и следствия ошибки.
+Messages in the error log will help the developers to solve this problem and will give a close inspection of the game process, the cause and consequences of the error.
 
-**Описание:**   
+**Description:**
 
-Описание проблемы и действий, которые вы совершили перед появлением ошибки. В случае ошибки, можно написать:
+A description of the problem and the actions you took before the error occurred. In case of an error, you can write:
 
-* Ваши действия перед ошибкой?
+* What were your actions before the mistake?
