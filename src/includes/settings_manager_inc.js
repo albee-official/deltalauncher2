@@ -7,8 +7,8 @@ const pattern = {
     "allocated_memory": 3,
     "optimization_level": 2,
     "controls": {
-        "crouch": { "minecraft_key": "key_key.sneak", "minecraft_code": 29, "key_code": 12, "key_name": "CONTROL" },
-        "run": { "minecraft_key": "key_key.sprint", "minecraft_code": 42, "key_code": 12, "key_name": "SHIFT" },
+        "crouch": { "minecraft_key": "key_key.sneak", "minecraft_code": 42, "key_code": 12, "key_name": "SHIFT" },
+        "run": { "minecraft_key": "key_key.sprint", "minecraft_code": 29, "key_code": 12, "key_name": "CONTROL" },
         "forward": { "minecraft_key": "key_key.forward", "minecraft_code": 17, "key_code": 87, "key_name": "W" },
         "back": { "minecraft_key": "key_key.back", "minecraft_code": 31, "key_code": 83, "key_name": "S" },
         "left": { "minecraft_key": "key_key.left", "minecraft_code": 30, "key_code": 12, "key_name": "A" },

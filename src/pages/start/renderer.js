@@ -274,12 +274,14 @@ function login() {
             },
             dataType: 'text'
         }).done((data) => {
-            console.log(`got reply. data: ${data}`);
+            console.log(`got reply. data: \n ${data}`);
             document.getElementById('auth-container').classList.add('open-auth');
             document.getElementById('auth-container').classList.remove('auth-locked');
             document.getElementById('auth-container').style.transition = 'all 1s cubic-bezier(0.645, 0.045, 0.355, 1)';
-            requestResult = data;
+            data.replaceAt(0, '{');
+            requestResult = JSON.parse(data);
         }).then((result) => {
+            result = JSON.parse(result);
             if (result['username'] != undefined && result['username'] != "" && result['username'] != null)
             {
                 console.log('Login Succesfull!');
@@ -311,7 +313,7 @@ function finish() {
             url: 'https://deltaminecraft.000webhostapp.com/includes/launcher.getuserinfo.inc.php',
             method: 'POST',
             data: {
-                uid: document.getElementById('login').value,
+                username: document.getElementById('login').value,
             },
             dataType: 'json'
         }).done(async (data) => {

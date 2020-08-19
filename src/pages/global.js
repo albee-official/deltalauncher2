@@ -1,4 +1,6 @@
-
+String.prototype.replaceAt = function(index, replacement) {
+    return this.substr(0, index) + replacement + this.substr(index + replacement.length);
+}
 
 //#region //. Theme update -----------
 function set_theme_colours(theme)

@@ -317,7 +317,7 @@ ipcMain.on('update-user-info', (event, { info, password }) => {
 
     // overwrites userInfo variable to info
     userInfo = info;
-    keytar.setPassword('Delta', info['uid'], password);
+    keytar.setPassword('Delta', info['username'], password);
     event.reply('user-info-updated');
 });
 
