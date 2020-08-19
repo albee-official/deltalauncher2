@@ -270,19 +270,20 @@ function login() {
             method: 'POST',
             data: {
                 mailuid: document.getElementById('login').value,
-                pwd: document.getElementById('password').value
+                pwd: document.getElementById('password').value 
             },
-            dataType: 'json'
+            dataType: 'text'
         }).done((data) => {
+            console.log(`got reply. data: ${data}`);
             document.getElementById('auth-container').classList.add('open-auth');
             document.getElementById('auth-container').classList.remove('auth-locked');
             document.getElementById('auth-container').style.transition = 'all 1s cubic-bezier(0.645, 0.045, 0.355, 1)';
             requestResult = data;
         }).then((result) => {
-            if (result['uid'] != undefined && result['uid'] != "" && result['uid'] != null)
+            if (result['username'] != undefined && result['username'] != "" && result['username'] != null)
             {
                 console.log('Login Succesfull!');
-                console.log(result['uid']);
+                console.log(result['username']);
 
                 ipcRenderer.send('update-user-info', { 
                     info: result, 
