@@ -9,6 +9,7 @@
 
 ![version](https://img.shields.io/github/package-json/v/SuperMegaKeks/Delta-Launcher?color=orange&label=version&style=for-the-badge)
 ![release](https://img.shields.io/github/v/release/SuperMegaKeks/Delta-Launcher?color=red&include_prereleases&style=for-the-badge)
+![node](https://img.shields.io/npm/v/npm?style=for-the-badge)
 
 ## License
 
