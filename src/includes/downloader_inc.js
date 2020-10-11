@@ -4,13 +4,13 @@ const { log } = require('electron-log');
 
 // Links to download modpacks. Not very safe, tho it works!
 const modlinks = {
-    libraries: 'https://github.com/Avandelta/Libraries/archive/master.zip',
+    libraries: 'https://github.com/Avandelta/Libraries/archive/main.zip',
 
-    magicae: "https://github.com/Avandelta/Magicae/archive/master.zip",
-    fabrica: "https://github.com/Avandelta/Fabrica/archive/master.zip",
-    statera: "https://github.com/Avandelta/Statera/archive/master.zip",
-    insula: "https://github.com/Avandelta/Insula/archive/master.zip",
-    testsborka: "https://github.com/SuperMegaKeks/testsborka/archive/master.zip",
+    magicae: "https://github.com/Avandelta/Magicae/archive/main.zip",
+    fabrica: "https://github.com/Avandelta/Fabrica/archive/main.zip",
+    statera: "https://github.com/Avandelta/Statera/archive/main.zip",
+    insula: "https://github.com/Avandelta/Insula/archive/main.zip",
+    testsborka: "https://github.com/SuperMegaKeks/testsborka/archive/main.zip",
 };
 
 const modpack_sizes = {
@@ -205,23 +205,32 @@ function process_modpack(modpack_folder, found_folder) {
         console.log(`Moving: ${sub_folder} to ${modpack_folder}`);
 
         // Copy files from downloaded folder to new one
+        console.log('Moving: CustomSkinLoader...');
+        await fs.move(sub_folder + `\\CustomSkinLoader`, modpack_folder + `\\CustomSkinLoader`);
+
+        console.log('Moving: Graphics...');
+        await fs.move(sub_folder + `\\Graphics`, modpack_folder + `\\Graphics`);
+
         console.log('Moving: asm...');
         await fs.move(sub_folder + `\\asm`, modpack_folder + `\\asm`);
-        
+
+        console.log('Moving: config...');
+        await fs.move(sub_folder + `\\config`, modpack_folder + `\\config`);
+
         console.log('Moving: mods...');
         await fs.move(sub_folder + `\\mods`, modpack_folder + `\\mods`);
 
         console.log('Moving: resourcepacks...');
         await fs.move(sub_folder + `\\resourcepacks`, modpack_folder + `\\resourcepacks`);
 
-        console.log('Moving: settings...');
-        await fs.move(sub_folder + `\\settings`, modpack_folder + `\\settings`);
-
-        console.log('Moving: config...');
-        await fs.move(sub_folder + `\\config`, modpack_folder + `\\config`);
+        console.log('Moving: scripts...');
+        await fs.move(sub_folder + `\\scripts`, modpack_folder + `\\scripts`);
 
         console.log('Moving: knownkeys.txt...');
         await fs.copy(sub_folder + `\\knownkeys.txt`, modpack_folder + `\\knownkeys.txt`);
+
+        console.log('Moving: .ReAuth.cfg...');
+        await fs.copy(sub_folder + `\\.ReAuth.cfg`, modpack_folder + `\\.ReAuth.cfg`);
 
         console.log('Modes processing done!');
         resolve(modpack_folder);

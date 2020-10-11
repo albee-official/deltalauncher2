@@ -254,7 +254,7 @@ play_button.addEventListener('click', async () => {
 
                 // Запустить майнкрафт. Эта фнукция (Promise) заканчивается когда выключается майнкрафт.
                 let mem_input = document.querySelector('#memory-input');
-                launch_minecraft(1000, mem_input.value * 1024, modpack_folder, userData['uid'], userData['uuid'], modpack_name).then(res => {
+                launch_minecraft(1000, mem_input.value * 1024, modpack_folder, userData['username'], userData['uuid'], modpack_name).then(res => {
 
                     // Манйкрафт завершился. Если 0, то все заебумба
                     console.log(`Minecraft exited with code: ${res}`);

@@ -18,11 +18,11 @@ const modpacks = [
 ];
 
 const settings_levels = {
-    0: 'lowest',
-    1: 'low',
-    2: 'medium',
-    3: 'high',
-    4: 'ultra'
+    0: 'Ultra Low',
+    1: 'Low',
+    2: 'Medium',
+    3: 'High',
+    4: 'Ultra High'
 };
 
 let modpacks_started = {
@@ -122,7 +122,7 @@ function change_settings_preset(modpack_name, settings_lvl)
     let preset = settings_levels[settings_lvl];
     
     let modpack_folder = verify_and_get_modpack_folder(modpack_name);
-    let settings_folder = modpack_folder + '\\settings';
+    let settings_folder = modpack_folder + '\\Graphics';
     let settings_preset_folder = settings_folder + '\\' + preset;
 
     fs.copySync(settings_preset_folder, modpack_folder);
@@ -317,7 +317,7 @@ function verify_user_skin(modpack_name)
         await fs.ensureDir(verify_and_get_modpack_folder(modpack_name) + `\\CustomSkinLoader`);
         await fs.ensureDir(verify_and_get_modpack_folder(modpack_name) + `\\CustomSkinLoader\\LocalSkin`);
         await fs.ensureDir(verify_and_get_modpack_folder(modpack_name) + `\\CustomSkinLoader\\LocalSkin\\skins`);
-        await fs.copyFile(verify_and_get_resources_folder() + `\\${userData['uid']}.png`, verify_and_get_modpack_folder(modpack_name) + `\\CustomSkinLoader\\LocalSkin\\skins\\${userData['uid']}.png`);
+        await fs.copyFile(verify_and_get_resources_folder() + `\\${userData['username']}.png`, verify_and_get_modpack_folder(modpack_name) + `\\CustomSkinLoader\\LocalSkin\\skins\\${userData['username']}.png`);
         
         resolve();
     });
