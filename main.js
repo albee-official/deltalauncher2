@@ -129,6 +129,7 @@ function cancel_current_download()
 {
   return new Promise((resolve, reject) => {
     download_canceled = true;
+    downloading_item = false;
     for (let req of requests)
     {
       req.abort();
@@ -143,7 +144,7 @@ function cancel_current_download()
   });
 }
 
-function threadless_download(url, path, filename, onProgress)
+function threadless_download(event, url, path, filename)
 { 
   return new Promise((resolve, reject) => {
     console.log(`Downloading from: ${url}`);
@@ -179,7 +180,9 @@ function threadless_download(url, path, filename, onProgress)
         let percent = (received_bytes) / total_bytes;
         progress.percent = percent;
 
-        onProgress(progress);
+        console.log(progress.percent);
+        console.log((progress.speed / 1024 / 1024).toPrecision(2));
+        event.reply('download-progress', progress);
     });
 
     req.on('end', function() {
@@ -237,11 +240,86 @@ function create_download_thread(start_bytes, finish_bytes, url, path, thread_num
   });
 }
 
+function threaded_download(event, url, path, filename, threads, total_bytes) {
+
+  return new Promise((resolve, reject) => {
+    if (threads == undefined || threads == null || threads == 0) threads = 1;
+
+    let finished = 0;
+    let biggest_percent = 0;
+
+    //. Split By Chunks of Data
+    for (let i = 0; i < threads; i++) {
+
+      let chunk_start = Math.floor((total_bytes / threads) * i);
+      if (i > 0) chunk_start++;
+      let chunk_finish = Math.floor((total_bytes / threads) * (i + 1));
+
+      //. Create download thread
+      create_download_thread(
+        chunk_start, 
+        chunk_finish, 
+        url, 
+        path, 
+        i, 
+        function (progress) {
+          if (biggest_percent < progress.percent) {
+            console.log(progress.percent);
+            console.log((progress.speed / 1024 / 1024).toPrecision(2));
+            event.reply("download-progress", progress);
+        }
+      })
+        //. Then Download Thread finsihed
+        .then(async (res) => {
+          console.log(`Thread ${i} finished`);
+          finished++;
+          //. Num of finished threads is equal to num of started threads
+          if (finished == threads && !download_canceled) {
+            const outputPath = path + `\\${filename}`;
+
+            let inputPathList = [];
+            //. Add Thread to Threads list
+            for (let i = 0; i < threads; i++) {
+              inputPathList.push(path + `\\downloadingthread${i}.thread`);
+            }
+
+            //. Merge files into one
+            const status = await merge_files(inputPathList, outputPath);
+            console.log(status);
+
+            clear_thread_files(path, threads);
+            console.log("download is finished");
+            //. 1 - success
+            resolve(path);
+          }
+        })
+        .catch((err) => console.log(err));
+    }
+  })
+}
+
+function fool_github_into_thinking_i_am_a_good_person(url)
+{
+  return new Promise((resolve, reject) => {
+    console.log(`Faking download from: ${url}`);
+
+    let req = request({
+        method: 'GET',
+        uri: url
+    });
+
+    let fooling = setTimeout(() => {
+      req.abort();
+      resolve();
+    }, 5000)
+  });
+}
+
 function clear_thread_files(path, threads)
 {
   for (let i = 0; i < threads; i++)
   {
-    fs.unlinkSync(path + `\\downloadingthread${i}.thread`);
+    if (fs.pathExistsSync(path + `\\downloadingthread${i}.thread`)) fs.unlinkSync(path + `\\downloadingthread${i}.thread`);
   }
 }
 
@@ -250,12 +328,12 @@ function get_total_download_size(url)
   return new Promise(async (resolve, reject) => {
     let finally_got_that_size_from_github = false;
     let requests = 0;
-    while(!finally_got_that_size_from_github)
+    while(!finally_got_that_size_from_github && downloading_item)
     {
       requests++;
-      if (requests > 20)
+      if (requests > 16)
       {
-        console.log('Github is being stubborn, fuck it');
+        console.log('Github is being stubborn, lets wait a bit and try again...');
         finally_got_that_size_from_github = true;
         resolve(-1);
         break;
@@ -305,81 +383,43 @@ ipcMain.on('download-from-link', async (event, {threads, path, url, filename}) =
     console.log('another download is in progress...');
     event.reply('download-failed', 'download in progress'); 
   }
+  //. Save variable to know progress
+  console.log(`Downloading from: ${url}`);
+  current_num_of_threads = threads;
+  current_download_path = path;
+  downloading_item = true;
   
-    // Save variable to know progress
-    console.log(`Downloading from: ${url}`);
-    current_num_of_threads = threads;
-    current_download_path = path;
-    
+  let total_bytes = await get_total_download_size(url);
+
+  //. Github has sent size properly.
+  if (total_bytes > 16)
+  {
+    event.reply('got-download-size');
+
+    threaded_download(event, url, path, filename, threads, total_bytes)
+    //. Download is finished
+    .then(async res => {
+      console.log(`threaded download is finished. res: ${res}`);
+      event.reply('download-completed');
+    }).catch(err => console.log(err))
+  }
+  //. Github hasn't sent size properly. wait and retry...
+  else
+  {
+    await fool_github_into_thinking_i_am_a_good_person(url);
+
+    //. In theory, it should give me size now
+
     let total_bytes = await get_total_download_size(url);
-    if (total_bytes > 16)
-    {
-      event.reply('got-download-size');
-      if (threads == undefined || threads == null || threads == 0)
-        threads = 1;
-      let finished = 0;
-      let biggest_percent = 0;
-      for (let i = 0; i < threads; i++)
-      {
-        let chunk_start = Math.floor((total_bytes / threads) * i);
-        if (i > 0) chunk_start++;
-        let chunk_finish = Math.floor((total_bytes / threads) * (i + 1));
+    event.reply('got-download-size');
 
-        create_download_thread(
-          chunk_start,
-          chunk_finish,
-          url,
-          path,
-          i,
-          function (progress) {
-            if (biggest_percent < progress.percent)
-            {
-              console.log(progress.percent);
-              console.log((progress.speed / 1024 / 1024).toPrecision(2));
-              event.reply('download-progress', progress);
-            }
-          }
-        )
-        .then(async res => {
-          console.log(`Thread ${i} finished`);
-          finished++;
-          if(finished == threads && !download_canceled)
-          {
-            const outputPath = path + `\\${filename}`;
-
-            let inputPathList = [];
-            for (let i = 0; i < threads; i++)
-            {
-              inputPathList.push(path + `\\downloadingthread${i}.thread`);
-            }
-        
-            const status = await merge_files(inputPathList, outputPath);
-            console.log(status);
-
-            clear_thread_files(path, threads);
-            console.log('download is finished');
-            event.reply('download-completed');
-          }
-        }).catch(err => console.log(err));
-      }
-    }
-    else{
-      event.reply('got-download-size');
-      let download = await threadless_download(
-        url, 
-        path,
-        filename,
-        function (progress) {
-          console.log(progress.percent);
-          console.log((progress.speed / 1024 / 1024).toPrecision(2));
-          event.reply('download-progress', progress);
-        })
-        .then(async res => {
-          clear_thread_files(path, threads);
-          console.log(`download is finished. res: ${res}`);
-          event.reply('download-completed');
-        }).catch(err => console.log(err));
-      }
+    threaded_download(event, url, path, filename, threads, total_bytes)
+    //. Download is finished
+    .then(async res => {
+      console.log(`threaded download is finished. res: ${res}`);
+      event.reply('download-completed');
+    }).catch(err => console.log(err))
+  }
 });
 
 ipcMain.on('cancel-current-download', async (event, reason) => {
