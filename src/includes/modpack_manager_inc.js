@@ -330,9 +330,9 @@ function verify_user_skin(modpack_name)
 {
     return new Promise(async (resolve, reject) => {
         await fs.ensureDir(verify_and_get_modpack_folder(modpack_name) + `\\CustomSkinLoader`);
-        await fs.ensureDir(verify_and_get_modpack_folder(modpack_name) + `\\CustomSkinLoader\\LocalSkin`);
-        await fs.ensureDir(verify_and_get_modpack_folder(modpack_name) + `\\CustomSkinLoader\\LocalSkin\\skins`);
-        await fs.copyFile(verify_and_get_resources_folder() + `\\${userData['username']}.png`, verify_and_get_modpack_folder(modpack_name) + `\\CustomSkinLoader\\LocalSkin\\skins\\${userData['username']}.png`);
+        await fs.ensureDir(verify_and_get_modpack_folder(modpack_name) + `\\CustomSkinLoader\\Local`);
+        await fs.ensureDir(verify_and_get_modpack_folder(modpack_name) + `\\CustomSkinLoader\\Local\\Skin`);
+        await fs.copyFile(verify_and_get_resources_folder() + `\\${userData['username']}.png`, verify_and_get_modpack_folder(modpack_name) + `\\CustomSkinLoader\\Local\\Skin\\${userData['username']}.png`);
         
         resolve();
     });
