@@ -26,7 +26,8 @@ const pattern = {
         "magicae": "|ROOT|\\modpacks",
         "fabrica": "|ROOT|\\modpacks",
         "statera": "|ROOT|\\modpacks",
-        "insula": "|ROOT|\\modpacks"
+        "insula": "|ROOT|\\modpacks",
+        "isekai": "|ROOT|\\modpacks"
     }
 };
 

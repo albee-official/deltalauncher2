@@ -14,7 +14,8 @@ const modpacks = [
     "magicae",
     "fabrica",
     "statera",
-    "insula"
+    "insula",
+    "isekai"
 ];
 
 const settings_levels = {
@@ -30,6 +31,7 @@ let modpacks_started = {
     'fabrica': 'no',
     'statera': 'no',
     'insula': 'no',
+    'isekai': 'no'
 }
 
 let modpack_folders = {};
@@ -70,6 +72,12 @@ function verify_and_get_modpack_folder(modpack_name)
     return active_folder;
 }
 
+function only_get_modpack_path(modpack_name)
+{
+    let active_folder = modpack_folders[modpack_name.toLowerCase()].replace('|ROOT|', dir_root) + '\\' + modpack_name;
+    return active_folder;
+}
+
 function verify_and_get_libs_folder()
 {
     fs.ensureDirSync(libs_path);
@@ -89,22 +97,29 @@ function is_directry_empty(path) {
 function clear_modpack_folder(modpack_name)
 {
     return new Promise((resolve, reject) => {
-        let path = verify_and_get_modpack_folder(modpack_name);
+        let path = only_get_modpack_path(modpack_name);
 
-        fs.readdir(path, (err, files) => {
-            files.forEach(file => {
-                if (file.toString().split('.').length > 1)
-                {
-                    fs.unlinkSync(path + '\\' + file);
-                }
-                else
-                {
-                    rimraf.sync(path + '\\' + file);
-                }
+        if (fs.existsSync(path))
+        {
+            fs.readdir(path, (err, files) => {
+                files.forEach(file => {
+                    if (file.toString().split('.').length > 1)
+                    {
+                        fs.unlinkSync(path + '\\' + file);
+                    }
+                    else
+                    {
+                        rimraf.sync(path + '\\' + file);
+                    }
+                });
+    
+                resolve();
             });
-
+        }
+        else
+        {
             resolve();
-        });
+        }
     });
 }
 

@@ -133,7 +133,12 @@ function cancel_current_download()
     {
       req.abort();
     }
-    clear_thread_files(current_download_path, current_num_of_threads);
+    if (requests.length > 1) 
+    {
+      clear_thread_files(current_download_path, current_num_of_threads);
+    }
+    if (fs.pathExistsSync(`${current_download_path}\\modpack.zip`)) fs.unlinkSync(`${current_download_path}\\modpack.zip`);
+    
     resolve();
   });
 }
@@ -149,6 +154,8 @@ function threadless_download(url, path, filename, onProgress)
         method: 'GET',
         uri: url
     });
+
+    requests.push(req);
 
     let out = fs.createWriteStream(path + '\\' + filename);
     req.pipe(out);

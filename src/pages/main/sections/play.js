@@ -6,6 +6,7 @@ let magicae_select_button = document.querySelector('#magicae-select');
 let fabrica_select_button = document.querySelector('#fabrica-select');
 let statera_select_button = document.querySelector('#statera-select');
 let insula_select_button = document.querySelector('#insula-select');
+let isekai_select_button = document.querySelector('#isekai-select');
 
 let modpack_name = settings['selected_modpack'];
 
@@ -35,6 +36,14 @@ statera_select_button.addEventListener('click', () => {
 
 insula_select_button.addEventListener('click', () => {
     modpack_name = 'insula';
+    settings['selected_modpack'] = modpack_name;
+    update_settings();
+    UpdateServer();
+    UpdateRedownloadCheckBox();
+});
+
+isekai_select_button.addEventListener('click', () => {
+    modpack_name = 'isekai';
     settings['selected_modpack'] = modpack_name;
     update_settings();
     UpdateServer();
@@ -173,7 +182,6 @@ play_button.addEventListener('click', async () => {
             //. ЕСЛИ НЕ УСТАНОВЛЕННА
 
             show_progress_footer();
-            rimraf.sync(modpack_folder);
 
             console.log(`${modpack_name} is uninstalled. Downloading`);
             

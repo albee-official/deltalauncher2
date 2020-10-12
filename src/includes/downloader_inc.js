@@ -10,6 +10,7 @@ const modlinks = {
     fabrica: "https://github.com/Avandelta/Fabrica/archive/main.zip",
     statera: "https://github.com/Avandelta/Statera/archive/main.zip",
     insula: "https://github.com/Avandelta/Insula/archive/main.zip",
+    isekai: "https://github.com/Avandelta/Isekai/archive/main.zip",
     testsborka: "https://github.com/SuperMegaKeks/testsborka/archive/main.zip",
 };
 
@@ -20,6 +21,7 @@ const modpack_sizes = {
     fabrica: 193104345,
     statera: 245793651,
     insula: 392821086,
+    isekai: 3776000000,
     testsborka: 200000000,
 }
 
