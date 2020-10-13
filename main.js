@@ -331,7 +331,7 @@ function get_total_download_size(url)
     while(!finally_got_that_size_from_github && downloading_item)
     {
       requests++;
-      if (requests > 16)
+      if (requests > 20)
       {
         console.log('Github is being stubborn, lets wait a bit and try again...');
         finally_got_that_size_from_github = true;

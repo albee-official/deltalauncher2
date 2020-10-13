@@ -191,7 +191,7 @@ play_button.addEventListener('click', async () => {
             await clear_modpack_folder(modpack_name);
 
             // Скачать либы если их нету
-            let libs_installed = await download_libs();
+            let libs_installed = await download_libs(modpack_name);
             if (libs_installed)
             {
                 console.log('installed libs');
@@ -216,17 +216,45 @@ play_button.addEventListener('click', async () => {
             // Обновить натсройки
             change_settings_preset(modpack_name, document.querySelector('#optimization-input').value);
             document.querySelector('#play-button-assist-label').classList.remove('unactive');
-            play_button.click();
+
+            // Запуск
+            console.log(`Последняя версия ${Capitalize_First_Letter(modpack_name)} установлена. Запускаем...`);
+
+            // Запустить штуку которая блокирует пользователю возможность запустить сборку еще раз
+            show_launch_menu();
+
+            // Отключить Rich Presence потому что у майна свой
+            ipcRenderer.send('rich-presence-to', {
+                details: `Запускает ${Capitalize_First_Letter(modpack_name)}...`,
+                largeImageKey: `rpc_${modpack_name}`,
+                smallImageKey: 'rich_presence_light',
+            });
+
+            await verify_user_skin(modpack_name);
+
+            // Запустить майнкрафт. Эта фнукция (Promise) заканчивается когда выключается майнкрафт.
+            let mem_input = document.querySelector('#memory-input');
+            launch_minecraft(1000, mem_input.value * 1024, modpack_folder, userData['username'], userData['uuid'], modpack_name).then(res => {
+
+                // Манйкрафт завершился. Если 0, то все заебумба
+                console.log(`Minecraft exited with code: ${res}`);
+                UpdateRedownloadCheckBox();
+            }).catch(err => {
+
+                // Что то пошло не так при запуске.
+                console.log(`Launch encountered some errors: ${err}`);
+                UpdateRedownloadCheckBox();
+            });
 
         } else { //. ЕСЛИ УСТАНОВЛЕННА
             console.log(`Найденна ${Capitalize_First_Letter(modpack_name)}. Проверка обновлений...`);
-            if (libs_folder_empty())
+            if (libs_folder_empty(modpack_name))
             {
                 show_progress_footer();
             }
 
             // Скачать либы если их нету
-            let libs_installed = await download_libs();
+            let libs_installed = await download_libs(modpack_name);
             if (libs_installed)
             {
                 console.log('installed libs');
@@ -373,11 +401,11 @@ function download_mods_and_stuff(modpack_folder)
     });
 }
 
-function download_libs()
+function download_libs(item_name)
 {
     return new Promise(async (resolve, reject) => {
-        let core_path = verify_and_get_libs_folder();
-        if (libs_folder_empty()) {
+        let core_path = verify_and_get_libs_folder() + '\\' + modpack_versions[item_name];
+        if (libs_folder_empty(modpack_name)) {
             console.log(`No libraries found on this computer. Downloading...`);
             let libs_path = await download_from_github_illegally(
                 core_path,
@@ -390,7 +418,8 @@ function download_libs()
                     document.querySelector('#modpack-paragraph').innerHTML = `Скачивание Библиотек: ${(progress.percent * 100).toFixed()}%`
                     document.querySelector('#role-par').innerHTML = `Скорость: ${speed_in_mbps * 8} Мб в секунду`;
                     document.querySelector('.download-filler').style.width = `${progress.percent * 100}%`;
-                }
+                },
+                modpack_versions[item_name]
             );
 
             console.log(`Libraries installed: ${libs_path}`);

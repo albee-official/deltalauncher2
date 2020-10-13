@@ -18,6 +18,14 @@ const modpacks = [
     "isekai"
 ];
 
+const modpack_versions = {
+    'magicae': '1.12.2',
+    'fabrica': '1.12.2',
+    'statera': '1.12.2',
+    'insula': '1.12.2',
+    'isekai': '1.12.2'
+}
+
 const settings_levels = {
     0: 'Ultra Low',
     1: 'Low',
@@ -78,7 +86,7 @@ function only_get_modpack_path(modpack_name)
     return active_folder;
 }
 
-function verify_and_get_libs_folder()
+function verify_and_get_libs_folder(item_name = '')
 {
     fs.ensureDirSync(libs_path);
     return libs_path;
@@ -192,9 +200,9 @@ function modpack_not_installed(modpack_name)
             !fs.pathExistsSync(modpack_folder + '\\mods');
 }
 
-function libs_folder_empty()
+function libs_folder_empty(modpack_name)
 {
-    let _libs_path = verify_and_get_libs_folder();
+    let _libs_path = verify_and_get_libs_folder(modpack_name) + '\\' + modpack_versions[modpack_name];
     console.log(_libs_path);
     if (!fs.pathExistsSync(`${_libs_path}\\assets`))
     {
@@ -234,14 +242,9 @@ function copy_libs_to_modpack(modpack_name)
 {
     let _modpack_path = verify_and_get_modpack_folder(modpack_name);
     console.log(_modpack_path);
-    fs.copySync(libs_path + '\\libraries', _modpack_path + '\\libraries');
-    fs.copySync(libs_path + '\\assets', _modpack_path + '\\assets');
-    fs.copySync(libs_path + '\\versions', _modpack_path + '\\versions');
-    
-}
-
-function get_configs_path(modpack_name)
-{
+    fs.copySync(libs_path + '\\' + modpack_versions[modpack_name] + '\\libraries', _modpack_path + '\\libraries');
+    fs.copySync(libs_path + '\\' + modpack_versions[modpack_name] + '\\assets', _modpack_path + '\\assets');
+    fs.copySync(libs_path + '\\' + modpack_versions[modpack_name] + '\\versions', _modpack_path + '\\versions');
     
 }
 
@@ -284,16 +287,16 @@ function integrate_java_parameters(command)
     return command;
 }
 
-function verify_and_get_path_to_info(modpack_name)
+function verify_and_get_path_to_info(item_name, version = '')
 {
     let path;
-    if (modpack_name == 'libraries')
+    if (item_name == 'libraries')
     {
-        path = verify_and_get_libs_folder(modpack_name) + '\\info.json';
+        path = verify_and_get_libs_folder(item_name) + '\\' + version + '\\info.json';
     }
     else
     {
-        path = verify_and_get_modpack_folder(modpack_name) + '\\info.json';
+        path = verify_and_get_modpack_folder(item_name) + '\\info.json';
     }
 
     if (!fs.pathExistsSync(path))
@@ -320,6 +323,15 @@ function get_modpack_version_from_info(modpack_name)
 function set_modpack_version_to_info(modpack_name, version)
 {
     let path = verify_and_get_path_to_info(modpack_name);
+    console.log(`writing to ${path}`);
+    let json = JSON.parse(fs.readFileSync(path));
+    json['version'] = version;
+    fs.writeFileSync(path, JSON.stringify(json));
+}
+
+function set_libs_version_to_info(modpack_name, version, libs_version)
+{
+    let path = verify_and_get_path_to_info(modpack_name, libs_version);
     console.log(`writing to ${path}`);
     let json = JSON.parse(fs.readFileSync(path));
     json['version'] = version;

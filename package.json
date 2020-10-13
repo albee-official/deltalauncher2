@@ -1,6 +1,6 @@
 {
   "name": "delta-launcher",
-  "version": "0.0.31",
+  "version": "0.0.32",
   "description": "launcher for 'delta' minecraft servers",
   "main": "main.js",
   "scripts": {

@@ -1,10 +1,45 @@
 const AdmZip = require('adm-zip');
 const rimraf = require('rimraf');
 const { log } = require('electron-log');
+const { DownloadItem } = require('electron');
 
 // Links to download modpacks. Not very safe, tho it works!
+
+let forge_1_12_2 = 'null-1.12.2';
+let forge_1_16_1 = 'null-1.16.1';
+
+function update_libs_links() {
+
+    // Update links to newest versions
+    require('jquery').ajax({
+        url: `https://api.github.com/repos/Avandelta/Context/tags`,
+        method: 'GET',
+        dataType: 'json'
+    }).done(res => {
+        console.log(res);
+        for (let version of res) {
+            if (version.name.split('-')[1] == '1.12.2') {
+                forge_1_12_2 = `https://github.com/Avandelta/Context/releases/download/${version.name}/Forge-1.12.2.zip`;
+                break;
+            }
+        }
+
+        for (let version of res) {
+            if (version.name.split('-')[1] == '1.16.1') {
+                forge_1_16_1 = `https://github.com/Avandelta/Context/releases/download/${version.name}/Forge-1.16.1.zip`;;
+                break;
+            }
+        }
+
+        console.log(forge_1_12_2);
+        console.log(forge_1_16_1);
+    });
+}
+
+update_libs_links();
+
 const modlinks = {
-    libraries: 'https://github.com/Avandelta/Libraries/archive/main.zip',
+    libraries: forge_1_12_2,
 
     magicae: "https://github.com/Avandelta/Magicae/archive/main.zip",
     fabrica: "https://github.com/Avandelta/Fabrica/archive/main.zip",
@@ -38,27 +73,69 @@ function get_latest_release(item_name)
     })
 }
 
+function get_latest_libs_version(libs_version)
+{
+    return new Promise((resolve, reject) => {
+        console.log(libs_version);
+        ajax({
+            url: `https://api.github.com/repos/Avandelta/Context/tags`,
+            method: 'GET',
+            dataType: 'json'
+        }).done(res => {
+            if (libs_version == '1.12.2') {
+                for (let release of res) {
+                    if (release.name.split('-')[1] == '1.12.2') {
+                        resolve(release.name.split('-')[0]);
+                    }
+                }
+            }
+
+            if (libs_version == '1.16.1') {
+                for (let release of res) {
+                    if (release.name.split('-')[1] == '1.16.1') {
+                        resolve(release.name.split('-')[0]);
+                    }
+                }
+            }
+        });
+    })
+}
+
 function Capitalize_First_Letter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-async function download_from_github_illegally(folder, item_name, onProgress) {
+async function download_from_github_illegally(folder, item_name, onProgress, version = '') {
     // Returns promise cuz you know.. download isn't instant.
     return new Promise(async (resolve, reject) => {
 
-        console.log(item_name);
-        let latest_release;
-        latest_release = await get_latest_release(Capitalize_First_Letter(item_name));
-        console.log(`Downloading release: ${latest_release['name']}`);
-
         let modpack_p = document.querySelector('#modpack-paragraph');
         let role_p = document.querySelector('#role-par');
+
+        console.log(item_name);
+        if (item_name == 'libraries')
+        {
+            let latest_release;
+            latest_release = await get_latest_libs_version(version);
+            console.log(`Downloading release: ${latest_release}`);
+            
+            modpack_p.innerHTML = `Начинаем загрузку: ${Capitalize_First_Letter(item_name)}`;
+            role_p.innerHTML = 'Ожидание ответа сервера';
+
+            await set_libs_version_to_info(item_name, latest_release, version);
+        } 
+        else
+        {
+            let latest_release;
+            latest_release = await get_latest_release(Capitalize_First_Letter(item_name));
+            console.log(`Downloading release: ${latest_release['name']}`);
+            
+            modpack_p.innerHTML = `Начинаем загрузку: ${Capitalize_First_Letter(item_name)}`;
+            role_p.innerHTML = 'Ожидание ответа сервера';
+
+            await set_modpack_version_to_info(item_name, latest_release['name']);
+        }
         
-        modpack_p.innerHTML = `Начинаем загрузку: ${item_name}`;
-        role_p.innerHTML = 'Ожидание ответа сервера';
-
-        await set_modpack_version_to_info(item_name, latest_release['name']);
-
         let zip_path = folder + '\\modpack.zip';
 
         // If zip exists, we don't need to redownload it :D
@@ -87,6 +164,21 @@ async function download_from_github_illegally(folder, item_name, onProgress) {
         else
         {
             let download_url = modlinks[item_name];
+            if (item_name == 'libraries') {
+                switch (version) {
+                    case '1.12.2':
+                        download_url = forge_1_12_2;
+                        break;
+                    
+                    case '1.16.1':
+                        download_url = forge_1_16_1;
+                        break;
+                
+                    default:
+                        download_url = forge_1_12_2;
+                        break;
+                }
+            }
 
             let threads = 8;
             if (document.querySelector('#play-button-assist-cb').checked)
@@ -143,19 +235,7 @@ async function download_from_github_illegally(folder, item_name, onProgress) {
                 if (item_name == 'libraries')
                 {
                     // FINISH IT! (puts mods where they should be and deletes extras)
-                    modpack_p.innerHTML = 'Завершение: Перенос файлов...';
-                    let folders = fs.readdirSync(folder);
-                    let found_folder;
-                    for (let el of folders)
-                    {
-                        if (el.startsWith(Capitalize_First_Letter(item_name)))
-                        {
-                            found_folder = el;
-                        }
-                    }
-                    await process_libs(folder, found_folder);
                     modpack_p.innerHTML = 'Завершение: Удаление архива загрузки...';
-                    await clean_up(folder + `\\` + found_folder, zip_path);
                     console.log(item_name);
                     resolve(folder);
                 }
