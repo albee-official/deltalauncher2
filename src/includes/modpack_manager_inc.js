@@ -111,13 +111,13 @@ function clear_modpack_folder(modpack_name)
         {
             fs.readdir(path, (err, files) => {
                 files.forEach(file => {
-                    if (file.toString().split('.').length > 1)
+                    if (file.toString().split('.').length > 1 && file.toString() != '.mixin.out')
                     {
-                        fs.unlinkSync(path + '\\' + file);
+                        if (fs.pathExistsSync(path + '\\' + file)) fs.unlinkSync(path + '\\' + file);
                     }
                     else
                     {
-                        rimraf.sync(path + '\\' + file);
+                        if (fs.pathExistsSync(path + '\\' + file)) rimraf.sync(path + '\\' + file);
                     }
                 });
     

@@ -2,6 +2,8 @@ const { dialog } = require('electron').remote;
 const { electron } = require('process');
 const { param } = require('jquery');
 
+document.querySelector('#version-span').innerHTML = app.getVersion();
+
 let memory_range = document.querySelector('#memory-range');
 let optimization_range = document.querySelector('#optimization-range');
 let controll_inputs = document.querySelectorAll('.controll-setting-input');

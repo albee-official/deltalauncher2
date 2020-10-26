@@ -194,49 +194,74 @@ function threadless_download(event, url, path, filename)
 
 function create_download_thread(start_bytes, finish_bytes, url, path, thread_num, onProgress)
 { 
-  return new Promise((resolve, reject) => {
-    console.log(`Creating Thread from: ${start_bytes}, to: ${finish_bytes}`);
-    let received_bytes = 0;
-    let total_bytes = 0;
+  return new Promise(async (resolve, reject) => {
+    let thread_created_successfully = false;
+    let thread_attempts = 0;
+    while (!thread_created_successfully)
+    {
+      thread_attempts++;
+      console.log(`[DWNTHRD ${thread_num}] - Attempting to create thread from: ${start_bytes} to: ${finish_bytes}. [${thread_attempts}]`);
 
-    let req = request({
-        headers: {
-          'Range': `bytes=${start_bytes}-${finish_bytes}`
-        },
-        method: 'GET',
-        uri: url
-    });
+      let received_bytes = 0;
+      let total_bytes = 0;
 
-    requests.push(req);
+      let downloaded_size = await new Promise((resolve, reject) => {
+        let req = request({
+          headers: {
+            'Range': `bytes=${start_bytes}-${finish_bytes}`
+          },
+          method: 'GET',
+          uri: url
+        });
 
-    let out = fs.createWriteStream(path + '\\' + `downloadingthread${thread_num}.thread`);
-    req.pipe(out);
+        let out = fs.createWriteStream(path + '\\' + `downloadingthread${thread_num}.thread`);
+        req.pipe(out);
 
-    req.on('response', function ( data ) {
-        // Change the total bytes value to get progress later.
-        total_bytes = parseInt(data.headers['content-length']);
-    });
+        req.on('response', function ( data ) {
+            // Change the total bytes value to get progress later.
+            total_bytes = parseInt(data.headers['content-length']);
+            console.log(`[DWNTHRD ${thread_num}] - Got response. Size: ${data.headers['content-length']}`);
+            if (total_bytes != undefined && total_bytes > (finish_bytes - start_bytes) / 2)
+            {
+              requests.push(req);
+              thread_created_successfully = true;
+            }
+            else
+            {
+              reject('broken thread');
+              req.abort();
+              out.end();
+            }
 
-    req.on('data', function(chunk) {
-        // Update the received bytes
-        received_bytes += chunk.length;
+            console.log(`[DWNTHRD ${thread_num}] - Total data in thread: ${data.headers['content-length']}`);
+        });
 
-        let progress = {speed: 0, percentage: 0};
+        req.on('data', function(chunk) {
+            // Update the received bytes
+            received_bytes += chunk.length;
 
-        progress.speed = chunk.length;
+            let progress = {speed: 0, percentage: 0};
 
-        progress.totalBytes = total_bytes;
-        progress.transferredBytes = received_bytes;
+            progress.speed = chunk.length;
 
-        let percent = (received_bytes) / total_bytes;
-        progress.percent = percent;
+            progress.totalBytes = total_bytes;
+            progress.transferredBytes = received_bytes;
 
-        onProgress(progress);
-    });
+            let percent = (received_bytes) / total_bytes;
+            progress.percent = percent;
 
-    req.on('end', function() {
-      resolve();
-    });
+            onProgress(progress);
+        });
+
+        req.on('end', function() {
+          resolve();
+        });
+      }).then(res => {
+        resolve();
+      }).catch(err => {
+        console.log(`[DWNTHRD ${thread_num}] = Broken thread`);
+      });
+    }
   });
 }
 
@@ -263,15 +288,13 @@ function threaded_download(event, url, path, filename, threads, total_bytes) {
         path, 
         i, 
         function (progress) {
-          if (biggest_percent < progress.percent) {
-            console.log(progress.percent);
-            console.log((progress.speed / 1024 / 1024).toPrecision(2));
+          if (biggest_percent.toPrecision(1) < progress.percent.toPrecision(1)) {
             event.reply("download-progress", progress);
         }
       })
         //. Then Download Thread finsihed
         .then(async (res) => {
-          console.log(`Thread ${i} finished`);
+          console.log(`[DWNTHRD ${i}] - Finished`);
           finished++;
           //. Num of finished threads is equal to num of started threads
           if (finished == threads && !download_canceled) {
@@ -288,7 +311,7 @@ function threaded_download(event, url, path, filename, threads, total_bytes) {
             console.log(status);
 
             clear_thread_files(path, threads);
-            console.log("download is finished");
+            console.log("[THREADED_DWNLD] - Finished");
             //. 1 - success
             resolve(path);
           }
@@ -311,7 +334,7 @@ function fool_github_into_thinking_i_am_a_good_person(url)
     let fooling = setTimeout(() => {
       req.abort();
       resolve();
-    }, 5000)
+    }, 3000)
   });
 }
 
@@ -333,7 +356,7 @@ function get_total_download_size(url)
       requests++;
       if (requests > 20)
       {
-        console.log('Github is being stubborn, lets wait a bit and try again...');
+        console.log('Github is being stubborn, lets try fooling it...');
         finally_got_that_size_from_github = true;
         resolve(-1);
         break;
