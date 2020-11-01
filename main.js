@@ -400,6 +400,36 @@ function get_total_download_size(url)
   });
 }
 
+function check_link(username, type)
+{
+  return new Promise((resolve, reject) => {
+    console.log(`[GETLNK] Getting link for ${username}`);
+    let req = request({
+      method: 'POST',
+      data: {
+        type: type
+      },
+      uri: url
+    });
+
+    req.on('response', data => {
+      console.log(`[GETLNK] ${JSON.stringify()}`);
+      if (!data.headers || data.headers[0] == 'HTTP/1.1 404 Not Found' || data.headers['x-content-type-options'] == undefined) {
+        resolve(false);
+      } else {
+        resolve(true);
+      }
+      req.abort();
+    });
+  });
+}
+
+ipcMain.on('get-link', async (event, {username, type}) => {
+  let res = await check_link(username, type);
+  console.log(`[GETLNK] Got link for: ${username}`);
+  event.reply('got-link', res);
+});
+
 ipcMain.on('download-from-link', async (event, {threads, path, url, filename}) => {
   if (downloading_item)
   {

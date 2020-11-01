@@ -332,27 +332,39 @@ let downloading_icon = false;
 async function download_user_icon()
 {
     return new Promise((resolve, reject) => {
-        downloading_icon = true;
-        ipcRenderer.send('download-from-link', {
-            threads: 2,
-            path: verify_and_get_resources_folder(),
-            url: `https://deltaminecraft.000webhostapp.com/uploads/profileImgs/${document.getElementById('login').value}.png`,
-            filename: `user.png`
-        });
-    
-        ipcRenderer.on('download-progress', (event, progress) => {
-            document.getElementById('finish-progress-bar').style.width = progress.procentage * 100 + '%';
-        });
-    
-        ipcRenderer.on('download-completed', (event, args) => {
-            if (downloading_icon)
-            {
-                document.getElementById('finish-progress-container').classList.remove('active');
-                console.log('done');
+        ajax({
+            url: 'https://deltaminecraft.000webhostapp.com/includes/launcher.getlink.inc.php',
+            method: 'POST',
+            data: {
+                username: document.getElementById('login').value,
+                type: 'icon',
+            },
+            dataType: 'text'
+        }).then(res => {
+            console.log(`Got link: ${res}`);
+
+            downloading_icon = true;
+            ipcRenderer.send('download-from-link', {
+                threads: 2,
+                path: verify_and_get_resources_folder(),
+                url: res,
+                filename: `user.png`
+            });
         
-                hideTopContent();
-                resolve();
-            }
+            ipcRenderer.on('download-progress', (event, progress) => {
+                document.getElementById('finish-progress-bar').style.width = progress.procentage * 100 + '%';
+            });
+        
+            ipcRenderer.on('download-completed', (event, args) => {
+                if (downloading_icon)
+                {
+                    document.getElementById('finish-progress-container').classList.remove('active');
+                    console.log('done');
+            
+                    hideTopContent();
+                    resolve();
+                }
+            });
         });
     });
 }
@@ -361,27 +373,39 @@ let downloading_skin = false;
 async function download_user_skin()
 {
     return new Promise((resolve, reject) => {
-        downloading_skin = true;
-        ipcRenderer.send('download-from-link', {
-            threads: 2,
-            path: verify_and_get_resources_folder(),
-            url: `https://deltaminecraft.000webhostapp.com/uploads/skins/${document.getElementById('login').value}.png`,
-            filename: `${document.getElementById('login').value}.png`
-        });
-    
-        ipcRenderer.on('download-progress', (event, progress) => {
-            document.getElementById('finish-progress-bar').style.width = progress.procentage * 100 + '%';
-        });
-    
-        ipcRenderer.on('download-completed', (event, args) => {
-            if (downloading_skin)
-            {
-                document.getElementById('finish-progress-container').classList.remove('active');
-                console.log('done');
+        ajax({
+            url: 'https://deltaminecraft.000webhostapp.com/includes/launcher.getlink.inc.php',
+            method: 'POST',
+            data: {
+                username: document.getElementById('login').value,
+                type: 'skin',
+            },
+            dataType: 'text'
+        }).then(res => {
+            console.log(`Got link: ${res}`);
+
+            downloading_skin = true;
+            ipcRenderer.send('download-from-link', {
+                threads: 2,
+                path: verify_and_get_resources_folder(),
+                url: res,
+                filename: `${document.getElementById('login').value}.png`
+            });
         
-                hideTopContent();
-                resolve();
-            }
+            ipcRenderer.on('download-progress', (event, progress) => {
+                document.getElementById('finish-progress-bar').style.width = progress.procentage * 100 + '%';
+            });
+        
+            ipcRenderer.on('download-completed', (event, args) => {
+                if (downloading_skin)
+                {
+                    document.getElementById('finish-progress-container').classList.remove('active');
+                    console.log('done');
+            
+                    hideTopContent();
+                    resolve();
+                }
+            });
         });
     });
 }
