@@ -50,7 +50,6 @@
     "win": {
       "publish": {
         "provider": "github",
-        "token": "984fbec6bcef8268a884a63a05003fd97ec2f352"
       }
     },
     "publish": [
