@@ -21,6 +21,7 @@
     <script src="../../includes/modpack_manager_inc.js"></script>
     <script src="../../includes/settings_manager_inc.js"></script>
 
+    <video id="bg-video" class="bg-video" src="" autoplay muted loop></video>
     <div class="bg-filter"></div>
 
     <div id="key-select-menu" class="key-select-menu">
@@ -655,6 +656,13 @@
                     <p class="settings-element-p" id="bg-select-input">Сменить задний фон</p>
                     <p class="settings-element-p" id="bg-reset-input">Поставить фон по умолчанию</p>
                     <p class="settings-element-p" id="change-theme-button">Поменять тему</p>
+                    <label class="checkbox-left checkbox">
+                        <span class="additional-setting-name">Заглушить задный фон</span>
+                        <input id="muted-bg-cb" type="checkbox" checked="checked">
+                        <div class="checkmark">
+                            <div class="checkmark-fill"></div>
+                        </div>
+                    </label>
                 </div>
 
                 <div class="settings-element">

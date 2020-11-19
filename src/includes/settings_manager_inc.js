@@ -20,6 +20,7 @@ const pattern = {
     },
     "java_parameters": "",
     "bg_extension": "",
+    "bg_muted": true,
     "theme": "default",
     "addon_mods": [ "recorder", "dynamic souroundings" ],
     "modpack_dirs": {

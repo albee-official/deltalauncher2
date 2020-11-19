@@ -18,7 +18,7 @@ function set_theme_colours(theme)
 
             document.body.style.setProperty('--start-bg', 'var(--darkest)');
             document.body.style.setProperty('--start-bg-decoration', '23, 49, 80');
-            document.body.style.setProperty('--start-header', 'var(--darkest)');
+            document.body.style.setProperty('--start-header', 'var(--main-text)');
             document.body.style.setProperty('--start-text', 'var(--mid)');
             document.body.style.setProperty('--start-text-active', 'var(--main-text)');
             document.body.style.setProperty('--start-icon', 'var(--start-text)');
@@ -125,7 +125,7 @@ function set_theme_colours(theme)
             
             document.body.style.setProperty('--start-bg', 'var(--darkest)');
             document.body.style.setProperty('--start-bg-decoration', 'var(--dark)');
-            document.body.style.setProperty('--start-header', 'var(--darkest)');
+            document.body.style.setProperty('--start-header', 'var(--main-text)');
             document.body.style.setProperty('--start-text', 'var(--mid)');
             document.body.style.setProperty('--start-text-active', 'var(--main-text)');
             document.body.style.setProperty('--start-icon', 'var(--start-text)');
@@ -224,6 +224,18 @@ function set_theme_colours(theme)
             break;
     }
 }
+
+function check_muted_video() {
+    if (settings['bg_muted'])
+    {
+        document.querySelector('#bg-video').muted = true;
+    }
+    else
+    {
+        document.querySelector('#bg-video').muted = false;
+    }
+}
+
 function update_theme()
 {
     const body = document.body;
@@ -254,7 +266,15 @@ function update_theme()
         }
     }
     set_theme_colours(settings['theme']);
-    body.style.backgroundImage = `url("${bg_path}?${new Date()}")`;
+    if (settings['bg_extension'] == 'avi' || settings['bg_extension'] == 'webm' || settings['bg_extension'] == 'mp4' || settings['bg_extension'] == 'ogg')
+    {
+        document.querySelector('#bg-video').src = `${bg_path}?${new Date()}`;
+        check_muted_video();
+    }
+    else
+    {
+        body.style.backgroundImage = `url("${bg_path}?${new Date()}")`;
+    }
 }
 
 update_theme();

@@ -61,20 +61,43 @@ document.querySelector('#bg-select-input').addEventListener('click', e => {
         let selected_file = res.filePaths[0];
         let splitted = selected_file.split('.');
         let extension = splitted[splitted.length - 1];
+
+        if (extension == 'mov' || extension == 'webm' || extension == 'mp4' || extension == 'ogg' || extension == 'png' || extension == 'jpeg' || extension == 'jpg' || extension == 'gif' || extension == 'bmp') {}
+        else
+        {
+            return;
+        }
+
+        document.querySelector('#bg-video').src = '';
         console.log(selected_file);
         console.log(extension);
 
         let resources_path = verify_and_get_resources_folder();
         let bg_path = resources_path + '\\custom_bg.' + extension;
         await fs.copy(selected_file, bg_path);
-        console.log(bg_path.replace('\\', '/'));
-        document.body.style.backgroundImage = `url("${bg_path.replace(/\\/g, '/')}?${new Date()}")`;
+        bg_path = bg_path.replace(/\\/g, '/')
+        console.log(bg_path);
+        if (extension == 'mov' || extension == 'webm' || extension == 'mp4' || extension == 'ogg')
+        {
+            document.querySelector('#bg-video').src = `${bg_path}?${new Date()}`;
+            check_muted_video();
+        }
+        else if (extension == 'png' || extension == 'jpeg' || extension == 'jpg' || extension == 'gif' || extension == 'bmp')
+        {
+            document.body.style.backgroundImage = `url("${bg_path}?${new Date()}")`;
+        }
 
         settings['bg_extension'] = extension;
         update_settings();
     });
 });
 
+let muted_cb = document.querySelector('#muted-bg-cb');
+muted_cb.addEventListener('click', () => {
+    settings['bg_muted'] = muted_cb.checked;
+    update_settings();
+    check_muted_video();
+});
 //#endregion
 
 //#region //. Remove custom BG

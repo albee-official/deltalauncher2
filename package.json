@@ -1,6 +1,6 @@
 {
   "name": "delta-launcher",
-  "version": "0.0.34",
+  "version": "0.0.36",
   "description": "launcher for 'delta' minecraft servers",
   "main": "main.js",
   "scripts": {
@@ -54,8 +54,7 @@
     ],
     "win": {
       "publish": {
-        "provider": "github",
-        "token": "e62e8eb73f062c67d053cde4262d3f04a8127fac"
+        "provider": "github"
       }
     },
     "publish": [
