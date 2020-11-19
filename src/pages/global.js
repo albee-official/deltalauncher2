@@ -24,7 +24,8 @@ function set_theme_colours(theme)
             document.body.style.setProperty('--start-icon', 'var(--start-text)');
             document.body.style.setProperty('--start-login-button-bg', 'linear-gradient(to left bottom, rgb(var(--mid)), rgb(var(--mid)))');
             document.body.style.setProperty('--start-login-button-text', 'var(--darkest)');
-            document.body.style.setProperty('--start-download-bar', 'linear-gradient(to right, rgb(var(--light)), rgb(var(--mid)))');
+            document.body.style.setProperty('--start-download-bar', 'rgb(var(--start-text))');
+            document.body.style.setProperty('--start-download-filler', 'linear-gradient(to right, rgb(var(--light)), rgb(var(--mid)))');
 
             document.body.style.setProperty('--header-bg', 'var(--darkest)');
             document.body.style.setProperty('--header-text', 'var(--dark)');
@@ -59,7 +60,8 @@ function set_theme_colours(theme)
             document.body.style.setProperty('--start-icon', 'var(--main-text)');
             document.body.style.setProperty('--start-login-button-bg', 'rgb(var(--light))');
             document.body.style.setProperty('--start-login-button-text', 'var(--darkest)');
-            document.body.style.setProperty('--start-download-bar', 'rgb(var(--light))');
+            document.body.style.setProperty('--start-download-bar', 'rgb(var(--start-text))');
+            document.body.style.setProperty('--start-download-filler', 'rgb(var(--light))');
 
             document.body.style.setProperty('--header-bg', 'var(--darkest)');
             document.body.style.setProperty('--header-text', 'var(--dark)');
@@ -89,13 +91,14 @@ function set_theme_colours(theme)
 
             document.body.style.setProperty('--start-bg', 'var(--darkest)');
             document.body.style.setProperty('--start-bg-decoration', '36, 30, 40');
-            document.body.style.setProperty('--start-header', 'var(--darkest)');
+            document.body.style.setProperty('--start-header', 'var(--main-text)');
             document.body.style.setProperty('--start-text', '84, 74, 90');
             document.body.style.setProperty('--start-text-active', 'var(--main-text)');
             document.body.style.setProperty('--start-icon', 'var(--main-text)');
             document.body.style.setProperty('--start-login-button-bg', 'rgb(var(--light))');
             document.body.style.setProperty('--start-login-button-text', 'var(--main-text)');
-            document.body.style.setProperty('--start-download-bar', 'rgb(var(--light))');
+            document.body.style.setProperty('--start-download-bar', 'rgb(36, 30, 40)');
+            document.body.style.setProperty('--start-download-filler', 'rgb(var(--light))');
 
             document.body.style.setProperty('--header-bg', 'var(--darkest)');
             document.body.style.setProperty('--header-text', '78, 67, 85');
@@ -131,7 +134,8 @@ function set_theme_colours(theme)
             document.body.style.setProperty('--start-icon', 'var(--start-text)');
             document.body.style.setProperty('--start-login-button-bg', 'linear-gradient(to left bottom, rgb(var(--mid)), rgb(var(--mid)))');
             document.body.style.setProperty('--start-login-button-text', 'var(--darkest)');
-            document.body.style.setProperty('--start-download-bar', 'linear-gradient(to right, rgb(var(--light)), rgb(var(--mid)))');
+            document.body.style.setProperty('--start-download-bar', 'rgb(var(--start-text))');
+            document.body.style.setProperty('--start-download-filler', 'linear-gradient(to right, rgb(var(--light)), rgb(var(--mid)))');
 
             document.body.style.setProperty('--header-bg', 'var(--darkest)');
             document.body.style.setProperty('--header-text', 'var(--mid)');
@@ -166,7 +170,8 @@ function set_theme_colours(theme)
             document.body.style.setProperty('--start-icon', 'var(--start-text)');
             document.body.style.setProperty('--start-login-button-bg', 'rgb(var(--light))');
             document.body.style.setProperty('--start-login-button-text', 'var(--main-text)');
-            document.body.style.setProperty('--start-download-bar', 'rgb(var(--light))');
+            document.body.style.setProperty('--start-download-bar', 'rgb(var(--start-text))');
+            document.body.style.setProperty('--start-download-filler', 'rgb(var(--light))');
 
             document.body.style.setProperty('--header-bg', 'var(--main-text)');
             document.body.style.setProperty('--header-text', 'var(--main-text-accent)');
@@ -203,7 +208,8 @@ function set_theme_colours(theme)
             document.body.style.setProperty('--start-icon', 'var(--start-text)');
             document.body.style.setProperty('--start-login-button-bg', 'rgb(var(--light))');
             document.body.style.setProperty('--start-login-button-text', 'var(--main-text)');
-            document.body.style.setProperty('--start-download-bar', 'rgb(var(--light))');
+            document.body.style.setProperty('--start-download-bar', 'rgb(var(--start-text))');
+            document.body.style.setProperty('--start-download-filler', 'rgb(var(--light))');
 
             document.body.style.setProperty('--header-bg', 'var(--main-text)');
             document.body.style.setProperty('--header-text', 'var(--main-text-accent)');

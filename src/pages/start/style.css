@@ -1,5 +1,5 @@
 body{
-    background-image: url("../../res/bg.png");
+    background-image: none;
     background-size: cover;
     height: 100vh;
     background-position: center center;
@@ -182,7 +182,7 @@ body{
     height: 100%;
     border-radius: 3px;
     
-    background: var(--start-download-bar);
+    background: var(--start-download-filler);
 }
 
 .active{
@@ -290,7 +290,7 @@ body{
 }
 
 .sub-line-filler{
-    background: var(--start-download-bar);
+    background: var(--start-download-filler);
     width: 0;
     height: 100%;
     border-radius: 2px;

@@ -8,6 +8,7 @@ ipcRenderer.on('update-message', (event, text) => {
 });
 
 const body = document.body;
+console.log('Opened START');
 
 //#region //. -------------------------------- Login Text fields ---------------------
 document.getElementById("login").addEventListener("input", (e) => {
@@ -213,6 +214,7 @@ let downloading_update = false;
 //#region //. Check for update --------------------------------------
 function checkUpdate() {
     return new Promise(async (resolve, reject) => {
+        console.log('-- Checking for updates --');
         verify_root_dirs();
 
         ipcRenderer.send('check-for-updates');
@@ -230,6 +232,12 @@ function checkUpdate() {
         });
 
         ipcRenderer.on('update-not-available', (event, args) => {
+            document.getElementById('update-progress-container').classList.remove('active');
+            document.getElementById('auth-progress-container').classList.add('active');
+            resolve();
+        });
+
+        ipcRenderer.on('already-checking-for-update', (event, args) => {
             document.getElementById('update-progress-container').classList.remove('active');
             document.getElementById('auth-progress-container').classList.add('active');
             resolve();
@@ -261,7 +269,8 @@ function checkUpdate() {
 //#region //. Login -------------------------------------------------
 function login() {
     return new Promise((resolve, reject) => {
-        console.log('Starting login!');
+        console.log('-- Starting login --');
+
         document.getElementById('auth-container').classList.remove('open-auth');
         document.getElementById('auth-container').style.transition = 'all .2s linear';
         document.getElementById('auth-container').classList.add('auth-locked');
@@ -284,8 +293,8 @@ function login() {
             result = JSON.parse(result);
             if (result['username'] != undefined && result['username'] != "" && result['username'] != null)
             {
-                console.log('Login Succesfull!');
-                console.log(result['username']);
+                console.log('[LOGIN] Succesfull');
+                console.log(`[LOGIN] username: ${result['username']}`);
 
                 ipcRenderer.send('update-user-info', { 
                     info: result, 
@@ -305,6 +314,7 @@ function login() {
 //#region //. Finishing (downloading and requesting user information)
 function finish() {
     return new Promise((resolve, reject) => {
+        console.log('-- Finishing --');
 
         document.getElementById('finish-progress-container').classList.add('active');
         document.getElementById('auth-progress-container').classList.remove('active');
@@ -318,6 +328,7 @@ function finish() {
             dataType: 'json'
         }).done(async (data) => {
             ipcRenderer.send('update-user-server-info', data);
+            document.getElementById('finish-progress-bar').style.width = '80%';
 
             await download_user_icon();
             await download_user_skin();
@@ -349,10 +360,6 @@ async function download_user_icon()
                 path: verify_and_get_resources_folder(),
                 url: res,
                 filename: `user.png`
-            });
-        
-            ipcRenderer.on('download-progress', (event, progress) => {
-                document.getElementById('finish-progress-bar').style.width = progress.procentage * 100 + '%';
             });
         
             ipcRenderer.on('download-completed', (event, args) => {
@@ -420,7 +427,7 @@ checkUpdate().then(() => {
     let user_credentials = ipcRenderer.sendSync('get-user-credentials');
 
     if (update_required) return;
-    if (user_credentials == {})
+    if (user_credentials == {} || user_credentials == undefined)
     {
         openLogin(); 
     }
