@@ -40,7 +40,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/SuperMegaKeks/Delta-Launcher.git"
+    "url": "https://github.com/AlbeeTheLoli/Delta-Launcher.git"
   },
   "build": {
     "appId": "com.albee.app",
@@ -61,7 +61,7 @@
     "publish": [
       {
         "provider": "github",
-        "owner": "SuperMegaKeks",
+        "owner": "AlbeeTheLoli",
         "repo": "Delta-Launcher"
       }
     ],

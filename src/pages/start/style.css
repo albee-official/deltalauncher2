@@ -79,7 +79,7 @@ body{
     height: 100vh;
     animation:  top-start 2s cubic-bezier(0.645, 0.045, 0.355, 1);
     clip-path: circle(60% at 6% 50%);
-    background-color: rgb(var(--white));
+    background-color: rgb(var(--start-bg));
 }
 
 @keyframes show-content
@@ -165,7 +165,7 @@ body{
 }
 
 .progress-label{
-    color: rgba(var(--white-contrast), .6);
+    color: rgba(var(--start-text), .6);
 }
 
 .progress-bar{
@@ -173,7 +173,7 @@ body{
     height: 0px;
     width: 380px;
 
-    background-color: rgba(var(--white-contrast), .6);
+    background: var(--start-download-bar);
     border-radius: 3px;
 }
 
@@ -182,7 +182,7 @@ body{
     height: 100%;
     border-radius: 3px;
     
-    background: linear-gradient(to left bottom, rgb(var(--light)), rgb(var(--mid)));
+    background: var(--start-download-bar);
 }
 
 .active{
@@ -192,7 +192,7 @@ body{
 }
 
 .active .progress-label{
-    color: rgb(var(--darkest));
+    color: rgb(var(--start-text-active));
     font-size: 24px;
 }
 
@@ -251,7 +251,7 @@ body{
 }
 
 .login-text{
-    color: rgb(var(--darkest));
+    color: rgb(var(--start-header));
     font-size: 32px;
     font-weight: bold;
     margin-bottom: 32px;
@@ -264,7 +264,7 @@ body{
     width: 100%;
     background: none;
     border: none;
-    color: rgba(var(--white-contrast), .6);
+    color: rgba(var(--start-text), .6);
 }
 
 .active-text-field{
@@ -276,13 +276,13 @@ body{
 }
 
 .text-field::placeholder{
-    color: rgba(var(--white-contrast), .6);
+    color: rgba(var(--start-text), .6);
     font-size: 18px;
     font-weight: bold;
 }
 
 .sub-line{
-    background-color: rgba(var(--white-contrast), .6);
+    background-color: rgba(var(--start-text), .6);
     height: 4px;
     width: 100%;
     margin-bottom: 38px;
@@ -290,7 +290,7 @@ body{
 }
 
 .sub-line-filler{
-    background: linear-gradient(to left bottom, rgb(var(--lightest)), rgb(var(--light)));
+    background: var(--start-download-bar);
     width: 0;
     height: 100%;
     border-radius: 2px;
@@ -314,8 +314,8 @@ body{
     height: 40px;
     border: none;
     border-radius: 11px;
-    background: rgba(var(--light), 1);
-    color: rgb(var(--white));
+    background: var(--start-login-button-bg);
+    color: rgb(var(--start-login-button-text));
     font-size: 18px;
     font-weight: bold;
     cursor: pointer;
@@ -334,7 +334,7 @@ body{
     height: 40px;
     border: none;
     background: none;
-    color: rgba(var(--white-contrast), .6);
+    color: rgba(var(--start-text), .6);
     font-weight: bold;
     font-size: 18px;
     margin-right: 16px;

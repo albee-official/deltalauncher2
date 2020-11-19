@@ -60,7 +60,7 @@
 .exit{
     width: 47px;
     height: 31px;
-    background-color: rgba(var(--white), 0);
+    background-color: rgba(var(--header-bg), 0);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -71,7 +71,7 @@
 .reload{
     width: 47px;
     height: 31px;
-    background-color: rgba(var(--white), 0);
+    background-color: rgba(var(--header-bg), 0);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -82,7 +82,7 @@
 .minimize{
     width: 47px;
     height: 31px;
-    background-color: rgba(var(--white), 0);
+    background-color: rgba(var(--header-bg), 0);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -91,8 +91,8 @@
 }
 
 button{
-    background: linear-gradient(to left bottom, rgb(var(--light)), rgb(var(--mid)));
-    color: #fff;
+    background: var(--button-bg);
+    color: rgb(var(--button-text));
     font-size: 24px;
     font-weight: bold;
     border: none;
@@ -107,7 +107,7 @@ button{
     flex-direction: row-reverse;
     cursor: pointer;
 
-    color: rgb(var(--white));
+    color: rgb(var(--main-text));
     font-size: 16px;
     font-weight: bold;
     margin: 2px 0;
@@ -125,7 +125,7 @@ button{
     height: 10px;
     width: 10px;
     background: none;
-    border: rgb(var(--white)) 2px solid;
+    border: rgb(var(--main-text)) 2px solid;
     margin-right: 8px;
     margin-top: 2px;
     
@@ -135,7 +135,7 @@ button{
 }
 
 .checkbox .checkmark-fill{
-    background: rgba(var(--white), 0);
+    background: rgba(var(--main-text), 0);
     height: 4px;
     width: 4px;
 
@@ -143,7 +143,7 @@ button{
 }
 
 .checkbox input:checked ~ .checkmark .checkmark-fill {
-    background: rgba(var(--white), 1);
+    background: rgba(var(--main-text), 1);
 }
 
 .invisible{
@@ -159,6 +159,6 @@ button{
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(to right bottom, rgb(var(--dark)), rgb(var(--darkest)));
+    background: var(--bg);
     opacity: .85;
 }

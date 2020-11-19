@@ -97,27 +97,27 @@ function checkPassword(e) {
 
 //#region //. -------------------------------- Top panel -----------------------------
 let exitLisHover = document.getElementById('close-btn').addEventListener('mouseover', () => {
-    document.getElementById('close-btn').style.backgroundColor = 'rgba(var(--white), 0.4)';
+    document.getElementById('close-btn').style.backgroundColor = 'rgba(var(--main-text), 0.4)';
 });
 
 let exitLisLeave = document.getElementById('close-btn').addEventListener('mouseleave', () => {
-    document.getElementById('close-btn').style.backgroundColor = 'rgba(var(--white), 0)';
+    document.getElementById('close-btn').style.backgroundColor = 'rgba(var(--main-text), 0)';
 });
 
 let minimizeLisHover = document.getElementById('minimize-btn').addEventListener('mouseover', () => {
-    document.getElementById('minimize-btn').style.backgroundColor = 'rgba(var(--white), 0.3)';
+    document.getElementById('minimize-btn').style.backgroundColor = 'rgba(var(--main-text), 0.3)';
 });
 
 let minimizeLisLeave = document.getElementById('minimize-btn').addEventListener('mouseleave', () => {
-    document.getElementById('minimize-btn').style.backgroundColor = 'rgba(var(--white), 0)';
+    document.getElementById('minimize-btn').style.backgroundColor = 'rgba(var(--main-text), 0)';
 });
 
 let reloadLisHover = document.getElementById('reload-btn').addEventListener('mouseover', () => {
-    document.getElementById('reload-btn').style.backgroundColor = 'rgba(var(--white), 0.2)';
+    document.getElementById('reload-btn').style.backgroundColor = 'rgba(var(--main-text), 0.2)';
 });
 
 let reloadLisLeave = document.getElementById('reload-btn').addEventListener('mouseleave', () => {
-    document.getElementById('reload-btn').style.backgroundColor = 'rgba(var(--white), 0)';
+    document.getElementById('reload-btn').style.backgroundColor = 'rgba(var(--main-text), 0)';
 });
 
 document.getElementById('close-btn').addEventListener('click', () => {
@@ -163,43 +163,43 @@ function hideTopContent() {
     document.getElementById('reload-btn').removeEventListener('mouseover', reloadLisHover);
     document.getElementById('reload-btn').removeEventListener('mouseleave', reloadLisLeave);
 
-    document.getElementById('exit-icon1').style.stroke = 'rgb(var(--header-contrast-ultra))';
-    document.getElementById('exit-icon2').style.stroke = 'rgb(var(--header-contrast-ultra))';
+    document.getElementById('exit-icon1').style.stroke = 'rgb(var(--header-icon))';
+    document.getElementById('exit-icon2').style.stroke = 'rgb(var(--header-icon))';
 
-    document.getElementById('minimize-icon').style.stroke = 'rgb(var(--header-contrast-ultra))';
+    document.getElementById('minimize-icon').style.stroke = 'rgb(var(--header-icon))';
 
-    document.getElementById('reload-icon').style.fill = 'rgb(var(--header-contrast-ultra))';
+    document.getElementById('reload-icon').style.fill = 'rgb(var(--header-icon))';
 
     document.getElementById('close-btn').addEventListener('mouseover', () => {
         document.getElementById('close-btn').style.backgroundColor = 'rgb(var(--mid))';
-        document.getElementById('exit-icon1').style.stroke = 'rgb(var(--white))';
-        document.getElementById('exit-icon2').style.stroke = 'rgb(var(--white))';
+        document.getElementById('exit-icon1').style.stroke = 'rgb(var(--main-text))';
+        document.getElementById('exit-icon2').style.stroke = 'rgb(var(--main-text))';
     });
     
     document.getElementById('close-btn').addEventListener('mouseleave', () => {
-        document.getElementById('close-btn').style.backgroundColor = 'rgba(var(--header-contrast-ultra), 0)';
-        document.getElementById('exit-icon1').style.stroke = 'rgb(var(--header-contrast-ultra))';
-        document.getElementById('exit-icon2').style.stroke = 'rgb(var(--header-contrast-ultra))';
+        document.getElementById('close-btn').style.backgroundColor = 'rgba(var(--header-icon), 0)';
+        document.getElementById('exit-icon1').style.stroke = 'rgb(var(--header-icon))';
+        document.getElementById('exit-icon2').style.stroke = 'rgb(var(--header-icon))';
     });
     
     document.getElementById('minimize-btn').addEventListener('mouseover', () => {
         document.getElementById('minimize-btn').style.backgroundColor = 'rgb(var(--mid))';
-        document.getElementById('minimize-icon').style.stroke = 'rgb(var(--white))';
+        document.getElementById('minimize-icon').style.stroke = 'rgb(var(--main-text))';
     });
     
     document.getElementById('minimize-btn').addEventListener('mouseleave', () => {
         document.getElementById('minimize-btn').style.backgroundColor = 'rgba(var(--mid), 0)';
-        document.getElementById('minimize-icon').style.stroke = 'rgb(var(--header-contrast-ultra))';
+        document.getElementById('minimize-icon').style.stroke = 'rgb(var(--header-icon))';
     });
     
     document.getElementById('reload-btn').addEventListener('mouseover', () => {
         document.getElementById('reload-btn').style.backgroundColor = 'rgb(var(--mid))';
-        document.getElementById('reload-icon').style.fill = 'rgb(var(--white))';
+        document.getElementById('reload-icon').style.fill = 'rgb(var(--main-text))';
     });
     
     document.getElementById('reload-btn').addEventListener('mouseleave', () => {
         document.getElementById('reload-btn').style.backgroundColor = 'rgba(var(--mid), 0)';
-        document.getElementById('reload-icon').style.fill = 'rgb(var(--header-contrast-ultra))';
+        document.getElementById('reload-icon').style.fill = 'rgb(var(--header-icon))';
     });
 
     setInterval(() => {
@@ -248,7 +248,7 @@ function checkUpdate() {
                 document.getElementById('update-progress-label').innerHTML = `Подготовка к установке...`;
                 downloading_update = false;
                 setTimeout(() => {
-                    document.getElementById('update-progress-label').innerHTML = `Выключение лаунчер...`;
+                    document.getElementById('update-progress-label').innerHTML = `Выключение лаунчера...`;
                     ipcRenderer.send('install-update');
                     resolve();
                 }, 4500);

@@ -10,7 +10,7 @@ main{
 section{
     position: absolute;
     left: 0;
-    color: rgb(var(--white));
+    color: rgb(var(--main-text));
     height: 100%;
 
     transition: left .8s, opacity .8s;
@@ -122,7 +122,7 @@ section{
     width: 353px;
     min-width: 353px;
     min-height: 364px;
-    background-color: rgba(var(--white), .11);
+    background-color: rgba(var(--main-text), .11);
     border-radius: 8px;
     padding: 26px 34px;
     right: 90px;
@@ -155,7 +155,7 @@ section{
 .play-settings-header{
     font-size: 16px;
     font-weight: bold;
-    color: rgb(var(--white));
+    color: rgb(var(--main-text));
     margin-bottom: 17px;
 }
 
@@ -164,7 +164,7 @@ section{
     height: 34px;
     margin-bottom: 26px;
 
-    background-color: rgb(var(--white));
+    background-color: rgb(var(--main-text));
 }
 
 .play-settings .checkbox{
@@ -177,14 +177,14 @@ section{
 .play-settings .checkbox .checkmark{
     height: 12px;
     width: 12px;
-    border: rgb(var(--white)) 3px solid;
+    border: rgb(var(--main-text)) 3px solid;
     box-sizing: border-box;
     background: rgba(255, 255, 255, 0);
     transition: background .2s;
 }
 
 .play-settings .checkbox input:checked ~ .checkmark {
-    background: rgba(var(--white), 1);
+    background: rgba(var(--main-text), 1);
 }
 
 .play-settings .checkbox .checkmark .checkmark-fill{
@@ -202,11 +202,11 @@ section{
     padding: 0 12px;
     box-sizing: border-box;
     border: none;
-    background: rgba(var(--white), .1);
+    background: rgba(var(--main-text), .1);
 
     font-size: 14px;
     font-weight: 500;
-    color: rgb(var(--white));
+    color: rgb(var(--main-text));
 }
 
 .news-section{
@@ -271,14 +271,14 @@ section{
 
     font-size: 16px;
     font-weight: bold;
-    color: rgba(var(--white), .38);
+    color: rgba(var(--main-text), .38);
 
     cursor: pointer;
     transition: color .2s;
 }
 
 .news-voting li:hover{
-    color: rgba(var(--white), .55);
+    color: rgba(var(--main-text), .55);
 }
 
 .voting-header{
@@ -290,7 +290,7 @@ section{
 .voting-option-progress{
     height: 4px;
     width: 256px;
-    background-color: rgba(var(--white), .11);
+    background-color: rgba(var(--main-text), .11);
     border-radius: 4px;
 
     margin-top: 6px;
@@ -298,7 +298,7 @@ section{
 
 .voting-option-progress-filler{
     height: 4px;
-    background-color: rgb(var(--white));
+    background-color: rgb(var(--main-text));
     border-radius: 4px;
 }
 

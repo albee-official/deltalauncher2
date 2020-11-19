@@ -19,6 +19,10 @@ autoUpdater.logger.transports.file.level = 'info';
 log.info('App starting...');
 
 let userInfo = {};
+keytar.findCredentials('Delta').then(res => {
+  userInfo = res;
+  console.log(userInfo);
+});
 electronDl();
 
 //#region //. App Launch and Exit ------------------------------------------
@@ -641,8 +645,8 @@ autoUpdater.on('update-downloaded', (info) => {
 //#region //. Log out
 ipcMain.on('logout', (event, args) => {
   win.loadFile('src/pages/start/index.html');
-  keytar.deletePassword('Delta', userInfo['uid']);
-  console.log(userInfo['uid']);
+  console.log(userInfo['username']);
+  keytar.deletePassword('Delta', userInfo['username']);
   userInfo = {};
   event.reply('succesfull logout')
 });
