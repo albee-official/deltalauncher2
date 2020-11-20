@@ -131,7 +131,7 @@ async function download_from_github_illegally(folder, item_name, onProgress, ver
             console.log(`Downloading release: ${latest_release['name']}`);
             
             modpack_p.innerHTML = `Начинаем загрузку: ${Capitalize_First_Letter(item_name)}`;
-            role_p.innerHTML = 'Ожидание ответа сервера';
+            role_p.innerHTML = 'Ожидание ответа сервера<span class="loading"></span>';
 
             await set_modpack_version_to_info(item_name, latest_release['name']);
         }
@@ -143,9 +143,9 @@ async function download_from_github_illegally(folder, item_name, onProgress, ver
             if (item_name == 'libraries')
             {
                 // FINISH IT! (puts mods where they should be and deletes extras)
-                modpack_p.innerHTML = 'Завершение: Перенос файлов...';
+                modpack_p.innerHTML = 'Завершение: Перенос файлов<span class="loading"></span>';
                 await process_libs(folder);
-                modpack_p.innerHTML = 'Завершение: Удаление архива загрузки...';
+                modpack_p.innerHTML = 'Завершение: Удаление архива загрузки<span class="loading"></span>';
                 await clean_up(folder + `\\` + fs.readdirSync(folder)[0], zip_path);
                 console.log(item_name);
                 resolve(folder);
@@ -153,9 +153,9 @@ async function download_from_github_illegally(folder, item_name, onProgress, ver
             else
             {
                 // FINISH IT! (puts mods where they should be and deletes extras)
-                modpack_p.innerHTML = 'Завершение: Перенос файлов...';
+                modpack_p.innerHTML = 'Завершение: Перенос файлов<span class="loading"></span>';
                 await process_modpack(folder, item_name);
-                modpack_p.innerHTML = 'Завершение: Удаление архива загрузки...';
+                modpack_p.innerHTML = 'Завершение: Удаление архива загрузки<span class="loading"></span>';
                 await clean_up(folder + `\\` + fs.readdirSync(folder)[0], zip_path);
                 console.log(item_name);
                 resolve(folder);
@@ -228,21 +228,21 @@ async function download_from_github_illegally(folder, item_name, onProgress, ver
                 clearTimeout(speed_update);
 
                 // Unzip downloaded file
-                modpack_p.innerHTML = 'Завершение: Распаковка файлов...';
+                modpack_p.innerHTML = 'Завершение: Распаковка файлов<span class="loading"></span>';
                 role_p.innerHTML = 'Не выключайте лаунчер!';
                 await extract_zip(zip_path, folder);
 
                 if (item_name == 'libraries')
                 {
                     // FINISH IT! (puts mods where they should be and deletes extras)
-                    modpack_p.innerHTML = 'Завершение: Удаление архива загрузки...';
+                    modpack_p.innerHTML = 'Завершение: Удаление архива загрузки<span class="loading"></span>';
                     console.log(item_name);
                     resolve(folder);
                 }
                 else
                 {
                     // FINISH IT! (puts mods where they should be and deletes extras)
-                    modpack_p.innerHTML = 'Завершение: Перенос файлов...';
+                    modpack_p.innerHTML = 'Завершение: Перенос файлов<span class="loading"></span>';
                     let folders = fs.readdirSync(folder);
                     let found_folder;
                     for (let el of folders)
@@ -253,7 +253,7 @@ async function download_from_github_illegally(folder, item_name, onProgress, ver
                         }
                     }
                     await process_modpack(folder, found_folder);
-                    modpack_p.innerHTML = 'Завершение: Удаление архива загрузки...';
+                    modpack_p.innerHTML = 'Завершение: Удаление архива загрузки<span class="loading"></span>';
                     await clean_up(folder + `\\` + found_folder, zip_path);
                     console.log(item_name);
                     resolve(folder);

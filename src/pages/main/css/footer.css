@@ -54,6 +54,12 @@ footer{
     transition: all 1s cubic-bezier(0.23, 1, 0.320, 1);
 }
 
+.play-button-unactive{
+    background: rgba(var(--light), .1) !important;
+    color: rgb(var(--main-text)) !important;
+    pointer-events: none;
+}
+
 .footer-right{
     margin-right: 10%;
     width: 344px;

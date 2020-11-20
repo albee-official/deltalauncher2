@@ -2,6 +2,17 @@ String.prototype.replaceAt = function(index, replacement) {
     return this.substr(0, index) + replacement + this.substr(index + replacement.length);
 }
 
+let loadings = document.querySelectorAll('span[class="loading"]');
+let loading_interval_updater = setInterval(() => {
+    for (let loading_thing of loadings) {
+        if (loading_thing.innerHTML.length > 2) {
+            loading_thing.innerHTML = '';
+        }
+
+        loading_thing.innerHTML += '.'
+    }
+}, 1000);
+
 //#region //. Theme update -----------
 function set_theme_colours(theme)
 {
@@ -35,20 +46,24 @@ function set_theme_colours(theme)
             document.body.style.setProperty('--header-icon', 'var(--dark)');
 
             document.body.style.setProperty('--main-text', '255, 255, 255');
+            document.body.style.setProperty('--main-text-accent', '200, 200, 200');
+            document.body.style.setProperty('--main-side-panel-bg', 'var(--darkest)');
 
             document.body.style.setProperty('--footer-bg', 'var(--darkest)');
             document.body.style.setProperty('--footer-text', 'var(--main-text)');
             document.body.style.setProperty('--footer-download-bar', 'linear-gradient(to left, rgb(var(--light)), rgb(var(--mid)))');
 
-            document.body.style.setProperty('--button-bg', 'linear-gradient(to left bottom, rgb(var(--light)), rgb(var(--lightest)))');
+            document.body.style.setProperty('--button-bg', 'rgb(var(--light))');
+            document.body.style.setProperty('--button-bg-hover', 'rgb(var(--lightest))');
             document.body.style.setProperty('--button-text', 'var(--darkest)');
+            document.body.style.setProperty('--button-text-hover', 'var(--darkest)');
             break;
         case 'green hills':
             document.body.style.setProperty('--darkest', '9, 50, 46');
             document.body.style.setProperty('--dark', '47, 95, 88');
             document.body.style.setProperty('--mid', '225, 255, 194');
             document.body.style.setProperty('--light', '225, 255, 194'); 
-            document.body.style.setProperty('--lightest', '225, 255, 194');
+            document.body.style.setProperty('--lightest', '241, 255, 226');
 
             document.body.style.setProperty('--bg', 'linear-gradient(to right bottom, #2E4A31, #122116)');
 
@@ -72,20 +87,23 @@ function set_theme_colours(theme)
 
             document.body.style.setProperty('--main-text', '255, 255, 255');
             document.body.style.setProperty('--main-text-accent', '200, 200, 200');
+            document.body.style.setProperty('--main-side-panel-bg', 'var(--darkest)');
 
             document.body.style.setProperty('--footer-bg', '3, 20, 19');
             document.body.style.setProperty('--footer-text', 'var(--main-text)');
             document.body.style.setProperty('--footer-download-bar', 'linear-gradient(to left, rgb(var(--light)), rgb(var(--mid)))');
 
-            document.body.style.setProperty('--button-bg', 'linear-gradient(to left bottom, rgb(var(--light)), rgb(var(--lightest)))');
+            document.body.style.setProperty('--button-bg', 'rgb(var(--light))');
+            document.body.style.setProperty('--button-bg-hover', 'rgb(var(--lightest))');
             document.body.style.setProperty('--button-text', 'var(--darkest)');
+            document.body.style.setProperty('--button-text-hover', 'var(--darkest)');
             break;
         case 'dark sun':
             document.body.style.setProperty('--darkest', '15, 12, 17');
             document.body.style.setProperty('--dark', '128, 19, 54');
             document.body.style.setProperty('--mid', '224, 88, 99');
             document.body.style.setProperty('--light', '224, 88, 99'); 
-            document.body.style.setProperty('--lightest', '233, 97, 99');
+            document.body.style.setProperty('--lightest', '252, 102, 114');
 
             document.body.style.setProperty('--bg', 'linear-gradient(to right bottom, #4A2E37, #211712)');
 
@@ -109,20 +127,23 @@ function set_theme_colours(theme)
 
             document.body.style.setProperty('--main-text', '255, 255, 255');
             document.body.style.setProperty('--main-text-accent', '200, 200, 200');
+            document.body.style.setProperty('--main-side-panel-bg', 'var(--darkest)');
 
             document.body.style.setProperty('--footer-bg', 'var(--darkest)');
             document.body.style.setProperty('--footer-text', 'var(--main-text)');
             document.body.style.setProperty('--footer-download-bar', 'linear-gradient(to left, rgb(var(--light)), rgb(var(--mid)))');
 
-            document.body.style.setProperty('--button-bg', 'linear-gradient(to left bottom, rgb(var(--light)), rgb(var(--lightest)))');
+            document.body.style.setProperty('--button-bg', 'rgb(var(--light))');
+            document.body.style.setProperty('--button-bg-hover', 'rgb(var(--lightest))');
             document.body.style.setProperty('--button-text', 'var(--darkest)');
+            document.body.style.setProperty('--button-text-hover', 'var(--darkest)');
             break;
         case 'eternal void':
             document.body.style.setProperty('--darkest', '0, 0, 0');
             document.body.style.setProperty('--dark', '38, 38, 38');
             document.body.style.setProperty('--mid', '97, 97, 97');
             document.body.style.setProperty('--light', '164, 164, 164');
-            document.body.style.setProperty('--lightest', ' 193, 193, 193');
+            document.body.style.setProperty('--lightest', '193, 193, 193');
 
             document.body.style.setProperty('--bg', 'linear-gradient(to right bottom, #000000, #262626)');
             
@@ -145,13 +166,17 @@ function set_theme_colours(theme)
             document.body.style.setProperty('--header-icon', 'var(--mid)');
 
             document.body.style.setProperty('--main-text', '255, 255, 255');
+            document.body.style.setProperty('--main-text-accent', '200, 200, 200');
+            document.body.style.setProperty('--main-side-panel-bg', 'var(--darkest)');
 
             document.body.style.setProperty('--footer-bg', 'var(--darkest)');
             document.body.style.setProperty('--footer-text', 'var(--main-text)');
             document.body.style.setProperty('--footer-download-bar', 'linear-gradient(to left, rgb(var(--light)), rgb(var(--mid)))');
 
-            document.body.style.setProperty('--button-bg', 'linear-gradient(to left bottom, rgb(var(--light)), rgb(var(--lightest)))');
+            document.body.style.setProperty('--button-bg', 'rgb(var(--lightest))');
+            document.body.style.setProperty('--button-bg-hover', 'rgb(var(--lightest))');
             document.body.style.setProperty('--button-text', 'var(--darkest)');
+            document.body.style.setProperty('--button-text-hover', 'var(--darkest)');
             break;
         case 'default':
             document.body.style.setProperty('--darkest', '45, 19, 44');
@@ -182,13 +207,16 @@ function set_theme_colours(theme)
 
             document.body.style.setProperty('--main-text', '255, 255, 255');
             document.body.style.setProperty('--main-text-accent', '200, 200, 200');
+            document.body.style.setProperty('--main-side-panel-bg', 'var(--darkest)');
 
             document.body.style.setProperty('--footer-bg', 'var(--darkest)');
             document.body.style.setProperty('--footer-text', 'var(--main-text)');
             document.body.style.setProperty('--footer-download-bar', 'linear-gradient(to left, rgb(var(--light)), rgb(var(--mid)))');
 
-            document.body.style.setProperty('--button-bg', 'linear-gradient(to left bottom, rgb(var(--mid)), rgb(var(--light)))');
-            document.body.style.setProperty('--button-text', 'var(--darkest)');
+            document.body.style.setProperty('--button-bg', 'rgb(var(--mid))');
+            document.body.style.setProperty('--button-bg-hover', 'rgb(var(--light))');
+            document.body.style.setProperty('--button-text', 'var(--main-text)');
+            document.body.style.setProperty('--button-text-hover', 'var(--main-text)');
             break;
     
         default:
@@ -220,13 +248,16 @@ function set_theme_colours(theme)
 
             document.body.style.setProperty('--main-text', '255, 255, 255');
             document.body.style.setProperty('--main-text-accent', '200, 200, 200');
+            document.body.style.setProperty('--main-side-panel-bg', 'var(--darkest)');
 
             document.body.style.setProperty('--footer-bg', 'var(--darkest)');
             document.body.style.setProperty('--footer-text', 'var(--main-text)');
             document.body.style.setProperty('--footer-download-bar', 'linear-gradient(to left, rgb(var(--light)), rgb(var(--mid)))');
 
-            document.body.style.setProperty('--button-bg', 'linear-gradient(to left bottom, rgb(var(--mid)), rgb(var(--light)))');
-            document.body.style.setProperty('--button-text', 'var(--darkest)');
+            document.body.style.setProperty('--button-bg', 'rgb(var(--mid))');
+            document.body.style.setProperty('--button-bg-hover', 'rgb(var(--light))');
+            document.body.style.setProperty('--button-text', 'var(--main-text)');
+            document.body.style.setProperty('--button-text-hover', 'var(--main-text)');
             break;
     }
 }

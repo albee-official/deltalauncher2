@@ -60,7 +60,7 @@ section{
 .server-name{
     font-size: 24px;
     font-weight: bold;
-    color: rgb(var(--white));
+    color: rgb(var(--main-text));
     margin-bottom: 32px;
 }
 
@@ -99,6 +99,19 @@ section{
     align-items: flex-start;
 }
 
+.select-button-active{
+    background: none;
+    color: var(--button-bg);
+    border: var(--button-bg) 2px solid;
+    padding-top: 2px;
+}
+
+.select-button-active:hover{
+    background: rgb(var(--light)) !important;
+    color: rgb(var(--button-text-hover)) !important;
+    border: rgba(var(--light), 0) 2px solid;
+}
+
 .rotated{
     transform: rotate(-180deg) !important;
 }
@@ -122,8 +135,8 @@ section{
     width: 353px;
     min-width: 353px;
     min-height: 364px;
-    background-color: rgba(var(--main-text), .11);
-    border-radius: 8px;
+    background-color: rgba(var(--main-side-panel-bg), .2);
+    border-radius: 2px;
     padding: 26px 34px;
     right: 90px;
     box-sizing: border-box;
@@ -199,14 +212,13 @@ section{
     width: 288px;
     height: 32px;
     border-radius: 5px;
-    padding: 0 12px;
     box-sizing: border-box;
+    background: none;
     border: none;
-    background: rgba(var(--main-text), .1);
-
     font-size: 14px;
-    font-weight: 500;
-    color: rgb(var(--main-text));
+    font-weight: 600;
+    color: rgba(var(--main-text), .4);
+    cursor: pointer;
 }
 
 .news-section{

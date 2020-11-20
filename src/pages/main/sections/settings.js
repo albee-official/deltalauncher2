@@ -30,7 +30,6 @@ let theme_select_options = document.querySelectorAll('#theme-select-option');
 
 for (let item of theme_select_options)
 {
-    console.log(theme_select_options);
     item.addEventListener('mouseover', () => {
         set_theme_colours(item.getAttribute('data-name'));
     });
@@ -229,9 +228,10 @@ document.querySelector('#delete-reserved-files').addEventListener('click', async
 
 //#region //. ---------------- Memory range ------------------------
 
-let max_setable_ram = Math.floor(os.freemem() / 1024 / 1024 / 1024);
-console.log(max_setable_ram);
-let min_setable_ram = 4; 
+// Already declared in play.js
+// let max_setable_ram = Math.floor(os.freemem() / 1024 / 1024 / 1024);
+// console.log(max_setable_ram);
+// let min_setable_ram = 4; 
 
 // runs when user moves the slider
 memory_range.addEventListener('input', e => {
@@ -261,6 +261,7 @@ memory_range.addEventListener('input', e => {
 memory_range.children[0].children[1].children[0].value = Math.max(Math.min(settings['allocated_memory'], max_setable_ram), min_setable_ram);
 memory_range.addEventListener('change', () => {
     settings['allocated_memory'] = memory_range.children[0].children[1].children[0].value;
+    document.querySelector('#play-memory-range').children[0].children[1].children[0].value = memory_range.children[0].children[1].children[0].value; // Sync 2 memory ranges
     update_settings();
 })
 
@@ -528,3 +529,55 @@ function close_menu(menu) {
 //#endregion
 
 //#endregion
+
+//#region //. ---------------- Play settings --------------------------
+
+// Addon mods in settings
+let settings_addon_cbs = document.querySelectorAll('.settings-addon-cb');
+console.log(settings_addon_cbs);
+for (let addon_cb of settings_addon_cbs) {
+    let input = addon_cb.querySelector('input');
+    let dataName = addon_cb.getAttribute('data-name');
+
+    input.checked = settings['addon_mods'][dataName];
+    
+    input.addEventListener('change', () => {        
+        document.querySelector(`.play-addon-cb[data-name="${dataName}"] input`).checked = input.checked;
+
+        settings['addon_mods'][dataName] = input.checked;
+        update_settings();
+    });
+}
+
+// Addon mods in play
+let play_addon_cbs = document.querySelectorAll('.play-addon-cb');
+console.log(play_addon_cbs);
+for (let addon_cb of play_addon_cbs) {
+    let input = addon_cb.querySelector('input');
+    let dataName = addon_cb.getAttribute('data-name');
+
+    input.checked = settings['addon_mods'][dataName];
+    
+    input.addEventListener('change', () => {        
+        document.querySelector(`.settings-addon-cb[data-name="${dataName}"] input`).checked = input.checked;
+
+        settings['addon_mods'][dataName] = input.checked;
+        update_settings();
+    });
+}
+
+UpdateSideModpackDir(modpack_name);
+// Modpack directory
+function UpdateSideModpackDir(modpack)
+{
+    let dir = settings['modpack_dirs'][modpack];
+    let el = document.querySelector('#play-game-dir-input')
+    console.log(dir);
+    el.innerHTML = dir + '\\' + modpack;
+    el.addEventListener('click', e => {
+        let path = verify_and_get_modpack_folder(modpack);
+        shell.openItem(path);
+    });
+}
+//#endregion 
+

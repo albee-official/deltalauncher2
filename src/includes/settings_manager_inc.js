@@ -22,7 +22,10 @@ const pattern = {
     "bg_extension": "",
     "bg_muted": true,
     "theme": "default",
-    "addon_mods": [ "recorder", "dynamic souroundings" ],
+    "addon_mods": { 
+        "recorder": false,
+        "dynamic souroundings": false
+    },
     "modpack_dirs": {
         "magicae": "|ROOT|\\modpacks",
         "fabrica": "|ROOT|\\modpacks",

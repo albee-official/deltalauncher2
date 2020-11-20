@@ -405,7 +405,7 @@ function launch_minecraft(min_mem, max_mem, game_dir, username, uuid, _modpack_n
 
         let modpack_name = _modpack_name;
 
-        console.log(final_command);
+        console.log(`[${modpack_name.toUpperCase()}] ${final_command}`);
         minecraft = exec(final_command, { 
             windowsHide: true,
             maxBuffer: 1024 * 1024 * 1024,
@@ -425,7 +425,7 @@ function launch_minecraft(min_mem, max_mem, game_dir, username, uuid, _modpack_n
         console.log(minecraft);
 
         minecraft.stdout.on('data', data => {
-            console.log(data.toString());
+            console.log(`[${modpack_name.toUpperCase()}] ${data.toString()}`);
             if (data.toString().split('Starts to replace vanilla recipe ingredients with ore ingredients.').length > 1)
             {
                 minecraftLaunched = true;
@@ -456,9 +456,9 @@ function launch_minecraft(min_mem, max_mem, game_dir, username, uuid, _modpack_n
             play_button.innerHTML = 'Играть';
             document.querySelector('#launch-menu').classList.remove('open');
             if (error) {
-                reject(error);
+                reject(modpack_name, error);
             }
-            resolve('minecraft exit');
+            resolve(modpack_name, 'minecraft exit');
         });
     });
 }

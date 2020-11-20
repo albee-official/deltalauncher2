@@ -8,6 +8,16 @@ let statera_select_button = document.querySelector('#statera-select');
 let insula_select_button = document.querySelector('#insula-select');
 let isekai_select_button = document.querySelector('#isekai-select');
 
+let play_button = document.querySelector('#play-button');
+
+let launched_modpacks = {
+    'magicae': false,
+    'fabrica': false,
+    'statera': false,
+    'insula': false,
+    'isekai': false
+};
+
 let modpack_name = settings['selected_modpack'];
 
 magicae_select_button.addEventListener('click', () => {
@@ -16,6 +26,8 @@ magicae_select_button.addEventListener('click', () => {
     update_settings();
     UpdateServer();
     UpdateRedownloadCheckBox();
+    UpdateSideModpackDir(modpack_name);
+    UpdateActiveButton();
 });
 
 fabrica_select_button.addEventListener('click', () => {
@@ -24,6 +36,8 @@ fabrica_select_button.addEventListener('click', () => {
     update_settings();
     UpdateServer();
     UpdateRedownloadCheckBox();
+    UpdateSideModpackDir(modpack_name);
+    UpdateActiveButton();
 });
 
 statera_select_button.addEventListener('click', () => {
@@ -32,6 +46,8 @@ statera_select_button.addEventListener('click', () => {
     update_settings();
     UpdateServer();
     UpdateRedownloadCheckBox();
+    UpdateSideModpackDir(modpack_name);
+    UpdateActiveButton();
 });
 
 insula_select_button.addEventListener('click', () => {
@@ -40,6 +56,8 @@ insula_select_button.addEventListener('click', () => {
     update_settings();
     UpdateServer();
     UpdateRedownloadCheckBox();
+    UpdateSideModpackDir(modpack_name);
+    UpdateActiveButton();
 });
 
 isekai_select_button.addEventListener('click', () => {
@@ -48,7 +66,38 @@ isekai_select_button.addEventListener('click', () => {
     update_settings();
     UpdateServer();
     UpdateRedownloadCheckBox();
+    UpdateSideModpackDir(modpack_name);
+    UpdateActiveButton();
 });
+
+function UpdateActiveButton() {
+    let buttons = document.querySelectorAll('.select-button')
+    let active_button = document.querySelector(`#${modpack_name}-select`)
+    for (const button of buttons) {
+        button.classList = 'select-button';
+    }
+
+    active_button.classList = 'select-button select-button-active';
+}
+UpdateActiveButton();
+
+function UpdateServerSelectButton(server, button_el = document.querySelector(`#${server}-select`))
+{
+    if (modpack_not_installed(server))
+    {
+        button_el.innerHTML = 'Скачать';
+    }
+    else
+    {
+        button_el.innerHTML = 'Выбрать';
+    }
+}
+
+UpdateServerSelectButton('magicae')
+UpdateServerSelectButton('fabrica')
+UpdateServerSelectButton('statera')
+UpdateServerSelectButton('insula')
+UpdateServerSelectButton('isekai')
 
 function Capitalize_First_Letter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -59,14 +108,6 @@ function UpdateServer() {
     let admin_role = userData['servers_info'][modpack_name]['adminrole'];
     let privilege = userData['servers_info'][modpack_name]['privilege'];
     if (privilege == 'Player') privilege = 'Игрок';
-    if (admin_role == 'Delta') privilege = 'Разработчик';
-    if (admin_role == 'Rho') privilege = 'Разработчик';
-    if (admin_role == 'Iota') privilege = 'Разработчик';
-    if (admin_role == 'Lambda') privilege = 'Разработчик';
-    if (admin_role == 'Kappa') privilege = 'Разработчик';
-    if (admin_role == 'Epsilon') privilege = 'Разработчик';
-    if (admin_role == 'Omikron') privilege = 'Разработчик';
-    if (admin_role == 'Psi') privilege = 'Разработчик';
 
     switch (admin_role) {
         case 'Delta': privilege = 'Разработчик'; break;
@@ -96,14 +137,6 @@ function UpdateRole() {
     let admin_role = userData['servers_info'][modpack_name]['adminrole'];
     let privilege = userData['servers_info'][modpack_name]['privilege'];
     if (privilege == 'Player') privilege = 'Игрок';
-    if (admin_role == 'Delta') privilege = 'Разработчик';
-    if (admin_role == 'Rho') privilege = 'Разработчик';
-    if (admin_role == 'Iota') privilege = 'Разработчик';
-    if (admin_role == 'Lambda') privilege = 'Разработчик';
-    if (admin_role == 'Kappa') privilege = 'Разработчик';
-    if (admin_role == 'Epsilon') privilege = 'Разработчик';
-    if (admin_role == 'Omikron') privilege = 'Разработчик';
-    if (admin_role == 'Psi') privilege = 'Разработчик';
 
     switch (admin_role) {
         case 'Delta': privilege = 'Разработчик'; break;
@@ -136,10 +169,21 @@ function UpdateRedownloadCheckBox() {
     if (!modpack_installed_bool)
     {
         secondary_text.innerHTML = 'Быстрое скачивание';
+        document.querySelector('#play-button').innerHTML = 'Скачать';
     }
     else
     {
         secondary_text.innerHTML = 'Автозаход на сервер';
+        document.querySelector('#play-button').innerHTML = 'Играть';
+    }
+
+    if (launched_modpacks[modpack_name])
+    {
+        deactivate_play_button();
+    }
+    else
+    {
+        activate_play_button();
     }
 
     console.log(cb);
@@ -168,10 +212,19 @@ ipcRenderer.on('rpc-join', (event, info) => {
     play_button.click();
 });
 
-let play_button = document.querySelector('#play-button');
 let download_in_progress = false;
 
 play_button.addEventListener('click', async () => {
+    if (launched_modpacks[modpack_name])
+    {
+        console.log(`${modpack_name} is already launched`);
+        deactivate_play_button();
+        return;
+    }
+    else
+    {
+        activate_play_button();
+    }
 
     // Verifyies if folder exists. creates if not. 
     // modpack_folder - folder in which modpack is located
@@ -279,6 +332,9 @@ play_button.addEventListener('click', async () => {
                 // Запустить штуку которая блокирует пользователю возможность запустить сборку еще раз
                 show_launch_menu();
 
+                launched_modpacks[modpack_name] = true;
+                deactivate_play_button();
+
                 // Отключить Rich Presence потому что у майна свой
                 ipcRenderer.send('rich-presence-to', {
                     details: `Запускает ${Capitalize_First_Letter(modpack_name)}...`,
@@ -290,14 +346,18 @@ play_button.addEventListener('click', async () => {
 
                 // Запустить майнкрафт. Эта фнукция (Promise) заканчивается когда выключается майнкрафт.
                 let mem_input = document.querySelector('#memory-input');
-                launch_minecraft(1000, mem_input.value * 1024, modpack_folder, userData['username'], userData['uuid'], modpack_name).then(res => {
+                launch_minecraft(1000, mem_input.value * 1024, modpack_folder, userData['username'], userData['uuid'], modpack_name).then((_modpack_name, res) => {
 
+                    launched_modpacks[_modpack_name] = false;
+                    activate_play_button();
                     // Манйкрафт завершился. Если 0, то все заебумба
                     console.log(`Minecraft exited with code: ${res}`);
                     UpdateRedownloadCheckBox();
-                }).catch(err => {
+                }).catch((_modpack_name, err) => {
 
                     // Что то пошло не так при запуске.
+                    launched_modpacks[_modpack_name] = false;
+                    activate_play_button();
                     console.log(`Launch encountered some errors: ${err}`);
                     UpdateRedownloadCheckBox();
                 });
@@ -344,6 +404,16 @@ function check_for_updates(_modpack_name)
     });
 }
 
+function activate_play_button()
+{
+    play_button.classList = 'play-button';
+}
+
+function deactivate_play_button()
+{
+    play_button.classList = 'play-button play-button-unactive';
+}
+
 function show_progress_footer()
 {
     // Show progress bar in footer
@@ -355,9 +425,9 @@ function show_progress_footer()
 
 function show_launch_menu()
 {
-    play_button.innerHTML = 'Запуск...';
+    play_button.innerHTML = 'Запуск<span class="loading"></span>';
     document.querySelector('#launch-menu').classList.add('open');
-    document.querySelector('#launch-h').innerHTML = `Запуск: ${Capitalize_First_Letter(modpack_name)}...`;
+    document.querySelector('#launch-h').innerHTML = `Запуск: ${Capitalize_First_Letter(modpack_name)}<span class="loading"></span>`;
 }
 
 //. Ну чтобы там все выглядело как до скачивания
@@ -458,3 +528,45 @@ function cancel_current_download()
 }
 
 //#endregion
+
+//#region //. ---------------- Play Memory range ------------------------
+let play_memory_range = document.querySelector('#play-memory-range');
+
+let max_setable_ram = Math.floor(os.freemem() / 1024 / 1024 / 1024);
+console.log(max_setable_ram);
+let min_setable_ram = 4; 
+
+// runs when user moves the slider
+play_memory_range.addEventListener('input', e => {
+    // get <input> tag
+    let input_range = e.currentTarget.children[0].children[1].children[0];
+
+    // get div containing stops (markers)
+    let input_stops = e.currentTarget.children[0].children[0].children;
+
+    input_range.value = Math.max(Math.min(input_range.value, max_setable_ram), min_setable_ram);
+
+    // loop through all stops
+    for (let i = 0; i < input_stops.length; i++) {
+
+        // if stop index is the same as input value, then it is active
+        // otherwise it is not
+        // we devide value by 2 because 'step' between stops is 2
+        if (i == input_range.value / 2) {
+            input_stops[i].classList.add('active-stop');
+        } else {
+            input_stops[i].classList.remove('active-stop');
+        }
+    }
+});
+
+// Change from settings or update settings
+play_memory_range.children[0].children[1].children[0].value = Math.max(Math.min(settings['allocated_memory'], max_setable_ram), min_setable_ram);
+play_memory_range.addEventListener('change', () => {
+    settings['allocated_memory'] = play_memory_range.children[0].children[1].children[0].value;
+    document.querySelector('#memory-range').children[0].children[1].children[0].value = play_memory_range.children[0].children[1].children[0].value; // Sync 2 memory ranges
+    update_settings();
+})
+
+//#endregion
+

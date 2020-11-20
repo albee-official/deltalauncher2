@@ -227,43 +227,98 @@
             <div class="play-settings">
 
                 <p class="play-settings-header">Выделение памяти</p>
-                <div class="play-set-ram-container">
-
+                <div id="play-memory-range" class="range settings-range">
+                    <div class="range-visuals">
+                        <div class="range-stops">
+                            <div class="range-stop active-stop">
+                                1Gb
+                                <div class="range-stop-markers">
+                                    <div class="marker"></div>
+                                    <div class="marker"></div>
+                                </div>
+                            </div>
+                            <div class="range-stop empty-stop">
+                                <div class="range-stop-markers">
+                                    <div class="marker"></div>
+                                    <div class="marker"></div>
+                                </div>
+                            </div>
+                            <div class="range-stop">
+                                4Gb
+                                <div class="range-stop-markers">
+                                    <div class="marker"></div>
+                                    <div class="marker"></div>
+                                </div>
+                            </div>
+                            <div class="range-stop empty-stop">
+                                <div class="range-stop-markers">
+                                    <div class="marker"></div>
+                                    <div class="marker"></div>
+                                </div>
+                            </div>
+                            <div class="range-stop">
+                                8Gb
+                                <div class="range-stop-markers">
+                                    <div class="marker"></div>
+                                    <div class="marker"></div>
+                                </div>
+                            </div>
+                            <div class="range-stop empty-stop">
+                                <div class="range-stop-markers">
+                                    <div class="marker"></div>
+                                    <div class="marker"></div>
+                                </div>
+                            </div>
+                            <div class="range-stop">
+                                12Gb
+                                <div class="range-stop-markers">
+                                    <div class="marker"></div>
+                                    <div class="marker"></div>
+                                </div>
+                            </div>
+                            <div class="range-stop empty-stop">
+                                <div class="range-stop-markers">
+                                    <div class="marker"></div>
+                                    <div class="marker"></div>
+                                </div>
+                            </div>
+                            <div class="range-stop">
+                                16Gb
+                                <div class="range-stop-markers">
+                                    <div class="marker"></div>
+                                    <div class="marker"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="range-bar">
+                            <input class="range-slider" id="memory-input" list="memlist" type="range" name="memory"
+                                min="0" max="16" step="1">
+                        </div>
+                    </div>
                 </div>
                 <p class="play-settings-header">Дополнительные настройки</p>
                 <div class="play-settings-checkboxes">
-                    <label class="checkbox">
+                    <label data-name="replay" class="checkbox play-addon-cb">
                         <input type="checkbox">
                         <div class="checkmark">
                             <div class="checkmark-fill"></div>
                         </div>
-                        Dynamic souroundings
+                        Replay
                     </label>
-                    <label class="checkbox">
+                    <label data-name="dynamic souroundings" class="checkbox play-addon-cb">
                         <input type="checkbox">
                         <div class="checkmark">
                             <div class="checkmark-fill"></div>
                         </div>
-                        Mode Name
-                    </label>
-                    <label class="checkbox">
-                        <input type="checkbox">
-                        <div class="checkmark">
-                            <div class="checkmark-fill"></div>
-                        </div>
-                        Loshara Ipsum
-                    </label>
-                    <label class="checkbox">
-                        <input type="checkbox">
-                        <div class="checkmark">
-                            <div class="checkmark-fill"></div>
-                        </div>
-                        Record
+                        Dynamic Souroundings
                     </label>
                 </div>
 
-                <p class="play-settings-header">Директория игры</p>
-                <input id="play-game-dir-input" class="play-game-dir-input" type="text">
+                <p class="play-settings-header">Директория сборки</p>
+                <p id="play-game-dir-input" class="play-game-dir-input"></p>
+                <script>
+
+                </script>
             </div>
         </section>
         <section id="news-section" class="news-section mCustomScrollbar main-left" style="overflow: auto;">
@@ -446,9 +501,6 @@
                     </div>
                 </div>
 
-                <script>
-                </script>
-
                 <div class="settings-element">
                     <h1 class="settings-element-header">Настройки управления</h1>
                     <div class="controll-settings-container">
@@ -505,7 +557,7 @@
                     <h1 class="settings-element-header">Дополнительные настройки</h1>
                     <div class="additional-settings-list">
                         <div class="additional-setting">
-                            <label class="checkbox">
+                            <label data-name="replay" class="checkbox settings-addon-cb">
                                 <span class="additional-setting-name">Replay</span>
                                 <input type="checkbox"
                                     checked="checked">
@@ -515,7 +567,7 @@
                             </label>
                         </div>
                         <div class="additional-setting">
-                            <label class="checkbox">
+                            <label data-name="dynamic souroundings" class="checkbox settings-addon-cb">
                                 <span class="additional-setting-name">Dynamic Souroundings</span>
                                 <input type="checkbox"
                                     checked="checked">
@@ -525,7 +577,7 @@
                             </label>
                         </div>
                         <div class="additional-setting">
-                            <p>Выбрать шейдер по умолчанию</p>
+                            <p>Шейдер по умолчанию не установлен</p>
                         </div>
                     </div>
                 </div>
