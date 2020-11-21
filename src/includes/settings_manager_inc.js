@@ -1,6 +1,6 @@
 let settings_file_path = verify_and_get_settings_file();
 
-const pattern = {
+const settings_pattern = {
     "selected_modpack": "magicae",
     "opened_settings": true,
     "on_page": "play",
@@ -43,14 +43,15 @@ modpack_folders = settings['modpack_dirs'];
 function read_settings()
 {
     let settings_raw = fs.readFileSync(settings_file_path);
-    if (settings_raw == '') return '{ }';
+    if (settings_raw == '') return settings_pattern;
     let settings_json = JSON.parse(settings_raw);
+
     return settings_json;
 }
 
 function check_settings()
 {
-    settings = Object.assign(pattern, settings);
+    settings = Object.assign(settings_pattern, settings);
     update_settings();
 }
 

@@ -249,7 +249,15 @@ check_themes();
 function read_themes() {
     let themes_raw = fs.readFileSync(verify_and_get_themes_file());
     if (themes_raw == '') return themes_template;
+    console.log(themes_raw.toString());
     let themes_json = JSON.parse(themes_raw);
+
+    if (themes_json[settings['theme']] == undefined)
+    {
+        settings['theme'] = 'default';
+        update_settings();
+    }
+
     return themes_json;
 }
 
