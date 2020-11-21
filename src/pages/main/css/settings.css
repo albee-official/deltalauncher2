@@ -477,26 +477,6 @@
     cursor: pointer;
 }
 
-.theme-select-option[data-name="default"] .theme-bg-preview-filter{
-    background: linear-gradient(to right bottom, #801336, #801336);
-}
-
-.theme-select-option[data-name="night sky"] .theme-bg-preview-filter{
-    background: linear-gradient(to right bottom, #171D37, #0E1327);
-}
-
-.theme-select-option[data-name="green hills"] .theme-bg-preview-filter{
-    background: linear-gradient(to right bottom, #15594D, #082626);
-}
-
-.theme-select-option[data-name="dark sun"] .theme-bg-preview-filter{
-    background: linear-gradient(to right bottom, #4A2E37, #211712);
-}
-
-.theme-select-option[data-name="eternal void"] .theme-bg-preview-filter{
-    background: linear-gradient(to right bottom, #262626, #000000);
-}
-
 .theme-select-option:hover{
     transform: scale(1.1);
 }

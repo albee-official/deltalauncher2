@@ -26,6 +26,16 @@ java_parameters.addEventListener('change', e => {
 //#region //. ---------------- Theme selection ---------------------
 
 //#region //. Change Theme
+theme_select_options_container = document.querySelector('#theme-select-options');
+for (let theme_key of Object.keys(themes_json)) {
+    let theme_thing = themes_json[theme_key];
+    theme_select_options_container.innerHTML += `<div id="theme-select-option" class="theme-select-option" data-name="${theme_thing['name']}">
+            <p>${Capitalize_First_Letter(theme_thing['name'])}</p>
+            <img src="${theme_thing['bg_path']}" alt="">
+            <div class="theme-bg-preview-filter" style="${theme_thing['theme_select_options']}"></div>
+        </div>`
+}
+
 let theme_select_options = document.querySelectorAll('#theme-select-option');
 
 for (let item of theme_select_options)

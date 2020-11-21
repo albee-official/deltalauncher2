@@ -454,14 +454,14 @@ function download_mods_and_stuff(modpack_folder)
             modpack_folder,
             modpack_name,
             (progress) => {
-                let speed_in_mbps = progress.speed;
+                let speed_in_mbps = (progress.speed / 1024 / 1024).toPrecision(2);
 
                 console.log(`Download speed: ${speed_in_mbps} Mb / s`);
                 console.log(progress);
 
-                document.querySelector('#modpack-paragraph').innerHTML = `Загрузка сборки ${Capitalize_First_Letter(modpack_name)}: ${(progress.percent * 100).toFixed()}%`
+                document.querySelector('#modpack-paragraph').innerHTML = `Загрузка сборки ${Capitalize_First_Letter(modpack_name)}: ${(progress.percent).toFixed()}%`
                 document.querySelector('#role-par').innerHTML = `Скорость: ${speed_in_mbps} Мб в секунду`;
-                document.querySelector('.download-filler').style.width = `${progress.percent * 100}%`;
+                document.querySelector('.download-filler').style.width = `${progress.percent}%`;
             }
         );
         
@@ -481,13 +481,14 @@ function download_libs(item_name)
                 core_path,
                 'libraries',
                 (progress) => {
-                    let speed_in_mbps = progress.speed;
+                    let speed_in_mbps = (progress.speed / 1024 / 1024).toPrecision(2);
 
                     console.log(`Download speed: ${speed_in_mbps} Mb / s`);
+                    console.log(progress);
 
-                    document.querySelector('#modpack-paragraph').innerHTML = `Скачивание Библиотек: ${(progress.percent * 100).toFixed()}%`
+                    document.querySelector('#modpack-paragraph').innerHTML = `Скачивание Библиотек: ${(progress.percent).toFixed()}%`
                     document.querySelector('#role-par').innerHTML = `Скорость: ${speed_in_mbps * 8} Мб в секунду`;
-                    document.querySelector('.download-filler').style.width = `${progress.percent * 100}%`;
+                    document.querySelector('.download-filler').style.width = `${progress.percent}%`;
                 },
                 modpack_versions[item_name]
             );

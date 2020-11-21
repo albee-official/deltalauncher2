@@ -11,6 +11,7 @@ console.log(os);
 const log = require('electron-log');
 const { autoUpdater } = require("electron-updater");
 const { resolve } = require("path");
+const { data } = require("jquery");
 
 autoUpdater.autoDownload = false;
 
@@ -21,7 +22,6 @@ log.info('App starting...');
 let userInfo = {};
 keytar.findCredentials('Delta').then(res => {
   userInfo = res;
-  console.log(userInfo);
 });
 electronDl();
 
@@ -122,6 +122,7 @@ app.on("activate", () => {
 //#region //. IPC -----------------------------------------
 
 //#region //. Download 
+let progressUpdateInterval = undefined;;
 let downloading_item = false;
 let download_canceled = false;
 let total_download_size = 0;
@@ -132,6 +133,12 @@ let requests = [];
 function cancel_current_download()
 {
   return new Promise((resolve, reject) => {
+    if (progressUpdateInterval != undefined) 
+    {
+      clearInterval(progressUpdateInterval);
+      progressUpdateInterval = undefined;
+    }
+
     download_canceled = true;
     downloading_item = false;
     for (let req of requests)
@@ -196,7 +203,7 @@ function threadless_download(event, url, path, filename)
   });
 }
 
-function create_download_thread(start_bytes, finish_bytes, url, path, thread_num, onProgress)
+function create_download_thread({start_bytes, finish_bytes, url, path, thread_num, onData})
 { 
   return new Promise(async (resolve, reject) => {
     let thread_created_successfully = false;
@@ -242,19 +249,7 @@ function create_download_thread(start_bytes, finish_bytes, url, path, thread_num
 
         req.on('data', function(chunk) {
             // Update the received bytes
-            received_bytes += chunk.length;
-
-            let progress = {speed: 0, percentage: 0};
-
-            progress.speed = chunk.length;
-
-            progress.totalBytes = total_bytes;
-            progress.transferredBytes = received_bytes;
-
-            let percent = (received_bytes) / total_bytes;
-            progress.percent = percent;
-
-            onProgress(progress);
+            onData(chunk.length);
         });
 
         req.on('end', function() {
@@ -276,6 +271,19 @@ function threaded_download(event, url, path, filename, threads, total_bytes) {
 
     let finished = 0;
     let biggest_percent = 0;
+    let bytes_received_total = 0;
+    let bytes_recieved_in_second = 0;
+
+    progressUpdateInterval = setInterval(() => {
+      let progress = {'totalBytes': 0, 'percent': 0, 'speed': 0}
+      progress['totalBytes'] = total_bytes;
+      progress['totalBytesReceived'] = bytes_received_total;
+      progress['percent'] = (bytes_received_total / total_bytes) * 100;
+      progress['speed'] = bytes_recieved_in_second * 2;
+
+      event.reply('download-progress', progress)
+      bytes_recieved_in_second = 0;
+    }, 500);
 
     //. Split By Chunks of Data
     for (let i = 0; i < threads; i++) {
@@ -285,41 +293,48 @@ function threaded_download(event, url, path, filename, threads, total_bytes) {
       let chunk_finish = Math.floor((total_bytes / threads) * (i + 1));
 
       //. Create download thread
-      create_download_thread(
-        chunk_start, 
-        chunk_finish, 
-        url, 
-        path, 
-        i, 
-        function (progress) {
-          if (biggest_percent.toPrecision(1) < progress.percent.toPrecision(1)) {
-            event.reply("download-progress", progress);
+      create_download_thread({
+        start_bytes: chunk_start,
+        finish_bytes: chunk_finish,
+        url: url,
+        path: path,
+        thread_num: i,
+        onData: function (received) {
+          bytes_recieved_in_second += received;
+          bytes_received_total += received;
+        }
+      }).then(async (res) => { //. When Download Thread finsihed
+        console.log(`[DWNTHRD ${i}] - Finished`);
+        finished++;
+
+        //. Num of finished threads is equal to num of started threads => All threads are finished
+        if (finished == threads && !download_canceled) {
+          // Stop sending progress messages
+          if (progressUpdateInterval != undefined) 
+          {
+            clearInterval(progressUpdateInterval);
+            progressUpdateInterval = undefined;
+          }
+
+          const outputPath = path + `\\${filename}`;
+
+          let inputPathList = [];
+
+          //. Add Thread to Threads list
+          for (let i = 0; i < threads; i++) {
+            inputPathList.push(path + `\\downloadingthread${i}.thread`);
+          }
+
+          //. Merge files into one
+          const status = await merge_files(inputPathList, outputPath);
+          console.log(status);
+
+          clear_thread_files(path, threads);
+          console.log("[THREADED_DWNLD] - Finished");
+          //. 1 - success
+          resolve(path);
         }
       })
-        //. Then Download Thread finsihed
-        .then(async (res) => {
-          console.log(`[DWNTHRD ${i}] - Finished`);
-          finished++;
-          //. Num of finished threads is equal to num of started threads
-          if (finished == threads && !download_canceled) {
-            const outputPath = path + `\\${filename}`;
-
-            let inputPathList = [];
-            //. Add Thread to Threads list
-            for (let i = 0; i < threads; i++) {
-              inputPathList.push(path + `\\downloadingthread${i}.thread`);
-            }
-
-            //. Merge files into one
-            const status = await merge_files(inputPathList, outputPath);
-            console.log(status);
-
-            clear_thread_files(path, threads);
-            console.log("[THREADED_DWNLD] - Finished");
-            //. 1 - success
-            resolve(path);
-          }
-        })
         .catch((err) => console.log(err));
     }
   })
@@ -648,7 +663,6 @@ autoUpdater.on('update-downloaded', (info) => {
 //#region //. Log out
 ipcMain.on('logout', (event, args) => {
   win.loadFile('src/pages/start/index.html');
-  console.log(userInfo['username']);
   keytar.deletePassword('Delta', userInfo['username']);
   userInfo = {};
   event.reply('succesfull logout')

@@ -47,6 +47,7 @@ let modpack_folders = {};
 let dir_root = app.getPath("appData") + "\\.delta";
 const modpacks_path = dir_root + "\\modpacks";
 const settings_path = dir_root + "\\settings.json";
+const themes_path = dir_root + "\\themes.json";
 const libs_path = dir_root + "\\libs";
 const res_path = dir_root + "\\resources";
 
@@ -61,6 +62,11 @@ function verify_root_dirs()
     {
         fs.createFileSync(settings_path);
     }
+
+    if (!fs.pathExistsSync(themes_path))
+    {
+        fs.createFileSync(themes_path);
+    }
     
 }
 
@@ -72,6 +78,16 @@ function verify_and_get_settings_file()
     }
     return settings_path;
 }
+
+function verify_and_get_themes_file()
+{
+    if (!fs.pathExistsSync(themes_path))
+    {
+        fs.createFileSync(themes_path);
+    }
+    return themes_path;
+}
+
 
 function verify_and_get_modpack_folder(modpack_name)
 {

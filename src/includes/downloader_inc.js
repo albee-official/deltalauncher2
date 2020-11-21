@@ -120,7 +120,8 @@ async function download_from_github_illegally(folder, item_name, onProgress, ver
             console.log(`Downloading release: ${latest_release}`);
             
             modpack_p.innerHTML = `Начинаем загрузку: ${Capitalize_First_Letter(item_name)}`;
-            role_p.innerHTML = 'Ожидание ответа сервера';
+            role_p.innerHTML = 'Ожидание ответа сервера<span class="loading"></span>';
+            update_loadings();
 
             await set_libs_version_to_info(item_name, latest_release, version);
         } 
@@ -132,6 +133,7 @@ async function download_from_github_illegally(folder, item_name, onProgress, ver
             
             modpack_p.innerHTML = `Начинаем загрузку: ${Capitalize_First_Letter(item_name)}`;
             role_p.innerHTML = 'Ожидание ответа сервера<span class="loading"></span>';
+            update_loadings();
 
             await set_modpack_version_to_info(item_name, latest_release['name']);
         }
@@ -145,7 +147,8 @@ async function download_from_github_illegally(folder, item_name, onProgress, ver
                 // FINISH IT! (puts mods where they should be and deletes extras)
                 modpack_p.innerHTML = 'Завершение: Перенос файлов<span class="loading"></span>';
                 await process_libs(folder);
-                modpack_p.innerHTML = 'Завершение: Удаление архива загрузки<span class="loading"></span>';
+                modpack_p.innerHTML = 'Завершение: Удаление архива загрузки<span class="loading"></span>';c
+                update_loadings();
                 await clean_up(folder + `\\` + fs.readdirSync(folder)[0], zip_path);
                 console.log(item_name);
                 resolve(folder);
@@ -156,6 +159,7 @@ async function download_from_github_illegally(folder, item_name, onProgress, ver
                 modpack_p.innerHTML = 'Завершение: Перенос файлов<span class="loading"></span>';
                 await process_modpack(folder, item_name);
                 modpack_p.innerHTML = 'Завершение: Удаление архива загрузки<span class="loading"></span>';
+                update_loadings();
                 await clean_up(folder + `\\` + fs.readdirSync(folder)[0], zip_path);
                 console.log(item_name);
                 resolve(folder);
@@ -194,29 +198,18 @@ async function download_from_github_illegally(folder, item_name, onProgress, ver
                 filename: 'modpack.zip'
             });
 
-            let progress = {totalBytes: 0, percent: 0, speed: 0};
-            let speed_update;
 
             ipcRenderer.on('got-download-size', (event) => {
-                speed_update = setInterval(() => {
-                    progress.speed = (progress.speed / 1024 / 1024 * 8 * 10).toPrecision(2);
-                    onProgress(progress);
-                    progress = {totalBytes: 0, percent: 0, speed: 0};
-                }, 100);
+                // Finally got some size
             }); 
 
             ipcRenderer.on('download-cancelled', (event) => {
-                clearInterval(speed_update);
+                // Download cancelled
             }); 
 
             // Redirects reply on progress to caller of the function
-            ipcRenderer.on('download-progress', (event, _progress) => {
-                progress['totalBytes'] += _progress['totalBytes'];
-                if (_progress['percent'] > progress['percent'])
-                {
-                    progress['percent'] = _progress['percent'];
-                }
-                progress['speed'] += _progress['speed'];
+            ipcRenderer.on('download-progress', (event, progress) => {
+                onProgress(progress);
             });
 
             // Unzipps after download is completed
@@ -225,10 +218,9 @@ async function download_from_github_illegally(folder, item_name, onProgress, ver
                 console.log(`download completed: ${url}`);
                 console.log('Unzipping...');
 
-                clearTimeout(speed_update);
-
                 // Unzip downloaded file
                 modpack_p.innerHTML = 'Завершение: Распаковка файлов<span class="loading"></span>';
+                update_loadings();
                 role_p.innerHTML = 'Не выключайте лаунчер!';
                 await extract_zip(zip_path, folder);
 
@@ -236,6 +228,7 @@ async function download_from_github_illegally(folder, item_name, onProgress, ver
                 {
                     // FINISH IT! (puts mods where they should be and deletes extras)
                     modpack_p.innerHTML = 'Завершение: Удаление архива загрузки<span class="loading"></span>';
+                    update_loadings();
                     console.log(item_name);
                     resolve(folder);
                 }
@@ -243,6 +236,7 @@ async function download_from_github_illegally(folder, item_name, onProgress, ver
                 {
                     // FINISH IT! (puts mods where they should be and deletes extras)
                     modpack_p.innerHTML = 'Завершение: Перенос файлов<span class="loading"></span>';
+                    update_loadings();
                     let folders = fs.readdirSync(folder);
                     let found_folder;
                     for (let el of folders)
@@ -254,6 +248,7 @@ async function download_from_github_illegally(folder, item_name, onProgress, ver
                     }
                     await process_modpack(folder, found_folder);
                     modpack_p.innerHTML = 'Завершение: Удаление архива загрузки<span class="loading"></span>';
+                    update_loadings();
                     await clean_up(folder + `\\` + found_folder, zip_path);
                     console.log(item_name);
                     resolve(folder);
@@ -319,7 +314,7 @@ function process_modpack(modpack_folder, found_folder) {
     });
 }
 
-function process_libs(libs_folder, found_folder) {
+async function process_libs(libs_folder, found_folder) {
     return new Promise(async (resolve, reject) => {
         console.log('Finishing...');
 
@@ -328,17 +323,17 @@ function process_libs(libs_folder, found_folder) {
 
         // Copy files from downloaded folder to new one
         console.log('Moving: assets...');
-        fs.moveSync(sub_folder + `\\assets`, libs_folder + `\\assets`);
+        await fs.move(sub_folder + `\\assets`, libs_folder + `\\assets`);
 
         console.log(fs.readdirSync(libs_folder));
 
         console.log('Moving: libraries...');
-        fs.moveSync(sub_folder + `\\libraries`, libs_folder + `\\libraries`);
+        await fs.move(sub_folder + `\\libraries`, libs_folder + `\\libraries`);
 
         console.log(fs.readdirSync(libs_folder));
 
         console.log('Moving: versions...');
-        fs.moveSync(sub_folder + `\\versions`, libs_folder + `\\versions`);
+        await fs.move(sub_folder + `\\versions`, libs_folder + `\\versions`);
 
         console.log(fs.readdirSync(libs_folder));
         
@@ -360,7 +355,12 @@ async function clean_up(downloaded_folder, zip_path)
 
     console.log(`Removing ${downloaded_folder}`);
     // removes downloaded folder (folder from zip)
-    rimraf.sync(downloaded_folder);
+    await rimraf(downloaded_folder, err => {
+        if (err) {
+            console.warn(err);
+            reject(err);
+        }
+    });
 
     console.log('All Clear! Ready to launch. Resolving...');
 }
