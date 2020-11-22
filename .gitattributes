@@ -1,0 +1,21 @@
+# Ignore all Documentation and Testing Data
+.gitattributes export-ignore
+.gitignore export-ignore
+README.md export-ignore
+LICENSE export-ignore
+
+# Text Qualifier
+* text=auto
+
+*.md text eol=lf
+
+*.cfg text eol=crlf
+*.conf text eolf=crlf
+
+*.css diff=css eol=crlf
+*.js diff=javascript eol=clrf
+*.html diff=html eol=clrf
+
+*.png binary
+*.jpg binary
+*.bmp binary
