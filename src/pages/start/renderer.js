@@ -157,6 +157,10 @@ function hideTopContent() {
     document.getElementById('top').style.animationPlayState = 'running';
     document.getElementById('top').style.clipPath = 'circle(128% at 6% 50%)';
 
+    document.getElementById('logo').style.animation = 'finished-top-contents 1s cubic-bezier(0.645, 0.045, 0.355, 1) paused';
+    document.getElementById('logo').style.animationPlayState = 'running';
+    document.getElementById('logo').style.opacity = '0';
+
     document.getElementById('close-btn').removeEventListener('mouseover', exitLisHover);
     document.getElementById('close-btn').removeEventListener('mouseleave', exitLisLeave);
     document.getElementById('minimize-btn').removeEventListener('mouseover', minimizeLisHover);
@@ -442,7 +446,8 @@ checkUpdate().then(() => {
     }
 });
 
-document.getElementById('login-button').addEventListener('click', () => {
+document.getElementById('login-button').addEventListener('click', (e) => {
+    e.preventDefault();
     login().then(() => {
         finish();
     });

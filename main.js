@@ -539,7 +539,7 @@ let presence = {
   joinSecret: 'starting_app',
   partyId: "delta",
   partySize: 1,
-  partyMax: 2,
+  partyMax: 64,
 };
 
 client.on('join', message => {
