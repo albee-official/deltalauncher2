@@ -6,8 +6,7 @@ const { shell } = require('electron');
 const hidefile = require('hidefile');
 
 let os = require('os');
-console.log(os);
-console.log(os.arch());
+console.log(`[INFO] os type: ${os.arch()}`);
 let os_version = os.release().split('.')[0];
 
 const modpacks = [
@@ -174,7 +173,7 @@ function apply_control_settings() {
 
         let options_path = modpack_folder + '\\options.txt';
         if (!fs.existsSync(options_path)) { 
-            console.log('there is no options in' + modpack_name);
+            console.log('[SETTINGS] There is no options in ' + modpack_name);
             continue;
         }
 
@@ -199,8 +198,8 @@ function apply_control_settings() {
             }
 
             let old_control_line = `${minecraft_key}:${val}`;
-            console.log(old_control_line);
-            console.log(new_control_line);
+            console.log(`[SETTINGS] ${old_control_line}`);
+            console.log(`[SETTINGS] ${new_control_line}`);
             new_options_string = new_options_string.toString().replace(old_control_line, new_control_line);
         }
         
@@ -219,7 +218,7 @@ function modpack_not_installed(modpack_name)
 function libs_folder_empty(modpack_name)
 {
     let _libs_path = verify_and_get_libs_folder(modpack_name) + '\\' + modpack_versions[modpack_name];
-    console.log(_libs_path);
+    console.log(`[SETTINGS] ${_libs_path}`);
     if (!fs.pathExistsSync(`${_libs_path}\\assets`))
     {
         return true;
@@ -238,7 +237,7 @@ function libs_folder_empty(modpack_name)
 function check_libs_in_mod(modpack_name)
 {
     let _modpack_path = verify_and_get_modpack_folder(modpack_name);
-    console.log(_modpack_path);
+    console.log(`[SETTINGS] ${_modpack_path}`);
     if (!fs.pathExistsSync(`${_modpack_path}\\assets`))
     {
         return false;
@@ -257,7 +256,7 @@ function check_libs_in_mod(modpack_name)
 function copy_libs_to_modpack(modpack_name)
 {
     let _modpack_path = verify_and_get_modpack_folder(modpack_name);
-    console.log(_modpack_path);
+    console.log(`[SETTINGS] ${_modpack_path}`);
     fs.copySync(libs_path + '\\' + modpack_versions[modpack_name] + '\\libraries', _modpack_path + '\\libraries');
     fs.copySync(libs_path + '\\' + modpack_versions[modpack_name] + '\\assets', _modpack_path + '\\assets');
     fs.copySync(libs_path + '\\' + modpack_versions[modpack_name] + '\\versions', _modpack_path + '\\versions');
@@ -279,16 +278,16 @@ function integrate_java_parameters(command)
         if (parameter.includes('-Xmx'))
         {
             let par_prototype = `-Xmx${settings['allocated_memory'] * 1024}M`;
-            console.log(par_prototype);
-            console.log(parameter);
+            console.log(`[LAUNCH] ${par_prototype}`);
+            console.log(`[LAUNCH] ${parameter}`);
             command = command.replace(par_prototype, parameter);
             continue;
         }
         else if (parameter.includes('-Xms'))
         {
             let par_prototype = `-Xms1000M`;
-            console.log(par_prototype);
-            console.log(parameter);
+            console.log(`[LAUNCH] ${par_prototype}`);
+            console.log(`[LAUNCH] ${parameter}`);
             command = command.replace(par_prototype, parameter);
             continue;
         }
@@ -323,12 +322,44 @@ function verify_and_get_path_to_info(item_name, version = '')
     return path;
 }
 
+async function get_shaders(modpack_name)
+{
+    let dir = verify_and_get_modpack_folder(modpack_name) + '\\shaderpacks';
+    let shaders = {};
+    let shader_names = await fs.readdir(dir)
+    shader_names.push('Без шейдера')
+
+    let selected_shader = await show_select_from_list('Выберите шейдер по умолчанию', shader_names);
+    await update_shader(modpack_name, selected_shader);
+}
+
+async function update_shader(modpack_name, shader_name)
+{
+    let dir = verify_and_get_modpack_folder(modpack_name);
+
+    // Switch fst render off if needed
+    let options_path = dir + '\\optionsof.txt';
+    let optionsof_contents = (await fs.readFile(options_path)).toString();
+    if (optionsof_contents.includes('ofFastRender:true')) {
+        console.log('[SETTINGS] turning off fast render');
+        optionsof_contents.replace('ofFastRender:true', 'ofFastRender:false');
+        await fs.writeFile(options_path, optionsof_contents);
+    }
+
+    let shaderoptions_path = dir + '\\optionsshaders.txt';
+    let shaderoptions_content = (await fs.readFile(shaderoptions_path)).toString().split('\n');
+    shaderoptions_content[1] = `shaderPack=${shader_name}`;
+    shaderoptions_content = shaderoptions_content.join('\n');
+    console.log('[SETTINGS] changing shader');
+    await fs.writeFile(shaderoptions_path, shaderoptions_content);
+}
+
 function get_modpack_version_from_info(modpack_name)
 {
     let path = verify_and_get_path_to_info(modpack_name);
-    console.log(`reading from ${path}`);
+    console.log(`[SETTINGS]  reading from ${path}`);
     let json = JSON.parse(fs.readFileSync(path));
-    console.log(json);
+    console.log(`[SETTINGS] ${json}`);
     if (json['version'] == undefined || json['version'] == '' || json['version'] == null)
     {
         json['version'] = 'v0.0.0.0';
@@ -339,7 +370,7 @@ function get_modpack_version_from_info(modpack_name)
 function set_modpack_version_to_info(modpack_name, version)
 {
     let path = verify_and_get_path_to_info(modpack_name);
-    console.log(`writing to ${path}`);
+    console.log(`[SETTINGS] writing to ${path}`);
     let json = JSON.parse(fs.readFileSync(path));
     json['version'] = version;
     fs.writeFileSync(path, JSON.stringify(json));
@@ -348,7 +379,7 @@ function set_modpack_version_to_info(modpack_name, version)
 function set_libs_version_to_info(modpack_name, version, libs_version)
 {
     let path = verify_and_get_path_to_info(modpack_name, libs_version);
-    console.log(`writing to ${path}`);
+    console.log(`[SETTINGS] writing to ${path}`);
     let json = JSON.parse(fs.readFileSync(path));
     json['version'] = version;
     fs.writeFileSync(path, JSON.stringify(json));
@@ -392,12 +423,12 @@ function get_latest_java_version_path()
         {
             if (os.arch() == 'x64')
             {
-                console.log(path.join(app.getAppPath().split('app.asar')[0], '\\src\\res\\java\\runtime-windows-x64\\bin\\javaw.exe'));
+                console.log(`[LAUNCH] Latest java: ${path.join(app.getAppPath().split('app.asar')[0], '\\src\\res\\java\\runtime-windows-x64\\bin\\javaw.exe')}`);
                 resolve(path.join(app.getAppPath().split('app.asar')[0], '\\src\\res\\java\\runtime-windows-x64\\bin\\javaw.exe'));
             }
             else
             {
-                console.log(path.join(app.getAppPath().split('app.asar')[0], '\\src\\res\\java\\runtime\\bin\\javaw.exe'));
+                console.log(`[LAUNCH] Latest java: ${path.join(app.getAppPath().split('app.asar')[0], '\\src\\res\\java\\runtime\\bin\\javaw.exe')}`);
                 resolve(path.join(app.getAppPath().split('app.asar')[0], '\\src\\res\\java\\runtime\\bin\\javaw.exe'));
             }
         }
@@ -421,7 +452,7 @@ function launch_minecraft(min_mem, max_mem, game_dir, username, uuid, _modpack_n
 
         let modpack_name = _modpack_name;
 
-        console.log(`[${modpack_name.toUpperCase()}] ${final_command}`);
+        console.log(`[LAUNCH] [${modpack_name.toUpperCase()}] ${final_command}`);
         minecraft = exec(final_command, { 
             windowsHide: true,
             maxBuffer: 1024 * 1024 * 1024,
@@ -441,7 +472,7 @@ function launch_minecraft(min_mem, max_mem, game_dir, username, uuid, _modpack_n
         console.log(minecraft);
 
         minecraft.stdout.on('data', data => {
-            console.log(`[${modpack_name.toUpperCase()}] ${data.toString()}`);
+            console.log(`[LAUNCH] [${modpack_name.toUpperCase()}] ${data.toString()}`);
             if (data.toString().split('Starts to replace vanilla recipe ingredients with ore ingredients.').length > 1)
             {
                 minecraftLaunched = true;
@@ -455,7 +486,7 @@ function launch_minecraft(min_mem, max_mem, game_dir, username, uuid, _modpack_n
 
             if (data.toString().split('The game loaded in approximately').length > 1)
             {
-                console.log('picoc');
+                console.log('[LAUNCH] game window opened');
                 ipcRenderer.sendSync('rich-presence-to', {
                     details: `В меню: ${Capitalize_First_Letter(modpack_name)}`,
                 });
@@ -467,7 +498,7 @@ function launch_minecraft(min_mem, max_mem, game_dir, username, uuid, _modpack_n
         });
     
         minecraft.on('exit', error => {
-            console.log(error);
+            console.log(`[LAUNCH] ${error}`);
             minecraftLaunched = false;
             play_button.innerHTML = 'Играть';
             document.querySelector('#launch-menu').classList.remove('open');

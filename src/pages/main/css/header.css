@@ -1,7 +1,7 @@
 header{
     z-index: 5;
 
-    background-color: rgb(var(--header-bg));
+    background-color: var(--header-bg);
     height: 96px;
     width: 100%;
 
@@ -37,7 +37,7 @@ header{
     position: relative;
     bottom: 0;
 
-    color: rgb(var(--header-text));
+    color: var(--header-text);
     transition: all .2s cubic-bezier(0.215, 0.610, 0.355, 1);
 }
 
@@ -47,7 +47,8 @@ header{
     position: relative;
     bottom: 0;
 
-    background-color: rgb(var(--header-text));
+    background-color: var(--header-text);
+    border-radius: 1px;
     opacity: 0;
     
     transition: all .4s cubic-bezier(0.215, 0.610, 0.355, 1);
@@ -63,11 +64,11 @@ header{
 }
 
 .active .nav-text{
-    color: rgb(var(--header-text-active));
+    color: var(--header-text-active);
 }
 
 .active .nav-line{
-    background: var(--header-underline-active);
+    background: var(--header-text-active);
     opacity: 1;
 }
 
@@ -85,7 +86,7 @@ header{
     justify-content: center;
 
     border-radius: 100%;
-    border: rgb(var(--header-profile-border)) 4px solid;
+    border: var(--header-profile-border);
 }
 
 .profile-picture img{
@@ -103,11 +104,11 @@ header{
 .profile-name{
     font-size: 20px;
     font-weight: bold;
-    color: rgb(var(--mid));
+    color: var(--header-profile-username);
 }
 
 .profile-sub{
-    color: rgb(var(--header-text));
+    color: var(--header-profile-logout);
     font-size: 14px;
     font-weight: bold;
     cursor: pointer;
@@ -115,5 +116,5 @@ header{
 }
 
 .profile-sub:hover{
-    color: rgb(var(--mid));
+    color: var(--header-profile-username);
 }

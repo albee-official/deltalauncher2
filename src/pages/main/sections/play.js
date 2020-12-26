@@ -186,10 +186,6 @@ function UpdateRedownloadCheckBox() {
         activate_play_button();
     }
 
-    console.log(cb);
-    console.log(label);
-    console.log(modpack_installed_bool);
-
     if (!modpack_installed_bool) {
         label.className = 'checkbox unactive';
     } else {
@@ -534,7 +530,7 @@ function cancel_current_download()
 let play_memory_range = document.querySelector('#play-memory-range');
 
 let max_setable_ram = Math.floor(os.freemem() / 1024 / 1024 / 1024);
-console.log(max_setable_ram);
+console.log(`[SETTINGS] Ram available to allocate: ${max_setable_ram}`);
 let min_setable_ram = 4; 
 
 // runs when user moves the slider

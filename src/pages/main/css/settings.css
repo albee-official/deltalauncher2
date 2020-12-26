@@ -42,7 +42,7 @@
 .range-stop {
     font-size: 12px;
     font-weight: bold;
-    opacity: .35;
+    opacity: var(--main-text-p-opacity);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -62,7 +62,7 @@
 .marker {
     width: 4px;
     height: 8px;
-    background-color: rgb(var(--main-text));
+    background: rgba(var(--main-text-rgb), 1);
     opacity: .5;
     border-radius: 2px;
 }
@@ -90,7 +90,7 @@
     width: 100%;
     height: 3px;
     border-radius: 5px;
-    background: rgba(var(--main-text), .25);
+    background: var(--slider-bg);
     outline: none;
     -webkit-transition: .2s;
     transition: opacity .2s;
@@ -103,7 +103,7 @@
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    background: rgb(var(--main-text));
+    background: rgba(var(--main-text-rgb), 1);
     cursor: pointer;
 }
 
@@ -111,7 +111,7 @@
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    background: rgb(var(--main-text));
+    background: rgba(var(--main-text-rgb), 1);
     cursor: pointer;
 }
 
@@ -127,7 +127,7 @@
 }
 
 .range:hover .range-slider{
-    background: rgba(var(--main-text), .4);
+    background: var(--slider-bg-hover);
 }
 
 .range:hover .range-stop {
@@ -149,17 +149,16 @@
     display: flex;
     width: unset;
 
-    color: rgb(var(--main-text));
+    color: rgba(var(--main-text-rgb), var(--main-text-p-opacity));
     font-size: 17px;
     font-weight: 700;
-    opacity: .35;
     cursor: default;
 
     transition: all .1s cubic-bezier(0.23, 1, 0.320, 1);
 }
 
 .controll-setting:hover {
-    opacity: .5;
+    color: rgba(var(--main-text-rgb), var(--main-text-p-opacity-hover));
 }
 
 .controll-setting-name {
@@ -179,28 +178,28 @@
 
     background: none;
     border: none;
-    border-bottom: rgb(var(--main-text)) solid 3px;
+    border-bottom: rgba(var(--main-text-rgb), 1) solid 3px;
     padding: 6px;
 
-    color: rgb(var(--main-text));
+    color: var(--main-h1);
     font-size: 16px;
     font-weight: 600;
 
-    opacity: .35;
+    opacity: var(--main-text-p-opacity);
 
     transition: all .1s cubic-bezier(0.23, 1, 0.320, 1);
 }
 
 .settings-java-parameters-input:focus {
-    opacity: .5;
+    opacity: var(--main-text-p-opacity-hover);
 }
 
 .settings-java-parameters-input:hover {
-    opacity: .5;
+    opacity: var(--main-text-p-opacity-hover);
 }
 
 .settings-java-parameters-input::placeholder {
-    color: rgb(var(--main-text));
+    color: rgba(var(--main-text-rgb), var(--main-text-p-opacity));
     font-size: 16px;
     font-weight: 600;
 }
@@ -215,10 +214,10 @@
 }
 
 .additional-setting p{
-    color: rgb(var(--main-text));
+    color: rgba(var(--main-text-rgb), 1);
     font-size: 16px;
     font-weight: 600;
-    opacity: .35;
+    opacity: var(--main-text-p-opacity);
     position: relative;
     top: 16px;
     cursor: pointer;
@@ -227,20 +226,20 @@
 }
 
 .additional-setting:hover p{
-    opacity: .5;
+    opacity: var(--main-text-p-opacity-hover);
 }
 
 .additional-setting-name {
-    color: rgb(var(--main-text));
+    color: rgba(var(--main-text-rgb), 1);
     font-size: 16px;
     font-weight: 600;
-    opacity: .35;
+    opacity: var(--main-text-p-opacity);
 
     transition: all .1s cubic-bezier(0.23, 1, 0.320, 1);
 }
 
 .additional-setting:hover .additional-setting-name {
-    opacity: .5;
+    opacity: var(--main-text-p-opacity-hover);
 }
 
 .directories-list {
@@ -252,14 +251,14 @@
     display: flex;
     margin-bottom: 8px;
 
-    color: rgb(var(--main-text));
+    color: rgba(var(--main-text-rgb), 1);
     font-size: 16px;
     font-weight: 600;
 }
 
 .directory-modpack-name {
     min-width: 86px;
-    opacity: .35;
+    opacity: var(--main-text-p-opacity);
     cursor: default;
 
     transition: all .1s cubic-bezier(0.23, 1, 0.320, 1);
@@ -271,14 +270,14 @@
 
 .directory-path {
     margin-right: 16px;
-    opacity: .35;
+    opacity: var(--main-text-p-opacity);
     cursor: pointer;
 
     transition: all .1s cubic-bezier(0.23, 1, 0.320, 1);
 }
 
 .directory-path:hover {
-    opacity: .5;
+    opacity: var(--main-text-p-opacity-hover);
 }
 
 .updating .directory-path {
@@ -302,8 +301,8 @@
 
 .handy-function {
     margin-bottom: 8px;
-    opacity: .35;
-    color: rgb(var(--main-text));
+    opacity: var(--main-text-p-opacity);
+    color: rgba(var(--main-text-rgb), 1);
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
@@ -312,13 +311,13 @@
 }
 
 .handy-function:hover {
-    opacity: .5;
+    opacity: var(--main-text-p-opacity-hover);
 }
 
 .settings-element-p{
     margin-bottom: 8px;
-    opacity: .35;
-    color: rgb(var(--main-text));
+    opacity: var(--main-text-p-opacity);
+    color: rgba(var(--main-text-rgb), 1);
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
@@ -327,7 +326,7 @@
 }
 
 .settings-element-p:hover{
-    opacity: .5;
+    opacity: var(--main-text-p-opacity-hover);
 }
 
 .key-select-menu{
@@ -336,7 +335,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(var(--darkest), .75);
+    background-color: var(--main-bg);
     z-index: 10;
     opacity: 0;
     display: flex;
@@ -360,7 +359,7 @@
 }
 
 .key-select-container h1{
-    color: rgb(var(--main-text));
+    color: rgba(var(--main-text-rgb), 1);
     font-weight: bold;
     font-size: 32px;
     cursor: pointer;
@@ -368,10 +367,10 @@
 
 .key-select-container p{
     margin-top: 4px;
-    color: rgb(var(--main-text));
+    color: rgba(var(--main-text-rgb), 1);
     font-weight: bold;
     font-size: 24px;
-    opacity: .25;
+    opacity: var(--main-text-p-opacity);
     cursor: pointer;
 }
 
@@ -381,7 +380,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(var(--darkest), .75);
+    background-color: var(--main-bg);
     z-index: 20;
     opacity: 0;
     display: flex;
@@ -403,7 +402,7 @@
 }
 
 .modpack-select-container h1{
-    color: rgb(var(--main-text));
+    color: rgba(var(--main-text-rgb), 1);
     font-weight: bold;
     font-size: 32px;
     cursor: pointer;
@@ -411,10 +410,10 @@
 
 .modpack-select-container p{
     margin-bottom: 4px;
-    color: rgb(var(--main-text));
+    color: rgba(var(--main-text-rgb), 1);
     font-weight: bold;
     font-size: 24px;
-    opacity: .25;
+    opacity: var(--main-text-p-opacity);
     cursor: pointer;
 
     transition: all .4s cubic-bezier(0.23, 1, 0.320, 1);
@@ -423,7 +422,7 @@
 .modpack-select-container p:hover{
     margin-bottom: 8px;
     font-size: 32px;
-    opacity: .5;
+    opacity: var(--main-text-p-opacity-hover);
 }
 
 .theme-select-menu{
@@ -432,7 +431,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(var(--darkest), .75);
+    background: var(--main-bg);
     z-index: 20;
     opacity: 0;
     display: flex;
@@ -482,7 +481,7 @@
 }
 
 .theme-select-option p{
-    color: rgb(var(--main-text));
+    color: rgba(var(--main-text-rgb), 1);
     font-weight: bold;
     font-size: 24px;
 
@@ -513,7 +512,7 @@
 
 .theme-select-container h1{
     margin-bottom: 38px;
-    color: rgb(var(--main-text));
+    color: rgba(var(--main-text-rgb), 1);
     font-weight: bold;
     font-size: 32px;
 }
@@ -524,7 +523,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(var(--darkest), .75);
+    background-color: var(--main-bg);
     z-index: 10;
     opacity: 0;
     display: flex;
@@ -546,15 +545,15 @@
 }
 
 .launch-container h1{
-    color: rgb(var(--main-text));
+    color: rgba(var(--main-text-rgb), 1);
     font-weight: bold;
     font-size: 32px;
     cursor: pointer;
 }
 
 .open{
-    opacity: 1;
-    pointer-events: all;
+    opacity: 1 !important;
+    pointer-events: all !important;
 }
 
 .open .key-select-container{
@@ -563,4 +562,55 @@
 
 .open .modpack-select-container{
     top: 0;
+}
+
+.select-menu{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--main-bg);
+    z-index: 20;
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    pointer-events: none;
+
+    transition: all 1s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.select-container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    transition: all 1s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.select-container h1{
+    color: rgba(var(--main-text-rgb), 1);
+    font-weight: bold;
+    font-size: 32px;
+    cursor: pointer;
+}
+
+.select-container p{
+    margin-bottom: 4px;
+    color: rgba(var(--main-text-rgb), 1);
+    font-weight: bold;
+    font-size: 24px;
+    opacity: var(--main-text-p-opacity);
+    cursor: pointer;
+
+    transition: all .4s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.select-container p:hover{
+    margin-bottom: 8px;
+    font-size: 32px;
+    opacity: var(--main-text-p-opacity-hover);
 }

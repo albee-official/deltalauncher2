@@ -17,7 +17,7 @@ body{
     height: 100vh;
     opacity: 0;
     width: 100%;
-    background-color: rgb(var(--main-text));
+    background: var(--header-bg);
     animation: open-window 1.6s cubic-bezier(0.645, 0.045, 0.355, 1);
 }
 

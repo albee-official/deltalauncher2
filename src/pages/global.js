@@ -2,6 +2,11 @@ String.prototype.replaceAt = function(index, replacement) {
     return this.substr(0, index) + replacement + this.substr(index + replacement.length);
 }
 
+function remove_event_listeners(el) {
+    elClone = el.cloneNode(true);
+    el.parentNode.replaceChild(elClone, el);
+}
+
 let loading_interval_updater = undefined;
 function update_loadings()
 {
@@ -22,225 +27,131 @@ update_loadings();
 
 //#region //. Theme parsing
 let themes_template = {
-    "default": {
-        "name": "default",
-        "bg_path": "../../res/bg.jpg",
-        "theme_select_options": "background: linear-gradient(to right bottom, #801336, #801336);",
-        "css": [
-            "--darkest: 45, 19, 44",
-            "--dark: 128, 19, 54",
-            "--mid: 199, 44, 65",
-            "--light: 238, 69, 64",
-            "--lightest: 255, 97, 38",
-            "--bg: linear-gradient(to right bottom, #801336, #2D132C)",
-            "--start-bg: var(--main-text)",
-            "--start-bg-decoration: 200, 200, 200",
-            "--start-header: var(--darkest)",
-            "--start-text: 200, 200, 200",
-            "--start-text-active: var(--darkest)",
-            "--start-icon: var(--start-text)",
-            "--start-login-button-bg: rgb(var(--light))",
-            "--start-login-button-text: var(--main-text)",
-            "--start-download-bar: rgb(var(--start-text))",
-            "--start-download-filler: rgb(var(--light))",
-            "--header-bg: var(--main-text)",
-            "--header-text: var(--main-text-accent)",
-            "--header-text-active: var(--light)",
-            "--header-underline-active: rgb(var(--light))",
-            "--header-profile-border: var(--light)",
-            "--header-icon: var(--darkest)",
-            "--main-text: 255, 255, 255",
-            "--main-text-accent: 200, 200, 200",
-            "--main-side-panel-bg: var(--darkest)",
-            "--footer-bg: var(--darkest)",
-            "--footer-text: var(--main-text)",
-            "--footer-download-bar: linear-gradient(to left, rgb(var(--light)), rgb(var(--mid)))",
-            "--button-bg: rgb(var(--mid))",
-            "--button-bg-hover: rgb(var(--light))",
-            "--button-text: var(--main-text)",
-            "--button-text-hover: var(--main-text)"
-        ]
-    },
-    "green hills": {
-        "name": "green hills",
-        "bg_path": "../../res/bg_greenhills.jpg",
-        "theme_select_options": "background: linear-gradient(to right bottom, #15594D, #082626);",
-        "css": [
-            "--darkest: 9, 50, 46",
-            "--dark: 47, 95, 88",
-            "--mid: 225, 255, 194",
-            "--light: 225, 255, 194",
-            "--lightest: 241, 255, 226",
-
-            "--bg: linear-gradient(to right bottom, #2E4A31, #122116)",
-
-            "--start-bg: 3, 20, 19",
-            "--start-bg-decoration: 9, 50, 46",
-            "--start-header: var(--main-text)",
-            "--start-text: 91, 155, 146",
-            "--start-text-active: var(--main-text)",
-            "--start-icon: var(--main-text)",
-            "--start-login-button-bg: rgb(var(--light))",
-            "--start-login-button-text: var(--darkest)",
-            "--start-download-bar: rgb(var(--start-text))",
-            "--start-download-filler: rgb(var(--light))",
-
-            "--header-bg: var(--darkest)",
-            "--header-text: var(--dark)",
-            "--header-text-active: var(--light)",
-            "--header-underline-active: rgb(var(--light))",
-            "--header-profile-border: var(--light)",
-            "--header-icon: var(--main-text)",
-
-            "--main-text: 255, 255, 255",
-            "--main-text-accent: 200, 200, 200",
-            "--main-side-panel-bg: var(--darkest)",
-
-            "--footer-bg: 3, 20, 19",
-            "--footer-text: var(--main-text)",
-            "--footer-download-bar: linear-gradient(to left, rgb(var(--light)), rgb(var(--mid)))",
-
-            "--button-bg: rgb(var(--light))",
-            "--button-bg-hover: rgb(var(--lightest))",
-            "--button-text: var(--darkest)",
-            "--button-text-hover: var(--darkest)"
-        ]
-    },
-    "night sky": {
-        "name": "night sky",
-        "bg_path": "../../res/bg_nightsky.jpg",
-        "theme_select_options": "background: linear-gradient(to right bottom, #171D37, #0E1327);",
-        "css": [
-            "--darkest: 12, 29, 49",
-            "--dark: 54, 90, 132",
-            "--mid: 154, 179, 245",
-            "--light: 163, 185, 244",
-            "--lightest: 185, 236, 255",
-
-            "--bg: linear-gradient(to right bottom, #0F3057, #173150)",
-
-            "--start-bg: var(--darkest)",
-            "--start-bg-decoration: 23, 49, 80",
-            "--start-header: var(--main-text)",
-            "--start-text: var(--mid)",
-            "--start-text-active: var(--main-text)",
-            "--start-icon: var(--start-text)",
-            "--start-login-button-bg: linear-gradient(to left bottom, rgb(var(--mid)), rgb(var(--mid)))",
-            "--start-login-button-text: var(--darkest)",
-            "--start-download-bar: rgb(var(--start-text))",
-            "--start-download-filler: linear-gradient(to right, rgb(var(--light)), rgb(var(--mid)))",
-
-            "--header-bg: var(--darkest)",
-            "--header-text: var(--dark)",
-            "--header-text-active: var(--mid)",
-            "--header-underline-active: rgb(var(--mid))",
-            "--header-profile-border: var(--header-text)",
-            "--header-icon: var(--dark)",
-
-            "--main-text: 255, 255, 255",
-            "--main-text-accent: 200, 200, 200",
-            "--main-side-panel-bg: var(--darkest)",
-
-            "--footer-bg: var(--darkest)",
-            "--footer-text: var(--main-text)",
-            "--footer-download-bar: linear-gradient(to left, rgb(var(--light)), rgb(var(--mid)))",
-
-            "--button-bg: rgb(var(--light))",
-            "--button-bg-hover: rgb(var(--lightest))",
-            "--button-text: var(--darkest)",
-            "--button-text-hover: var(--darkest)"
-        ]
-    },
-    "dark sun": {
-        "name": "dark sun",
-        "bg_path": "../../res/bg_darksun.jpg",
-        "theme_select_options": "background: linear-gradient(to right bottom, #4A2E37, #211712);",
-        "css": [
-            "--darkest: 15, 12, 17",
-            "--dark: 128, 19, 54",
-            "--mid: 224, 88, 99",
-            "--light: 224, 88, 99",
-            "--lightest: 252, 102, 114",
-
-            "--bg: linear-gradient(to right bottom, #4A2E37, #211712)",
-
-            "--start-bg: var(--darkest)",
-            "--start-bg-decoration: 36, 30, 40",
-            "--start-header: var(--main-text)",
-            "--start-text: 84, 74, 90",
-            "--start-text-active: var(--main-text)",
-            "--start-icon: var(--main-text)",
-            "--start-login-button-bg: rgb(var(--light))",
-            "--start-login-button-text: var(--main-text)",
-            "--start-download-bar: rgb(36, 30, 40)",
-            "--start-download-filler: rgb(var(--light))",
-
-            "--header-bg: var(--darkest)",
-            "--header-text: 78, 67, 85",
-            "--header-text-active: var(--light)",
-            "--header-underline-active: rgb(var(--light))",
-            "--header-profile-border: var(--light)",
-            "--header-icon: var(--main-text)",
-            
-            "--main-text: 255, 255, 255",
-            "--main-text-accent: 200, 200, 200",
-            "--main-side-panel-bg: var(--darkest)",
-
-            "--footer-bg: var(--darkest)",
-            "--footer-text: var(--main-text)",
-            "--footer-download-bar: linear-gradient(to left, rgb(var(--light)), rgb(var(--mid)))",
-
-            "--button-bg: rgb(var(--light))",
-            "--button-bg-hover: rgb(var(--lightest))",
-            "--button-text: var(--darkest)",
-            "--button-text-hover: var(--darkest)"
-        ]
-    },
-    "eternal void": {
-        "name": "eternal void",
-        "bg_path": "../../res/bg_eternalvoid.png",
-        "theme_select_options": "background: linear-gradient(to right bottom, #262626, #000000);",
-        "css": [
-            "--darkest: 0, 0, 0",
-            "--dark: 38, 38, 38",
-            "--mid: 97, 97, 97",
-            "--light: 164, 164, 164",
-            "--lightest: 193, 193, 193",
-
-            "--bg: linear-gradient(to right bottom, #000000, #262626)",
-
-            "--start-bg: var(--darkest)",
-            "--start-bg-decoration: var(--dark)",
-            "--start-header: var(--main-text)",
-            "--start-text: var(--mid)",
-            "--start-text-active: var(--main-text)",
-            "--start-icon: var(--start-text)",
-            "--start-login-button-bg: linear-gradient(to left bottom, rgb(var(--mid)), rgb(var(--mid)))",
-            "--start-login-button-text: var(--darkest)",
-            "--start-download-bar: rgb(var(--start-text))",
-            "--start-download-filler: linear-gradient(to right, rgb(var(--light)), rgb(var(--mid)))",
-
-            "--header-bg: var(--darkest)",
-            "--header-text: var(--mid)",
-            "--header-text-active: var(--light)",
-            "--header-underline-active: rgb(var(--light))",
-            "--header-profile-border: var(--lightest)",
-            "--header-icon: var(--mid)",
-
-            "--main-text: 255, 255, 255",
-            "--main-text-accent: 200, 200, 200",
-            "--main-side-panel-bg: var(--darkest)",
-
-            "--footer-bg: var(--darkest)",
-            "--footer-text: var(--main-text)",
-            "--footer-download-bar: linear-gradient(to left, rgb(var(--light)), rgb(var(--mid)))",
-
-            "--button-bg: rgb(var(--lightest))",
-            "--button-bg-hover: rgb(var(--lightest))",
-            "--button-text: var(--darkest)",
-            "--button-text-hover: var(--darkest)"
-        ]
-    }
+	"default": {
+		"name": "default",
+		"bg_path": "../../res/bg.jpg",
+		"theme_select_options": "background: linear-gradient(to right bottom, #801336, #801336)",
+		"css": [
+			"--global-clr: #DF3B40",
+			"--global-clr-rgb: 223, 59, 64",
+			"--global-text: #FFF",
+			"--global-text-rgb: 255, 255, 255",
+			"",
+			"--checkbox-text: var(--global-text)",
+			"--checkbox-filler: var(--global-text)",
+			"--slider-bg: rgba(255, 255, 255, .16)",
+			"--slider-bg-hover: rgba(255, 255, 255, .32)",
+			"",
+			"--start-logo-clr: #FFF",
+			"--start-bg: #FFF",
+			"--start-bg-decoration: #F6F6F6",
+			"--start-text: rgba(45, 19, 44, .32)",
+			"--start-text-active: rgba(45, 19, 44, 1)",
+			"--start-progress-bg: rgba(45, 19, 44, .16)",
+			"--start-progress-filler: var(--global-clr)",
+			"--start-button-bg: var(--global-clr)",
+			"--start-button-text: var(--global-text)",
+			"--start-button-bg-active: rgba(255, 69, 75, 1)",
+			"--start-button-text-active: var(--global-text)",
+			"",
+			"--header-bg: #FFF",
+			"--header-text: #C9C9C9",
+			"--header-text-active: var(--global-clr)",
+			"--header-profile-username: var(--header-text-active)",
+			"--header-profile-logout: var(--header-text)",
+			"--header-profile-border: var(--header-text-active) 4px solid",
+			"--header-sysbuttons-bg: rgba(var(--global-clr-rgb), 0)",
+			"--header-sysbuttons-bg-hover: rgba(var(--global-clr-rgb), 1)",
+			"--header-sysbuttons-icon: #5a1331",
+			"--header-sysbuttons-icon-hover: #FFF",
+			"",
+			"--main-bg: rgba(90, 19, 49, .85)",
+			"--main-text: var(--global-text)",
+			"--main-text-rgb: var(--global-text-rgb)",
+			"--main-h1: var(--main-text)",
+			"--main-text-p-opacity: .32",
+			"--main-text-p-opacity-hover: .5",
+			"--main-button-bg: var(--global-clr)",
+			"--main-button-text: var(--global-text)",
+			"--main-button-bg-active: var(--global-text)",
+			"--main-button-text-active: var(--global-clr)",
+			"--main-button-bg-locked: var(--global-clr)",
+			"--main-button-text-locked: var(--global-text)",
+			"--main-sidepanel-bg: rgba(45, 19, 44, .32)",
+			"",
+			"--footer-bg: rgba(45, 19, 44, .32)",
+			"--footer-h1: var(--global-text)",
+			"--footer-p: rgba(255, 255, 255, .32)",
+			"--footer-download-bg: #988BB8",
+			"--footer-download-filler: var(--global-clr)",
+			"--footer-button-bg: var(--global-clr)",
+			"--footer-button-text: var(--global-text)",
+			"--footer-button-bg-active: var(--global-text)",
+			"--footer-button-text-active: var(--global-clr)"
+		]
+	},
+	"velvet": {
+		"name": "velvet",
+		"bg_path": "../../res/bg_nightsky.jpg",
+		"theme_select_options": "background: #0D0917",
+		"css": [
+			"--global-clr: #551BDC",
+			"--global-text: #FFF",
+			"--global-text-rgb: 255, 255, 255",
+			"",
+			"--checkbox-text: var(--global-text)",
+			"--checkbox-filler: var(--global-text)",
+			"--slider-bg: rgba(255, 255, 255, .16)",
+			"--slider-bg-hover: rgba(255, 255, 255, .32)",
+			"",
+			"--start-logo-clr: #FFF",
+			"--start-bg: #0D0917",
+			"--start-bg-decoration: #161221",
+			"--start-text: rgba(var(--global-text-rgb), .32)",
+			"--start-text-active: rgba(var(--global-text-rgb), 1)",
+			"--start-progress-bg: rgba(var(--global-text-rgb), .16)",
+			"--start-progress-filler: var(--global-clr)",
+			"--start-button-bg: var(--global-clr)",
+			"--start-button-text: var(--global-text)",
+			"--start-button-bg-active: var(--global-text)",
+			"--start-button-text-active: var(--global-clr)",
+			"",
+			"--header-bg: #FFF",
+			"--header-text: #9692A2",
+			"--header-text-active: var(--global-clr)",
+			"--header-profile-username: var(--header-text-active)",
+			"--header-profile-logout: var(--header-text)",
+			"--header-profile-border: var(--header-text-active) 4px solid",
+			"--header-sysbuttons-bg: rgba(85, 27, 220, 0)",
+			"--header-sysbuttons-bg-hover: rgba(85, 27, 220, 1)",
+			"--header-sysbuttons-icon: #0D0917",
+			"--header-sysbuttons-icon-hover: #FFF",
+			"",
+			"--main-bg: rgba(13, 9, 23, .85)",
+			"--main-text: var(--global-text)",
+			"--main-text-rgb: var(--global-text-rgb)",
+			"--main-h1: var(--main-text)",
+			"--main-text-p-opacity: .32",
+			"--main-text-p-opacity-hover: .5",
+			"--main-button-bg: var(--global-clr)",
+			"--main-button-text: var(--global-text)",
+			"--main-button-bg-active: var(--global-text)",
+			"--main-button-text-active: var(--global-clr)",
+			"--main-button-bg-locked: var(--global-clr)",
+			"--main-button-text-locked: var(--global-text)",
+			"--main-sidepanel-bg: rgba(20, 15, 35, .32)",
+			"",
+			"--footer-bg: rgba(40, 30, 64, .32)",
+			"--footer-h1: var(--global-text)",
+			"--footer-p: rgba(255, 255, 255, .32)",
+			"--footer-download-bg: #988BB8",
+			"--footer-download-filler: var(--global-clr)",
+			"--footer-button-bg: var(--global-clr)",
+			"--footer-button-text: var(--global-text)",
+			"--footer-button-bg-active: var(--global-text)",
+			"--footer-button-text-active: var(--global-clr)"
+		]
+	}
 };
 
 let themes_json = read_themes();
@@ -249,7 +160,6 @@ check_themes();
 function read_themes() {
     let themes_raw = fs.readFileSync(verify_and_get_themes_file());
     if (themes_raw == '') return themes_template;
-    console.log(themes_raw.toString());
     let themes_json = JSON.parse(themes_raw);
 
     if (themes_json[settings['theme']] == undefined)
@@ -265,7 +175,6 @@ function update_themes()
 {
     let themes_string = JSON.stringify(themes_json, null, '\t');
     fs.writeFileSync(verify_and_get_themes_file(), themes_string);
-    console.log(themes_json);
 }
 
 function check_themes()
@@ -282,10 +191,8 @@ function get_themes() {
 //#region //. Theme update -----------
 function set_theme_colours(theme)
 {
-    console.log(document.body.style);
-
     let str = themes_json[theme]['css'].join(';');
-    console.log(str);
+    console.log(`[SETTINGS] Applied theme: ${theme}`);
 
     document.body.style = str;
 }

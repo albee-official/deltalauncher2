@@ -10,7 +10,7 @@ main{
 section{
     position: absolute;
     left: 0;
-    color: rgb(var(--main-text));
+    color: var(--main-text);
     height: 100%;
 
     transition: left .8s, opacity .8s;
@@ -60,7 +60,7 @@ section{
 .server-name{
     font-size: 24px;
     font-weight: bold;
-    color: rgb(var(--main-text));
+    color: var(--main-h1);
     margin-bottom: 32px;
 }
 
@@ -77,17 +77,19 @@ section{
     font-weight: bold;
     margin-bottom: 8px;
     height: 115px;
-    opacity: .55;
+    color: rgba(var(--main-text-rgb), var(--main-text-p-opacity));
 }
 
 .server-vipe{
     font-size: 16px;
     font-weight: bold;
     margin-bottom: 32px;
-    opacity: .55;
+    color: rgba(var(--main-text-rgb), var(--main-text-p-opacity));
 }
 
 .select-button{
+    background: var(--main-button-bg);
+    color: var(--main-button-text);
     width: 128px;
     height: 32px;
     font-size: 16px;
@@ -99,17 +101,22 @@ section{
     align-items: flex-start;
 }
 
+.select-button:hover{
+    background: var(--main-button-bg-active);
+    color: var(--main-button-text-active);
+}
+
 .select-button-active{
     background: none;
-    color: var(--button-bg);
-    border: var(--button-bg) 2px solid;
+    color: var(--main-button-text-locked);
+    border: var(--main-button-bg-locked) 2px solid;
     padding-top: 2px;
 }
 
 .select-button-active:hover{
-    background: rgb(var(--light)) !important;
-    color: rgb(var(--button-text-hover)) !important;
-    border: rgba(var(--light), 0) 2px solid;
+    background: var(--main-button-bg) !important;
+    color: var(--main-button-text) !important;
+    border: var(--main-button-bg-locked) 2px solid;
 }
 
 .rotated{
@@ -135,7 +142,7 @@ section{
     width: 353px;
     min-width: 353px;
     min-height: 364px;
-    background-color: rgba(var(--main-side-panel-bg), .2);
+    background: var(--main-sidepanel-bg);
     border-radius: 2px;
     padding: 26px 34px;
     right: 90px;

@@ -98,27 +98,27 @@ function checkPassword(e) {
 
 //#region //. -------------------------------- Top panel -----------------------------
 let exitLisHover = document.getElementById('close-btn').addEventListener('mouseover', () => {
-    document.getElementById('close-btn').style.backgroundColor = 'rgba(var(--main-text), 0.4)';
+    document.getElementById('close-btn').style.backgroundColor = 'rgba(var(--global-clr-rgb), 1)';
 });
 
 let exitLisLeave = document.getElementById('close-btn').addEventListener('mouseleave', () => {
-    document.getElementById('close-btn').style.backgroundColor = 'rgba(var(--main-text), 0)';
+    document.getElementById('close-btn').style.backgroundColor = 'rgba(var(--global-text-rgb), 0)';
 });
 
 let minimizeLisHover = document.getElementById('minimize-btn').addEventListener('mouseover', () => {
-    document.getElementById('minimize-btn').style.backgroundColor = 'rgba(var(--main-text), 0.3)';
+    document.getElementById('minimize-btn').style.backgroundColor = 'rgba(var(--global-text-rgb), .3)';
 });
 
 let minimizeLisLeave = document.getElementById('minimize-btn').addEventListener('mouseleave', () => {
-    document.getElementById('minimize-btn').style.backgroundColor = 'rgba(var(--main-text), 0)';
+    document.getElementById('minimize-btn').style.backgroundColor = 'rgba(var(--global-text-rgb), 0)';
 });
 
 let reloadLisHover = document.getElementById('reload-btn').addEventListener('mouseover', () => {
-    document.getElementById('reload-btn').style.backgroundColor = 'rgba(var(--main-text), 0.2)';
+    document.getElementById('reload-btn').style.backgroundColor = 'rgba(var(--global-text-rgb), .1)';
 });
 
 let reloadLisLeave = document.getElementById('reload-btn').addEventListener('mouseleave', () => {
-    document.getElementById('reload-btn').style.backgroundColor = 'rgba(var(--main-text), 0)';
+    document.getElementById('reload-btn').style.backgroundColor = 'rgba(var(--global-text-rgb), 0)';
 });
 
 document.getElementById('close-btn').addEventListener('click', () => {

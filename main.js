@@ -56,6 +56,12 @@ function createWindow() {
       event.preventDefault();
     }
   });
+
+  win.webContents.on('devtools-opened', err => {
+    BrowserWindow.getAllWindows()[0].send('devtools-opened');
+    console.log('[MAIN] console opened');
+    // win.webContents.closeDevTools();
+  });
 }
 
 let show_minimized_in_taskbar = true;

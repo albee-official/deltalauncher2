@@ -114,9 +114,16 @@ document.querySelector('#bg-reset-input').addEventListener('click', e => {
     settings['bg_extension'] = '';
     update_settings();
 
-    BrowserWindow.getFocusedWindow().reload();
+    update_theme();
 });
 //#endregion
+//#endregion
+
+//#region //. ---------------- Default Shader Selection ------------
+let default_shader = document.getElementById('default-shader');
+default_shader.addEventListener('click', e => {
+    
+});
 //#endregion
 
 //#region //. ---------------- Handy Features ----------------------
@@ -463,7 +470,46 @@ function ascii_to_dumbass(keycode) {
 
 //#endregion
 
-//#region //. ---------------- Select Functions -------------------- 
+//#region //. ---------------- Select Functions --------------------
+
+//#region //. Modpack select ---------
+async function show_select_from_list(header, options)
+{
+    return new Promise((resolve, reject) => {
+        // get vars
+        let menu = document.querySelector('#select-menu');
+        let menu_header = document.querySelector('#select-h');
+        menu_header.innerHTML = header;
+
+        function select_option(e) {
+            let el = e.currentTarget;
+            for (let option_el of option_elements)
+            {
+                option_el.removeEventListener('click', select_option);
+            }
+
+            close_menu(menu);
+            resolve(el.getAttribute('data-name'));
+        };
+
+        let option_elements = [];
+        for (let i = 0; i < options.length; i++)
+        {
+            let option = options[i];
+            let el = document.createElement('p');
+            el.id = 'select-p';
+            el.setAttribute('data-name', option);
+            el.innerHTML = option;
+            menu.children[0].appendChild(el);
+            option_elements.push(el);
+
+            el.addEventListener('click', select_option);
+        }
+
+        menu.classList.add('open');
+    });
+}
+//#endregion
 
 //#region //. Modpack select ---------
 async function show_modpack_selection_menu()
@@ -540,11 +586,10 @@ function close_menu(menu) {
 
 //#endregion
 
-//#region //. ---------------- Play settings --------------------------
+//#region //. ---------------- Play settings -----------------------
 
 // Addon mods in settings
 let settings_addon_cbs = document.querySelectorAll('.settings-addon-cb');
-console.log(settings_addon_cbs);
 for (let addon_cb of settings_addon_cbs) {
     let input = addon_cb.querySelector('input');
     let dataName = addon_cb.getAttribute('data-name');
@@ -561,7 +606,6 @@ for (let addon_cb of settings_addon_cbs) {
 
 // Addon mods in play
 let play_addon_cbs = document.querySelectorAll('.play-addon-cb');
-console.log(play_addon_cbs);
 for (let addon_cb of play_addon_cbs) {
     let input = addon_cb.querySelector('input');
     let dataName = addon_cb.getAttribute('data-name');
@@ -576,18 +620,23 @@ for (let addon_cb of play_addon_cbs) {
     });
 }
 
+let prev_click_event = undefined;
 UpdateSideModpackDir(modpack_name);
 // Modpack directory
-function UpdateSideModpackDir(modpack)
+async function UpdateSideModpackDir(modpack)
 {
     let dir = settings['modpack_dirs'][modpack];
     let el = document.querySelector('#play-game-dir-input')
-    console.log(dir);
-    el.innerHTML = dir + '\\' + modpack;
-    el.addEventListener('click', e => {
+    el.innerHTML = dir.replace('|ROOT|', '...') + '\\' + modpack;
+
+    el.removeEventListener('click', prev_click_event);
+
+    prev_click_event = function(e) {
         let path = verify_and_get_modpack_folder(modpack);
         shell.openItem(path);
-    });
+    }
+
+    el.addEventListener('click', prev_click_event);
 }
 //#endregion 
 

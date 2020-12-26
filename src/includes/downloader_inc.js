@@ -16,7 +16,6 @@ function update_libs_links() {
         method: 'GET',
         dataType: 'json'
     }).done(res => {
-        console.log(res);
         for (let version of res) {
             if (version.name.split('-')[1] == '1.12.2') {
                 forge_1_12_2 = `https://github.com/Avandelta/Context/releases/download/${version.name}/Forge-1.12.2.zip`;
@@ -30,9 +29,6 @@ function update_libs_links() {
                 break;
             }
         }
-
-        console.log(forge_1_12_2);
-        console.log(forge_1_16_1);
     });
 }
 
