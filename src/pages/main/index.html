@@ -6,6 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Delta</title>
 
+    <script src="../../includes/downloader_inc.js"></script>
+    <script src="../../includes/modpack_manager_inc.js"></script>
+    <script src="../../includes/settings_manager_inc.js"></script>
+
     <link rel="stylesheet" href="../global.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/header.css">
@@ -17,9 +21,7 @@
 </head>
 
 <body>
-    <script src="../../includes/downloader_inc.js"></script>
-    <script src="../../includes/modpack_manager_inc.js"></script>
-    <script src="../../includes/settings_manager_inc.js"></script>
+    <div style="pointer-events: none; position: absolute; z-index: 9; height: 100vh; opacity: 0; width: 100%; background: rgba(var(--bg), 1);" class="filler"></div>
 
     <video id="bg-video" class="bg-video" src="" autoplay muted loop></video>
     <div class="bg-filter"></div>
@@ -96,8 +98,6 @@
             </div>
         </div>
     </div>
-
-    <div class="filler"></div>
 
     <header>
         <div class="nav noselect">
@@ -621,7 +621,7 @@
                                     let path = res.filePaths[0];
                                     let current_modpack = current_modpack_dir.children[0].innerHTML.toLowerCase();
 
-                                    modpack_dir_p.innerHTML = path + '\\' + current_modpack;
+                                    modpack_dir_p.innerHTML = path;
 
                                     path = path.replace(dir_root, '|ROOT|');
                                     settings['modpack_dirs'][current_modpack] = path;

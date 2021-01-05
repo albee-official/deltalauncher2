@@ -90,14 +90,14 @@ function verify_and_get_themes_file()
 
 function verify_and_get_modpack_folder(modpack_name)
 {
-    let active_folder = modpack_folders[modpack_name.toLowerCase()].replace('|ROOT|', dir_root) + '\\' + modpack_name;
+    let active_folder = modpack_folders[modpack_name.toLowerCase()].replace('|ROOT|', dir_root);
     fs.ensureDirSync(active_folder);
     return active_folder;
 }
 
 function only_get_modpack_path(modpack_name)
 {
-    let active_folder = modpack_folders[modpack_name.toLowerCase()].replace('|ROOT|', dir_root) + '\\' + modpack_name;
+    let active_folder = modpack_folders[modpack_name.toLowerCase()].replace('|ROOT|', dir_root);
     return active_folder;
 }
 

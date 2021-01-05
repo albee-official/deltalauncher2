@@ -126,7 +126,7 @@ body{
     opacity: 1;
     animation:  show-content 3s, 
                 smooth-shake 16s ease-in-out infinite, 
-                finished-top-contents 1s paused;
+                finished-top-contents 4s paused;
 }
 
 .container{
@@ -139,7 +139,7 @@ body{
     width: 50%;
     opacity: 1;
     animation:  show-content 4s, 
-                finished-top-contents 1s paused;
+                finished-top-contents 4s paused;
 }
 
 .progress-container-container{
@@ -201,11 +201,15 @@ body{
 }
 
 @keyframes finished-top-contents{
-    from{
+    0%{
         opacity: 1;
     }
 
-    to{
+    25%{
+        opacity: 0;
+    }
+    
+    100%{
         opacity: 0;
     }
 }
@@ -292,13 +296,15 @@ body{
 .sub-line-filler{
     background: var(--start-progress-filler);
     width: 0;
+    opacity: 0;
     height: 100%;
     border-radius: 2px;
-    transition: width 1s cubic-bezier(0.645, 0.045, 0.355, 1);
+    transition: all 1s cubic-bezier(0.23, 1, 0.320, 1);
 }
 
 .active-text-line{
     width: 80%;
+    opacity: 1;
 }
 
 .buttons{

@@ -148,10 +148,10 @@ function closeLogin() {
 
 function hideTopContent() {
     document.getElementById('top-container').style.animationPlayState = 'running';
-    document.getElementById('top-container').style.opacity = '0';
+    document.getElementById('top-container').style.opacity = '0 !important';
 
     document.getElementById('top-lines').style.animationPlayState = 'running';
-    document.getElementById('top-lines').style.opacity = '0';
+    document.getElementById('top-lines').style.opacity = '0 !important';
 
     document.getElementById('top').style.animation = 'open-circle 2s cubic-bezier(0.645, 0.045, 0.355, 1) paused';
     document.getElementById('top').style.animationPlayState = 'running';
@@ -176,39 +176,44 @@ function hideTopContent() {
     document.getElementById('reload-icon').style.fill = 'rgb(var(--header-icon))';
 
     document.getElementById('close-btn').addEventListener('mouseover', () => {
-        document.getElementById('close-btn').style.backgroundColor = 'rgb(var(--mid))';
-        document.getElementById('exit-icon1').style.stroke = 'rgb(var(--main-text))';
-        document.getElementById('exit-icon2').style.stroke = 'rgb(var(--main-text))';
+        document.getElementById('close-btn').style.backgroundColor = 'var(--header-sysbuttons-bg-hover)';
+        document.getElementById('exit-icon1').style.stroke = 'var(--header-sysbuttons-icon-hover)';
+        document.getElementById('exit-icon2').style.stroke = 'var(--header-sysbuttons-icon-hover)';
     });
     
     document.getElementById('close-btn').addEventListener('mouseleave', () => {
-        document.getElementById('close-btn').style.backgroundColor = 'rgba(var(--header-icon), 0)';
-        document.getElementById('exit-icon1').style.stroke = 'rgb(var(--header-icon))';
-        document.getElementById('exit-icon2').style.stroke = 'rgb(var(--header-icon))';
+        document.getElementById('close-btn').style.backgroundColor = 'var(--header-sysbuttons-bg)';
+        document.getElementById('exit-icon1').style.stroke = 'var(--header-sysbuttons-icon)';
+        document.getElementById('exit-icon2').style.stroke = 'var(--header-sysbuttons-icon)';
     });
     
     document.getElementById('minimize-btn').addEventListener('mouseover', () => {
-        document.getElementById('minimize-btn').style.backgroundColor = 'rgb(var(--mid))';
-        document.getElementById('minimize-icon').style.stroke = 'rgb(var(--main-text))';
+        document.getElementById('minimize-btn').style.backgroundColor = 'var(--header-sysbuttons-bg-hover)';
+        document.getElementById('minimize-icon').style.stroke = 'var(--header-sysbuttons-icon-hover)';
     });
     
     document.getElementById('minimize-btn').addEventListener('mouseleave', () => {
-        document.getElementById('minimize-btn').style.backgroundColor = 'rgba(var(--mid), 0)';
-        document.getElementById('minimize-icon').style.stroke = 'rgb(var(--header-icon))';
+        document.getElementById('minimize-btn').style.backgroundColor = 'var(--header-sysbuttons-bg)';
+        document.getElementById('minimize-icon').style.stroke = 'var(--header-sysbuttons-icon)';
     });
     
     document.getElementById('reload-btn').addEventListener('mouseover', () => {
-        document.getElementById('reload-btn').style.backgroundColor = 'rgb(var(--mid))';
-        document.getElementById('reload-icon').style.fill = 'rgb(var(--main-text))';
+        document.getElementById('reload-btn').style.backgroundColor = 'var(--header-sysbuttons-bg-hover)';
+        document.getElementById('reload-icon').style.fill = 'var(--header-sysbuttons-icon-hover)';
     });
     
     document.getElementById('reload-btn').addEventListener('mouseleave', () => {
-        document.getElementById('reload-btn').style.backgroundColor = 'rgba(var(--mid), 0)';
-        document.getElementById('reload-icon').style.fill = 'rgb(var(--header-icon))';
+        document.getElementById('reload-btn').style.backgroundColor = 'var(--header-sysbuttons-bg)';
+        document.getElementById('reload-icon').style.fill = 'var(--header-sysbuttons-icon)';
     });
 
     setInterval(() => {
-        win.loadFile('src/pages/main/index.html');
+        ipcRenderer.send('load-main-win');
+
+        ipcRenderer.on('main-win-opened', () => {
+            win.close();
+            resolve();
+        });
     }, 2000);
 }
 

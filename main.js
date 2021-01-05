@@ -675,4 +675,47 @@ ipcMain.on('logout', (event, args) => {
 });
 //#endregion
 
+//#region //. Window managment
+ipcMain.on('load-main-win', (event, args) => {
+  console.log('[MAIN] Opening main window');
+  win_pos = win.getPosition()
+
+  win = new BrowserWindow({
+    width: 1400,
+    height: 800,
+    x: win_pos[0],
+    y: win_pos[1],
+    minWidth: 1000,
+    minHeight: 600,
+    webPreferences: {
+      nodeIntegration: true,
+    },
+    icon: 'src/res/app_icon.ico',
+    frame: false,
+    transparent: true,
+    show: false
+  });
+
+  win.loadFile('src/pages/main/index.html');
+
+  win.on('minimized', (event, args) => {
+    if (!show_minimized_in_taskbar)
+    {
+      event.preventDefault();
+    }
+  });
+
+  win.webContents.on('devtools-opened', err => {
+    BrowserWindow.getAllWindows()[0].send('devtools-opened');
+    console.log('[MAIN] console opened');
+    // win.webContents.closeDevTools();
+  });
+
+  win.webContents.on('did-finish-load', function() {
+      win.show();
+      event.reply('main-win-opened');
+      return;
+  });
+});
+//#endregion
 //#endregion
