@@ -14,7 +14,7 @@ const modpacks = [
     "fabrica",
     "statera",
     "insula",
-    "isekai"
+    "odyssea"
 ];
 
 const modpack_versions = {
@@ -22,7 +22,7 @@ const modpack_versions = {
     'fabrica': '1.12.2',
     'statera': '1.12.2',
     'insula': '1.12.2',
-    'isekai': '1.12.2'
+    'odyssea': '1.12.2'
 }
 
 const settings_levels = {
@@ -38,7 +38,7 @@ let modpacks_started = {
     'fabrica': 'no',
     'statera': 'no',
     'insula': 'no',
-    'isekai': 'no'
+    'odyssea': 'no'
 }
 
 let modpack_folders = {};
@@ -146,44 +146,63 @@ function clear_modpack_folder(modpack_name)
     });
 }
 
-function modpack_folder_empty(modpack_name)
-{
+function modpack_folder_empty(modpack_name) {
     let active_folder = verify_and_get_modpack_folder(modpack_name);
     return is_directry_empty(active_folder);
 }
 
-function change_settings_preset(modpack_name, settings_lvl)
-{
+function settings_exist() {
+    let modpack_folder = verify_and_get_modpack_folder(modpack_name);
+    return fs.pathExistsSync(modpack_folder + '\\options.txt') 
+        && fs.pathExistsSync(modpack_folder + '\\optionsof.txt') 
+        && fs.pathExistsSync(modpack_folder + '\\optionsshaders.txt');
+}
+
+function change_settings_preset(modpack_name, settings_lvl) {
     if (modpack_not_installed(modpack_name))
         return;
 
     let preset = settings_levels[settings_lvl];
     
     let modpack_folder = verify_and_get_modpack_folder(modpack_name);
-    let settings_folder = modpack_folder + '\\Graphics';
+    let settings_folder = modpack_folder + '\\options';
     let settings_preset_folder = settings_folder + '\\' + preset;
 
     fs.copySync(settings_preset_folder, modpack_folder);
     apply_control_settings();
 }
 
-function apply_control_settings() {
+async function apply_control_settings() {
     for (const modpack_name of modpacks) {
         let modpack_folder = verify_and_get_modpack_folder(modpack_name);
 
         let options_path = modpack_folder + '\\options.txt';
-        if (!fs.existsSync(options_path)) { 
+        let of_options_path = modpack_folder + '\\optionsof.txt';
+        if (!(await fs.exists(options_path))) { 
             console.log('[SETTINGS] There is no options in ' + modpack_name);
             continue;
         }
+        
+        if (!(await fs.exists(of_options_path))) { 
+            console.log('[SETTINGS] There is no optifine options in ' + modpack_name);
+            continue;
+        }
 
-        let options_string = fs.readFileSync(options_path);
+        let options_string = await fs.readFile(options_path);
         let new_options_string = options_string;
 
-        for (const key of Object.keys(settings['controls']))
+        let controls_object = { ...settings['controls'] };
+        // Dismount is the same as the crouch
+        controls_object['dismount'] = { ...controls_object['crouch'] };
+        controls_object['dismount']['minecraft_key'] = 'key_key.dismount';
+        console.log(controls_object);
+
+
+        let changed_smth = false;
+        for (const key of Object.keys(controls_object))
         {
-            let minecraft_key = settings['controls'][key]['minecraft_key'];
-            let minecraft_code = settings['controls'][key]['minecraft_code'];
+            let minecraft_key = controls_object[key]['minecraft_key'];
+            let minecraft_code = controls_object[key]['minecraft_code'];
             
             let new_control_line = `${minecraft_key}:${minecraft_code}`;
 
@@ -198,12 +217,51 @@ function apply_control_settings() {
             }
 
             let old_control_line = `${minecraft_key}:${val}`;
-            console.log(`[SETTINGS] ${old_control_line}`);
-            console.log(`[SETTINGS] ${new_control_line}`);
+
+            // Write to optionsof as well cuz this key is fucking special (fuck optifine)
+            if (minecraft_key == 'key_of.key.zoom') {
+                let of_options_string = await fs.readFile(of_options_path);
+                let of_new_control_line = `key_of.key.zoom:${minecraft_code}`;
+
+                let of_index_of_key = of_options_string.indexOf('key_of.key.zoom:');
+                let of_start_index_of_val = of_index_of_key + ('key_of.key.zoom:').length;
+                let of_val = '';
+                for (let i = 0; i < 4; i++)
+                {
+                    let of_symbol = of_options_string.toString().charAt(of_start_index_of_val + i);
+                    if (of_symbol == '\n') { break; }
+                    of_val += of_symbol;
+                }
+
+                let of_old_control_line = `key_of.key.zoom:${of_val}`;
+                of_new_options_string = new_options_string.toString().replace(of_old_control_line, of_new_control_line);
+
+                if (old_control_line == new_control_line) {
+                    console.log(`[SETTINGS] <optionsof.txt> Unchanged: ${old_control_line}`);
+                } else {
+                    console.log(`[SETTINGS] <optionsof.txt> From: ${of_old_control_line}`);
+                    console.log(`[SETTINGS] <optionsof.txt> To: ${of_new_control_line}`);
+                    await fs.writeFile(of_options_path, of_new_options_string);
+                }
+            }
+
+            if (old_control_line == new_control_line) {
+                console.log(`[SETTINGS] <options.txt> Unchanged: ${old_control_line}`);
+                continue;
+            }
+
+            changed_smth = true;
+            console.log(`[SETTINGS] <options.txt> From: ${old_control_line}`);
+            console.log(`[SETTINGS] <options.txt> To: ${new_control_line}`);
             new_options_string = new_options_string.toString().replace(old_control_line, new_control_line);
         }
         
-        fs.writeFileSync(options_path, new_options_string);
+        if (changed_smth){
+            console.log(`[SETTINGS] <options.txt> Updating file`);
+            await fs.writeFile(options_path, new_options_string);
+        } else {
+            console.log(`[SETTINGS] <options.txt> No changes have been made.`);
+        }
     }
 }
 
@@ -322,7 +380,7 @@ function verify_and_get_path_to_info(item_name, version = '')
     return path;
 }
 
-async function get_shaders(modpack_name)
+async function get_available_shaders(modpack_name)
 {
     let dir = verify_and_get_modpack_folder(modpack_name) + '\\shaderpacks';
     let shaders = {};
@@ -337,27 +395,45 @@ async function update_shader(modpack_name, shader_name)
 {
     let dir = verify_and_get_modpack_folder(modpack_name);
 
-    // Switch fst render off if needed
+    // Switch fast render off if needed
     let options_path = dir + '\\optionsof.txt';
     let optionsof_contents = (await fs.readFile(options_path)).toString();
     if (optionsof_contents.includes('ofFastRender:true')) {
-        console.log('[SETTINGS] turning off fast render');
+        console.log('[SETTINGS] Turning off fast render');
         optionsof_contents.replace('ofFastRender:true', 'ofFastRender:false');
         await fs.writeFile(options_path, optionsof_contents);
     }
 
+    // Read options of file and parse (serialize yeah im SMaRt) it
     let shaderoptions_path = dir + '\\optionsshaders.txt';
     let shaderoptions_content = (await fs.readFile(shaderoptions_path)).toString().split('\n');
-    shaderoptions_content[1] = `shaderPack=${shader_name}`;
-    shaderoptions_content = shaderoptions_content.join('\n');
-    console.log('[SETTINGS] changing shader');
-    await fs.writeFile(shaderoptions_path, shaderoptions_content);
+
+    //. Check if we even need to change shader
+    if (shaderoptions_content[1] == `shaderPack=${shader_name}`) {
+        console.log('[SETTINGS] Needed shader is already selected');
+    } else {
+
+        // Write new shader name to optionsof file
+        shaderoptions_content[1] = `shaderPack=${shader_name}`;
+        shaderoptions_content = shaderoptions_content.join('\n');
+        console.log('[SETTINGS] Changing shader');
+        await fs.writeFile(shaderoptions_path, shaderoptions_content);
+    }
+
+    // Copy shader from resource files if it is abscent
+    await fs.ensureDir(dir + '\\shaderpacks\\')
+    if (await fs.pathExists(dir + '\\shaderpacks\\' + shader_name)) {
+        console.log(`[SETTINGS] Needed shader is already in folder, no need to copy: ${dir + '\\shaderpacks\\' + shader_name}`);
+    } else {
+        console.log(`[SETTINGS] No shader found in shaderpacks, copying: ${shader_name}`);
+        await fs.copyFile(verify_and_get_resources_folder() + '\\' + shader_name, dir + '\\shaderpacks\\' + shader_name);
+    }
 }
 
 function get_modpack_version_from_info(modpack_name)
 {
     let path = verify_and_get_path_to_info(modpack_name);
-    console.log(`[SETTINGS]  reading from ${path}`);
+    console.log(`[SETTINGS] Reading from ${path}`);
     let json = JSON.parse(fs.readFileSync(path));
     console.log(`[SETTINGS] ${json}`);
     if (json['version'] == undefined || json['version'] == '' || json['version'] == null)
@@ -370,7 +446,7 @@ function get_modpack_version_from_info(modpack_name)
 function set_modpack_version_to_info(modpack_name, version)
 {
     let path = verify_and_get_path_to_info(modpack_name);
-    console.log(`[SETTINGS] writing to ${path}`);
+    console.log(`[SETTINGS] Writing to ${path}`);
     let json = JSON.parse(fs.readFileSync(path));
     json['version'] = version;
     fs.writeFileSync(path, JSON.stringify(json));
@@ -379,7 +455,7 @@ function set_modpack_version_to_info(modpack_name, version)
 function set_libs_version_to_info(modpack_name, version, libs_version)
 {
     let path = verify_and_get_path_to_info(modpack_name, libs_version);
-    console.log(`[SETTINGS] writing to ${path}`);
+    console.log(`[SETTINGS] Writing to ${path}`);
     let json = JSON.parse(fs.readFileSync(path));
     json['version'] = version;
     fs.writeFileSync(path, JSON.stringify(json));
@@ -453,7 +529,7 @@ function launch_minecraft(min_mem, max_mem, game_dir, username, uuid, _modpack_n
         let modpack_name = _modpack_name;
 
         console.log(`[LAUNCH] [${modpack_name.toUpperCase()}] ${final_command}`);
-        minecraft = exec(final_command, { 
+        minecraft = spawn(final_command, [], { 
             windowsHide: true,
             maxBuffer: 1024 * 1024 * 1024,
             shell: true
@@ -463,22 +539,23 @@ function launch_minecraft(min_mem, max_mem, game_dir, username, uuid, _modpack_n
             minecraftLaunched = true;
             play_button.innerHTML = 'Играть';
             document.querySelector('#launch-menu').classList.remove('open');
-            if (BrowserWindow.getFocusedWindow() != undefined && BrowserWindow.getFocusedWindow() != null)
-            {
-                BrowserWindow.getFocusedWindow().minimize();
-            }
+            // if (BrowserWindow.getFocusedWindow() != undefined && BrowserWindow.getFocusedWindow() != null)
+            // {
+            //     BrowserWindow.getFocusedWindow().minimize();
+            // }
         });
 
         console.log(minecraft);
 
         minecraft.stdout.on('data', data => {
-            console.log(`[LAUNCH] [${modpack_name.toUpperCase()}] ${data.toString()}`);
+            if (settings['link_consoles'])
+                console.log(`[LAUNCH] <${modpack_name.toUpperCase()}> ${data.toString()}`);
             if (data.toString().split('Starts to replace vanilla recipe ingredients with ore ingredients.').length > 1)
             {
                 minecraftLaunched = true;
                 play_button.innerHTML = 'Запущена';
                 document.querySelector('#launch-menu').classList.remove('open');
-                if (BrowserWindow.getFocusedWindow() != undefined && BrowserWindow.getFocusedWindow() != null)
+                if (BrowserWindow.getFocusedWindow() != undefined && BrowserWindow.getFocusedWindow() != null && settings['hide_upon_launch'])
                 {
                     BrowserWindow.getFocusedWindow().minimize();
                 }
@@ -486,13 +563,14 @@ function launch_minecraft(min_mem, max_mem, game_dir, username, uuid, _modpack_n
 
             if (data.toString().split('The game loaded in approximately').length > 1)
             {
-                console.log('[LAUNCH] game window opened');
+                console.log('[LAUNCH] Game window opened');
                 ipcRenderer.sendSync('rich-presence-to', {
                     details: `В меню: ${Capitalize_First_Letter(modpack_name)}`,
                 });
             }
         });
-    
+        
+        minecraft.stderr.setEncoding('utf8');
         minecraft.stderr.on('data', data => {
             console.log(data.toString());
         });
@@ -510,7 +588,33 @@ function launch_minecraft(min_mem, max_mem, game_dir, username, uuid, _modpack_n
     });
 }
 
+async function absolutely_utterly_obliterate_minecraft() {
+    return new Promise((resolve, reject) => {
+        // Get all processes
+        exec('tasklist', function(err, stdout, stderr) {
+            // Parse
+            let processes = stdout.trim().split('\n');
 
+            // Find needed process among others
+            let pid = null;
+            for (let process_info of processes) {
+                // Parse
+                process_info = process_info.trim().split(/\s+/g);
+
+                if (process_info[0] == 'javaw.exe' && process_info[2] == 'Console') {
+                    pid = process_info[1];
+                    break;
+                }
+            }
+
+            // ANNIHILATE found process
+            if (pid == null) resolve();
+            process.kill(pid, 'SIGKILL');
+            minecraft = undefined;
+            resolve();
+        });
+    });
+}
 
 
 

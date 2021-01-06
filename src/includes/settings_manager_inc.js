@@ -1,9 +1,10 @@
 let settings_file_path = verify_and_get_settings_file();
 
 const settings_pattern = {
+    "developer_mode": false,
     "selected_modpack": "magicae",
     "opened_settings": true,
-    "on_page": "play",
+    "on_page": "settings",
     "allocated_memory": 3,
     "optimization_level": 2,
     "controls": {
@@ -13,25 +14,30 @@ const settings_pattern = {
         "back": { "minecraft_key": "key_key.back", "minecraft_code": 31, "key_code": 83, "key_name": "S" },
         "left": { "minecraft_key": "key_key.left", "minecraft_code": 30, "key_code": 12, "key_name": "A" },
         "right": { "minecraft_key": "key_key.right", "minecraft_code": 32, "key_code": 12, "key_name": "D" },
-        "zoom": { "minecraft_key": "key_of.key.zoom", "minecraft_code": -1, "key_code": -1, "key_name": "NONE" },
+        "zoom": { "minecraft_key": "key_of.key.zoom", "minecraft_code": 0, "key_code": 0, "key_name": "NONE" },
         "quests": { "minecraft_key": "key_key.ftbquests.quests", "minecraft_code": 20, "key_code": 12, "key_name": "T" },
         "excavate": { "minecraft_key": "key_oreexcavation.key.excavate", "minecraft_code": 34, "key_code": 12, "key_name": "G" },
         "shop": { "minecraft_key": "key_key.ftbmoney.shop", "minecraft_code": 35, "key_code": 12, "key_name": "H" }
     },
     "java_parameters": "",
+    "link_consoles": false,
+    "default_shader": "",
+    "hide_upon_launch": true,
     "bg_extension": "",
     "bg_muted": true,
+    "bg_blurred": false,
+    "bg_blur_amount": '16px',
     "theme": "default",
     "addon_mods": { 
-        "recorder": false,
-        "dynamic souroundings": false
+        "aperture": false,
+        "dynamic surroundings": false
     },
     "modpack_dirs": {
-        "magicae": "|ROOT|\\modpacks",
-        "fabrica": "|ROOT|\\modpacks",
-        "statera": "|ROOT|\\modpacks",
-        "insula": "|ROOT|\\modpacks",
-        "isekai": "|ROOT|\\modpacks"
+        "magicae": "|ROOT|\\modpacks\\magicae",
+        "fabrica": "|ROOT|\\modpacks\\fabrica",
+        "statera": "|ROOT|\\modpacks\\statera",
+        "insula": "|ROOT|\\modpacks\\insula",
+        "odyssea": "|ROOT|\\modpacks\\odyssea"
     }
 };
 

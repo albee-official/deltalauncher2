@@ -48,8 +48,7 @@
             <p id="modpack-select-p" data-name="fabrica">Fabrica</p>
             <p id="modpack-select-p" data-name="statera">Statera</p>
             <p id="modpack-select-p" data-name="insula">Insula</p>
-            <p id="modpack-select-p" data-name="isekai">Isekai</p>
-            <input class="invisible" type="text" id="modpack-select-input">
+            <p id="modpack-select-p" data-name="odyssea">Odyssea</p>
         </div>
     </div>
 
@@ -170,45 +169,44 @@
                             <p>Игровая сборка магического направления на Minecraft версии 1.12.2. Ставит своей целью изучение магического мира и его элементов: эссенцию, эфир, кровавую магию и прочий волшебный мир.</p>
                         </div>
                         <p class="server-vipe">• Вайп каждые 12 месяцев</p>
-                        <button id="magicae-select" class="select-button">Выбрать</button>
+                        <button data-name="magicae" id="magicae-select" class="select-button">Выбрать</button>
                     </div>
-                    <div class="server">
+                    <div class="server server-unavailable">
                         <p class="server-name">Fabrica</p>
                         <div class="server-pros">
                             <p>Игровая сборка технического направления. Делает упор на технические процессы по типу: автоматизация, технологический прогресс и развитие.</p>
                         </div>
                         <p class="server-vipe">• Вайп каждые 12 месяцев</p>
-                        <button id="fabrica-select" class="select-button">Выбрать</button>
+                        <button data-name="fabrica" id="fabrica-select" class="select-button">Выбрать</button>
                     </div>
-                    <div class="server">
+                    <div class="server server-unavailable">
                         <p class="server-name">Statera</p>
                         <div class="server-pros">
                             <p>Игровая сборка техно-магического направления. Делает упор на баланс между магией и технологией, включает в себя меньше крупных модификаций на каждую тематику.</p>
                         </div>
                         <p class="server-vipe">• Вайп каждые 12 месяцев</p>
-                        <button id="statera-select" class="select-button">Выбрать</button>
+                        <button data-name="statera" id="statera-select" class="select-button">Выбрать</button>
                     </div>
-                    <div class="server">
+                    <div class="server server-unavailable">
                         <p class="server-name">Insula</p>
                         <div class="server-pros">
                             <p>Игровая сборка неопределённого направления. Делает упор на выживание на острове среди пустоты, включая как технологическое, так и магическое развития.</p>
                         </div>
                         <p class="server-vipe">• Вайп каждые 12 месяцев</p>
-                        <button id="insula-select" class="select-button">Выбрать</button>
+                        <button data-name="insula" id="insula-select" class="select-button">Выбрать</button>
                     </div>
-                    <div class="server">
-                        <p class="server-name">Isekai</p>
+                    <div class="server server-unavailable">
+                        <p class="server-name">Odyssea</p>
                         <div class="server-pros">
                             <p>Игровая сборка приключенческого направления. Делает упор на фарм и прокачку (чисто качаться) персонажа.</p>
                         </div>
                         <p class="server-vipe">• Вайп каждые 12 месяцев</p>
-                        <button id="isekai-select" class="select-button">Выбрать</button>
+                        <button data-name="odyssea" id="odyssea-select" class="select-button">Выбрать</button>
                     </div>
                 </div>
             </div>
             <div class="play-settings">
-
-                <p class="play-settings-header">Выделение памяти</p>
+                <p id="play-memory-header" class="play-settings-header">Выделение памяти</p>
                 <div id="play-memory-range" class="range settings-range">
                     <div class="range-visuals">
                         <div class="range-stops">
@@ -280,19 +278,19 @@
                 </div>
                 <p class="play-settings-header">Дополнительные настройки</p>
                 <div class="play-settings-checkboxes">
-                    <label data-name="replay" class="checkbox play-addon-cb">
+                    <label data-name="aperture" class="checkbox play-addon-cb">
                         <input type="checkbox">
                         <div class="checkmark">
                             <div class="checkmark-fill"></div>
                         </div>
-                        Replay
+                        Aperture
                     </label>
-                    <label data-name="dynamic souroundings" class="checkbox play-addon-cb">
+                    <label data-name="dynamic surroundings" class="checkbox play-addon-cb">
                         <input type="checkbox">
                         <div class="checkmark">
                             <div class="checkmark-fill"></div>
                         </div>
-                        Dynamic Souroundings
+                        Dynamic Surroundings
                     </label>
                 </div>
 
@@ -352,7 +350,7 @@
         <section id="settings-section" class="settings-section mCustomScrollbar" style="overflow: auto;">
             <div class="setting-container">
                 <div class="settings-element">
-                    <h1 class="settings-element-header">Выделение памяти</h1>
+                    <h1 id="settings-memory-header" class="settings-element-header">Выделение памяти</h1>
                     <div id="memory-range" class="range settings-range">
                         <div class="range-visuals">
                             <div class="range-stops">
@@ -539,8 +537,8 @@
                     <h1 class="settings-element-header">Дополнительные настройки</h1>
                     <div class="additional-settings-list">
                         <div class="additional-setting">
-                            <label data-name="replay" class="checkbox settings-addon-cb">
-                                <span class="additional-setting-name">Replay</span>
+                            <label data-name="aperture" class="checkbox settings-addon-cb">
+                                <span class="additional-setting-name">Aperture</span>
                                 <input type="checkbox"
                                     checked="checked">
                                 <div class="checkmark">
@@ -549,8 +547,8 @@
                             </label>
                         </div>
                         <div class="additional-setting">
-                            <label data-name="dynamic souroundings" class="checkbox settings-addon-cb">
-                                <span class="additional-setting-name">Dynamic Souroundings</span>
+                            <label data-name="dynamic surroundings" class="checkbox settings-addon-cb">
+                                <span class="additional-setting-name">Dynamic Surroundings</span>
                                 <input type="checkbox"
                                     checked="checked">
                                 <div class="checkmark">
@@ -591,75 +589,17 @@
                             <p class="directory-modpack-update noselect">Обновляется...</p>
                         </div>
 
-                        <div id="modpack-dir" data-name="isekai" class="modpack-directory">
-                            <p class="directory-modpack-name">isekai</p>
+                        <div id="modpack-dir" data-name="odyssea" class="modpack-directory">
+                            <p class="directory-modpack-name">Odyssea</p>
                             <p class="directory-path">...</p>
                             <p class="directory-modpack-update noselect">Обновляется...</p>
                         </div>
                     </div>
-                    <script defer>
-                        let modpack_dirs = document.querySelectorAll('#modpack-dir');
-
-                        for (let jojo of modpack_dirs)
-                        {
-                            jojo.children[1].innerHTML = verify_and_get_modpack_folder(jojo.children[0].innerHTML.toLowerCase());
-
-                            jojo.addEventListener('click', e => {
-                                let current_modpack_dir = e.currentTarget;
-                                let modpack_dir_p = current_modpack_dir.children[1];
-
-                                if (current_modpack_dir.classList.contains('updating')) return;
-
-                                const win = BrowserWindow.getFocusedWindow();
-                                dialog.showOpenDialog(win, {
-                                    title: 'Выберите Папку',
-                                    defaultPath: '',
-                                    buttonLabel: 'Выбрать',
-                                    properties: ['openDirectory']
-                                }).then(async res => {
-                                    if (res.canceled) return;
-                                    let path = res.filePaths[0];
-                                    let current_modpack = current_modpack_dir.children[0].innerHTML.toLowerCase();
-
-                                    modpack_dir_p.innerHTML = path;
-
-                                    path = path.replace(dir_root, '|ROOT|');
-                                    settings['modpack_dirs'][current_modpack] = path;
-                                    update_settings();
-                                });
-                            });
-                        }
-
-                        let modpack_update_paragraphs = document.querySelectorAll('.directory-modpack-update');
-                        let counter = 0;
-                        let launch_update_counter = 0;
-                        let update_animator = setInterval(() => {
-                            for (let modpack_update_p of modpack_update_paragraphs) {
-                                if (counter % 4 == 0) {
-                                    modpack_update_p.innerHTML = 'Обновляется';
-                                    counter = 0;
-                                } else {
-                                    modpack_update_p.innerHTML += '.';
-                                }
-                            }
-                            counter++;
-                        }, 1000);
-
-                        let launch_animator = setInterval(() => {
-                            if (launch_update_counter % 3 == 0) {
-                                document.querySelector('#launch-h').innerHTML = 'Запуск: ' + Capitalize_First_Letter(modpack_name) + '.';
-                                launch_update_counter = 0;
-                            } else {
-                                document.querySelector('#launch-h').innerHTML += '.';
-                            }
-                            launch_update_counter++;
-                        }, 1000);
-                    </script>
                 </div>
 
                 <div class="settings-element">
                     <h1 class="settings-element-header">Полезные функции</h1>
-                    <div class="handy-functions-list">
+                    <div id="handy-functions" class="handy-functions-list">
                         <div id="open-root-folder" class="handy-function">
                             <p>Открыть корневую папку</p>
                         </div>
@@ -669,17 +609,8 @@
                         <div id="delete-settings" class="handy-function">
                             <p>Сбросить настройки</p>
                         </div>
-                        <div id="delete-configs" class="handy-function">
-                            <p>Сбросить конфиги</p>
-                        </div>
                         <div id="reset-folder" class="handy-function">
                             <p>Восстановить папку</p>
-                        </div>
-                        <div id="delete-additional-files" class="handy-function">
-                            <p>Удаление второстепенных файлов</p>
-                        </div>
-                        <div id="delete-reserved-files" class="handy-function">
-                            <p>Удаление резервных файлов и папок</p>
                         </div>
                     </div>
                 </div>
@@ -689,9 +620,23 @@
                     <p class="settings-element-p" id="bg-select-input">Сменить задний фон</p>
                     <p class="settings-element-p" id="bg-reset-input">Поставить фон по умолчанию</p>
                     <p class="settings-element-p" id="change-theme-button">Поменять тему</p>
-                    <label class="checkbox-left checkbox">
+                    <label id="muted-bg-container" class="checkbox-left checkbox invisible">
                         <span class="additional-setting-name">Заглушить задный фон</span>
-                        <input id="muted-bg-cb" type="checkbox" checked="checked">
+                        <input id="muted-bg-cb" type="checkbox" checked>
+                        <div class="checkmark">
+                            <div class="checkmark-fill"></div>
+                        </div>
+                    </label>
+                    <label class="checkbox-left checkbox">
+                        <span class="additional-setting-name">Заблюрить задний фон</span>
+                        <input id="bg-blurred-cb" type="checkbox" checked>
+                        <div class="checkmark">
+                            <div class="checkmark-fill"></div>
+                        </div>
+                    </label>
+                    <label class="checkbox-left checkbox">
+                        <span class="additional-setting-name">Скрывать лаунчер при запуске</span>
+                        <input id="hide-upon-launch-cb" type="checkbox" checked>
                         <div class="checkmark">
                             <div class="checkmark-fill"></div>
                         </div>

@@ -4,24 +4,19 @@ const win = remote.getCurrentWindow();
 init_ipc();
 
 ipcRenderer.on('message', (event, message) => {
-    console.log(message);
+    console.log(`[MSG] <main> ${message}`);
 });
 
-ipcRenderer.on('devtools-opened', (event, message) => {
-    let header_color = `rgb(${themes_json[settings['theme']]['css'][4].split(':')[1].substring(1)})`;
-    let p_color = `rgb(${themes_json[settings['theme']]['css'][3].split(':')[1].substring(1)})`;
-    console.log("%cПодожди-ка!", `color:${header_color}; font-size: 48px; padding: 8px 0; font-weight:bold`);
-    console.log("%cТот, кто попросил вставить что либо сюда, с вероятностью 420/69 хочет тебя обмануть.", "color:#ffffff; font-size: 14px; padding: 8px 0");
-    console.log("%cЕсли вставить сюда что-нибудь, плохие дяди смогут получить доступ к вашему аккаунту.", `color:${p_color}; font-size: 16px; padding: 8px 0; font-weight:bold`);
-});
-
+window.addEventListener('beforeunload', () => {
+    win.webContents.emit('win-reload');
+})
 //#region  //. User Data -------------------------------------------------
 //? LOGOUT
 
 document.querySelector('#profile-sub').addEventListener('click', async e => {
     if (minecraft != undefined && minecraft != null)
     {
-        minecraft.kill();
+        await absolutely_utterly_obliterate_minecraft();
     }
     ipcRenderer.send('logout', {}).then( res => {
         console.log(res);
@@ -53,7 +48,7 @@ if (userData['username'] == 'OneHellSing')
 }
 //#endregion
 
-//#region //. Side-settings ----------------------------------------------
+//#region  //. Side-settings ----------------------------------------------
 let hide_settings_button = document.querySelector('#hide-settings-btn');
 hide_settings_button.addEventListener('click', () => {
     settings['opened_settings'] = !settings['opened_settings'];
@@ -78,7 +73,7 @@ function updateSettings(open)
 updateSettings(settings['opened_settings']);
 //#endregion
 
-//#region  //. Panel buttons -----------------------------------------------
+//#region  //. Panel buttons ----------------------------------------------
 
 document.getElementById('close-btn').addEventListener('mouseover', () => {
     document.getElementById('close-btn').style.backgroundColor = 'var(--header-sysbuttons-bg-hover)';
@@ -113,8 +108,10 @@ document.getElementById('reload-btn').addEventListener('mouseleave', () => {
 });
 
 document.getElementById('close-btn').addEventListener('click', () => {
-    update_settings();
-    win.close();
+    absolutely_utterly_obliterate_minecraft().then(res => {
+        update_settings();
+        win.close();
+    });
 });
 
 document.getElementById('minimize-btn').addEventListener('click', () => {
@@ -127,7 +124,7 @@ document.getElementById('reload-btn').addEventListener('click', () => {
 });
 //#endregion
 
-//#region  //. Switchin between sections -----------------------------------
+//#region  //. Switchin between sections ----------------------------------
 
 let selected_section = settings['on_page'];
 
@@ -275,4 +272,22 @@ function update_selected_section()
 }
 
 update_selected_section();
+//#endregion
+
+//#region  //. Console warning --------------------------------------------
+if (win.webContents.isDevToolsOpened()) {
+    let header_color = `${themes_json[settings['theme']]['css'][1].split(':')[1].substring(1)}`;
+    let p_color = `#FFF`;
+    console.log("%cПодожди-ка!", `color:${header_color}; font-size: 48px; padding: 8px 0; font-weight:bold`);
+    console.log("%cТот, кто попросил вставить что либо сюда, с вероятностью 420/69 хочет тебя обмануть.", "color:#ffffff; font-size: 14px; padding: 8px 0");
+    console.log("%cЕсли вставить сюда что-нибудь, плохие дяди смогут получить доступ к вашему аккаунту.", `color:${p_color}; font-size: 16px; padding: 8px 0; font-weight:bold`);
+}
+
+ipcRenderer.on('devtools-opened', (event, message) => {
+    let header_color = `${themes_json[settings['theme']]['css'][1].split(':')[1].substring(1)}`;
+    let p_color = `#FFF`;
+    console.log("%cПодожди-ка!", `color:${header_color}; font-size: 48px; padding: 8px 0; font-weight:bold`);
+    console.log("%cТот, кто попросил вставить что либо сюда, с вероятностью 420/69 хочет тебя обмануть.", "color:#ffffff; font-size: 14px; padding: 8px 0");
+    console.log("%cЕсли вставить сюда что-нибудь, плохие дяди смогут получить доступ к вашему аккаунту.", `color:${p_color}; font-size: 16px; padding: 8px 0; font-weight:bold`);
+});
 //#endregion

@@ -113,6 +113,20 @@ footer{
     padding-right: 85px;
 }
 
+@media only screen and (max-width: 1144px) {
+    .footer-left{
+        margin-left: 0;
+    }
+
+    .footer-left-container{
+        align-items: flex-start;
+    }
+
+    .footer-right{
+        margin-right: 0;
+    }
+}
+
 .downloading .download-bar{
     opacity: 1;
     height: 8px;

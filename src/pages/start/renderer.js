@@ -168,12 +168,16 @@ function hideTopContent() {
     document.getElementById('reload-btn').removeEventListener('mouseover', reloadLisHover);
     document.getElementById('reload-btn').removeEventListener('mouseleave', reloadLisLeave);
 
-    document.getElementById('exit-icon1').style.stroke = 'rgb(var(--header-icon))';
-    document.getElementById('exit-icon2').style.stroke = 'rgb(var(--header-icon))';
+    document.getElementById('exit-icon1').style.stroke = 'rgb(var(--header-sysbuttons-icon))';
+    document.getElementById('exit-icon1').style.transition = 'stroke 1s';
+    document.getElementById('exit-icon2').style.stroke = 'rgb(var(--header-sysbuttons-icon))';
+    document.getElementById('exit-icon2').style.transition = 'stroke 1s';
 
-    document.getElementById('minimize-icon').style.stroke = 'rgb(var(--header-icon))';
+    document.getElementById('minimize-icon').style.stroke = 'rgb(var(--header-sysbuttons-icon))';
+    document.getElementById('minimize-icon').style.transition = 'stroke 1s';
 
-    document.getElementById('reload-icon').style.fill = 'rgb(var(--header-icon))';
+    document.getElementById('reload-icon').style.fill = 'rgb(var(--header-sysbuttons-icon))';
+    document.getElementById('reload-icon').style.transition = 'fill 1s';
 
     document.getElementById('close-btn').addEventListener('mouseover', () => {
         document.getElementById('close-btn').style.backgroundColor = 'var(--header-sysbuttons-bg-hover)';
@@ -211,7 +215,7 @@ function hideTopContent() {
         ipcRenderer.send('load-main-win');
 
         ipcRenderer.on('main-win-opened', () => {
-            win.close();
+            win.destroy();
             resolve();
         });
     }, 2000);
@@ -456,5 +460,23 @@ document.getElementById('login-button').addEventListener('click', (e) => {
     login().then(() => {
         finish();
     });
+});
+//#endregion
+
+//#region  //. Console warning --------------------------------------------
+if (win.webContents.isDevToolsOpened()) {
+    let header_color = `rgb(${themes_json[settings['theme']]['css'][3].split(':')[1].substring(1)})`;
+    let p_color = `rgb(${themes_json[settings['theme']]['css'][3].split(':')[1].substring(1)})`;
+    console.log("%cПодожди-ка!", `color:${header_color}; font-size: 48px; padding: 8px 0; font-weight:bold`);
+    console.log("%cТот, кто попросил вставить что либо сюда, с вероятностью 420/69 хочет тебя обмануть.", "color:#ffffff; font-size: 14px; padding: 8px 0");
+    console.log("%cЕсли вставить сюда что-нибудь, плохие дяди смогут получить доступ к вашему аккаунту.", `color:${p_color}; font-size: 16px; padding: 8px 0; font-weight:bold`);
+}
+
+ipcRenderer.on('devtools-opened', (event, message) => {
+    let header_color = `rgb(${themes_json[settings['theme']]['css'][3].split(':')[1].substring(1)})`;
+    let p_color = `rgb(${themes_json[settings['theme']]['css'][3].split(':')[1].substring(1)})`;
+    console.log("%cПодожди-ка!", `color:${header_color}; font-size: 48px; padding: 8px 0; font-weight:bold`);
+    console.log("%cТот, кто попросил вставить что либо сюда, с вероятностью 420/69 хочет тебя обмануть.", "color:#ffffff; font-size: 14px; padding: 8px 0");
+    console.log("%cЕсли вставить сюда что-нибудь, плохие дяди смогут получить доступ к вашему аккаунту.", `color:${p_color}; font-size: 16px; padding: 8px 0; font-weight:bold`);
 });
 //#endregion

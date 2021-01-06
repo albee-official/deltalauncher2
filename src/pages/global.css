@@ -10,6 +10,8 @@
 
 body{
     overflow: hidden;
+
+    transition: backdrop-filter .8s cubic-bezier(0.23, 1, 0.320, 1);
 }
 
 .noselect {
@@ -176,6 +178,8 @@ button:hover{
     height: 100vh;
     width: 100vw;
     object-fit: cover;
+
+    transition: filter .8s cubic-bezier(0.23, 1, 0.320, 1);
 }
 
 .bg-filter{
@@ -186,4 +190,6 @@ button:hover{
     height: 100%;
     background: var(--main-bg);
     z-index: 0;
+
+    transition: all .8s cubic-bezier(0.23, 1, 0.320, 1);
 }

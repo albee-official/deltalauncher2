@@ -9,6 +9,8 @@ body{
     justify-content: center;
     align-items: center;
     animation: bg-start 1s cubic-bezier(0.23, 1, 0.320, 1);
+
+    transition: backdrop-filter 0s linear;
 }
 
 @keyframes bg-start

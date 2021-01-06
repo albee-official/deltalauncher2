@@ -57,6 +57,15 @@ section{
     padding: 0 4px;
 }
 
+.server-unavailable{
+    opacity: .5;
+    pointer-events: none;
+}
+
+.server-unavailable .select-button{
+    content: 'jopa';
+}
+
 .server-name{
     font-size: 24px;
     font-weight: bold;
@@ -175,7 +184,7 @@ section{
 .play-settings-header{
     font-size: 16px;
     font-weight: bold;
-    color: rgb(var(--main-text));
+    color: rgb(var(--global-text-rgb));
     margin-bottom: 17px;
 }
 
@@ -184,7 +193,7 @@ section{
     height: 34px;
     margin-bottom: 26px;
 
-    background-color: rgb(var(--main-text));
+    background-color: rgb(var(--global-text-rgb));
 }
 
 .play-settings .checkbox{
@@ -197,14 +206,14 @@ section{
 .play-settings .checkbox .checkmark{
     height: 12px;
     width: 12px;
-    border: rgb(var(--main-text)) 3px solid;
+    border: rgb(var(--global-text-rgb)) 3px solid;
     box-sizing: border-box;
     background: rgba(255, 255, 255, 0);
     transition: background .2s;
 }
 
 .play-settings .checkbox input:checked ~ .checkmark {
-    background: rgba(var(--main-text), 1);
+    background: rgba(var(--global-text-rgb), 1);
 }
 
 .play-settings .checkbox .checkmark .checkmark-fill{
@@ -224,7 +233,7 @@ section{
     border: none;
     font-size: 14px;
     font-weight: 600;
-    color: rgba(var(--main-text), .4);
+    color: rgba(var(--global-text-rgb), .4);
     cursor: pointer;
 }
 
@@ -290,14 +299,14 @@ section{
 
     font-size: 16px;
     font-weight: bold;
-    color: rgba(var(--main-text), .38);
+    color: rgba(var(--global-text-rgb), .38);
 
     cursor: pointer;
     transition: color .2s;
 }
 
 .news-voting li:hover{
-    color: rgba(var(--main-text), .55);
+    color: rgba(var(--global-text-rgb), .55);
 }
 
 .voting-header{
@@ -309,7 +318,7 @@ section{
 .voting-option-progress{
     height: 4px;
     width: 256px;
-    background-color: rgba(var(--main-text), .11);
+    background-color: rgba(var(--global-text-rgb), .11);
     border-radius: 4px;
 
     margin-top: 6px;
@@ -317,7 +326,7 @@ section{
 
 .voting-option-progress-filler{
     height: 4px;
-    background-color: rgb(var(--main-text));
+    background-color: rgb(var(--global-text-rgb));
     border-radius: 4px;
 }
 

@@ -242,6 +242,10 @@
     opacity: var(--main-text-p-opacity-hover);
 }
 
+.settings-element .checkbox-left{
+    margin-bottom: 8px;
+}
+
 .directories-list {
     display: flex;
     flex-direction: column;

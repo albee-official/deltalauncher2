@@ -41,11 +41,21 @@ function createWindow() {
     icon: 'src/res/app_icon.ico',
     frame: false,
     transparent: true,
-    center: true
+    center: true,
+    show: false
   });
 
   // and load the index.html of the app.
   win.loadFile('src/pages/start/index.html');
+
+  win.webContents.on('win-reload', () => {
+    win.hide();
+  });
+
+  win.webContents.on('did-finish-load', function() {
+    win.show();
+  });
+
 
   // Open the DevTools.
   //*   win.webContents.openDevTools()
@@ -104,6 +114,8 @@ function createTray() {
 }
 
 app.whenReady().then(createWindow);
+
+app.commandLine.appendSwitch('js-flags', '--expose_gc --max-old-space-size=128')
 
 // Quit when all windows are closed.
 app.on("window-all-closed", () => {
@@ -705,16 +717,27 @@ ipcMain.on('load-main-win', (event, args) => {
     }
   });
 
+  app.commandLine.appendSwitch('js-flags', '--expose_gc --max-old-space-size=128')
+
   win.webContents.on('devtools-opened', err => {
     BrowserWindow.getAllWindows()[0].send('devtools-opened');
     console.log('[MAIN] console opened');
     // win.webContents.closeDevTools();
   });
 
+  win.webContents.on('win-reload', () => {
+    win.hide();
+  });
+
   win.webContents.on('did-finish-load', function() {
-      win.show();
-      event.reply('main-win-opened');
-      return;
+    win.show();
+  });
+
+  win.webContents.once('did-finish-load', function() {
+    BrowserWindow.getAllWindows()[1].destroy();
+    
+    event.reply('main-win-opened');
+    return;
   });
 });
 //#endregion

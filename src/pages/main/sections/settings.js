@@ -8,6 +8,36 @@ let memory_range = document.querySelector('#memory-range');
 let optimization_range = document.querySelector('#optimization-range');
 let controll_inputs = document.querySelectorAll('.controll-setting-input');
 
+//#region //. ---------------- Developer settings ------------------
+if (settings['developer_mode']) {
+    document.querySelector('#handy-functions').innerHTML += 
+        `<div id="delete-configs" class="handy-function">
+            <p>Сбросить конфиги</p>
+        </div>
+        <div id="delete-additional-files" class="handy-function">
+            <p>Удаление второстепенных файлов</p>
+        </div>
+        <div id="delete-reserved-files" class="handy-function">
+            <p>Удаление резервных файлов и папок</p>
+        </div>
+        <label class="checkbox-left checkbox">
+            <span class="additional-setting-name">Связать консоли майнкрафта и лаунчера</span>
+            <input type="checkbox" id="link-consoles">
+            <div class="checkmark">
+                <div class="checkmark-fill"></div>
+            </div>
+        </label>`.replace(/\s+/g, ' ');
+
+    for (const server_container of document.querySelectorAll('.server')) {
+        server_container.classList = 'server';
+    }
+}
+
+for (const server_container of document.querySelectorAll('.server-unavailable')) {
+    server_container.querySelector('.select-button').innerHTML = 'Недоступно';
+}
+//#endregion 
+
 //#region //. ---------------- Java Parameters ---------------------
 
 let java_parameters = document.querySelector('#java-parameters');
@@ -77,11 +107,22 @@ document.querySelector('#bg-select-input').addEventListener('click', e => {
             return;
         }
 
-        document.querySelector('#bg-video').src = '';
-        console.log(selected_file);
-        console.log(extension);
+        //. Stop using this video or idk
+        let video_el = document.querySelector('#bg-video');
+        video_el.src = '';
+        video_el.pause();
+        video_el.removeAttribute('src'); // empty source
+        video_el.load();
+        
+        //. Run garbage collector to stop using the file
+        window.gc();
 
+        //. Delete previous BG
         let resources_path = verify_and_get_resources_folder();
+        if (await fs.pathExists(resources_path + '\\custom_bg.' + settings['bg_extension']))
+            await fs.unlink(resources_path + '\\custom_bg.' + settings['bg_extension']);
+
+        //. Copy new BG to resources and apply
         let bg_path = resources_path + '\\custom_bg.' + extension;
         await fs.copy(selected_file, bg_path);
         bg_path = bg_path.replace(/\\/g, '/')
@@ -91,21 +132,15 @@ document.querySelector('#bg-select-input').addEventListener('click', e => {
             document.querySelector('#bg-video').src = `${bg_path}?${new Date()}`;
             check_muted_video();
         }
-        else if (extension == 'png' || extension == 'jpeg' || extension == 'jpg' || extension == 'gif' || extension == 'bmp')
+        else
         {
             document.body.style.backgroundImage = `url("${bg_path}?${new Date()}")`;
         }
 
         settings['bg_extension'] = extension;
+        update_additional_settings();
         update_settings();
     });
-});
-
-let muted_cb = document.querySelector('#muted-bg-cb');
-muted_cb.addEventListener('click', () => {
-    settings['bg_muted'] = muted_cb.checked;
-    update_settings();
-    check_muted_video();
 });
 //#endregion
 
@@ -117,13 +152,93 @@ document.querySelector('#bg-reset-input').addEventListener('click', e => {
     update_theme();
 });
 //#endregion
+
 //#endregion
 
 //#region //. ---------------- Default Shader Selection ------------
 let default_shader = document.getElementById('default-shader');
-default_shader.addEventListener('click', e => {
-    
+if (settings['default_shader'] != '' && settings['default_shader'] != undefined) {
+    default_shader.innerHTML = `Шейдер по умолчанию: ${settings['default_shader']}`;
+} else {
+    default_shader.innerHTML = `Шейдер по умолчанию не установлен`;
+}
+default_shader.addEventListener('click', async e => {
+
+    const win = BrowserWindow.getFocusedWindow();
+    dialog.showOpenDialog(win, {
+        title: 'Выберите Шейдер по умолчанию',
+        defaultPath: '',
+        buttonLabel: 'Выбрать',
+        properties: ['openFile'],
+        filters: [
+            { name: 'Archives', extensions: ['zip'] }
+        ]
+    }).then(async res => {
+        if (res.canceled) return;
+        // Delete previous shader
+        if (await fs.pathExists(verify_and_get_resources_folder() + '\\' + settings['default_shader']) && settings['default_shader'] != '' && settings['default_shader'] != undefined)
+            await fs.unlink(verify_and_get_resources_folder() + '\\' + settings['default_shader']);
+
+        // Get info about newly selected one
+        let path = res.filePaths[0];
+        let jojo = path.split('\\');
+        let filename = jojo[jojo.length - 1];
+        console.log(`[SETTINGS] New default shader: ${filename}`);
+        
+        // Copy shader to out directory
+        await fs.copyFile(path, verify_and_get_resources_folder() + '\\' + filename);
+        default_shader.innerHTML = `Шейдер по умолчанию: ${filename}`;
+
+        settings['default_shader'] = filename;
+        update_settings();
+    });
 });
+//#endregion
+
+//#region //. ---------------- Modpack Folder Selectrion -----------
+
+let modpack_dirs = document.querySelectorAll('#modpack-dir');
+for (let jojo of modpack_dirs)
+{
+    jojo.children[1].innerHTML = verify_and_get_modpack_folder(jojo.children[0].innerHTML.toLowerCase());
+    jojo.addEventListener('click', e => {
+        let current_modpack_dir = e.currentTarget;
+        let modpack_dir_p = current_modpack_dir.children[1];
+        if (current_modpack_dir.classList.contains('updating')) return;
+        dialog.showOpenDialog(win, {
+            title: 'Выберите Папку',
+            defaultPath: '',
+            buttonLabel: 'Выбрать',
+            properties: ['openDirectory']
+        }).then(async res => {
+            if (res.canceled) return;
+            let path = res.filePaths[0];
+            let current_modpack = current_modpack_dir.children[0].innerHTML.toLowerCase();
+            modpack_dir_p.innerHTML = path;
+            path = path.replace(dir_root, '|ROOT|');
+            settings['modpack_dirs'][current_modpack] = path;
+            update_settings();
+            UpdateServer();
+            UpdateRedownloadCheckBox();
+            UpdateSideModpackDir(current_modpack);
+            UpdateButtons();
+        });
+    });
+}
+let modpack_update_paragraphs = document.querySelectorAll('.directory-modpack-update');
+let counter = 0;
+let launch_update_counter = 0;
+let update_animator = setInterval(() => {
+    for (let modpack_update_p of modpack_update_paragraphs) {
+        if (counter % 4 == 0) {
+            modpack_update_p.innerHTML = 'Обновляется';
+            counter = 0;
+        } else {
+            modpack_update_p.innerHTML += '.';
+        }
+    }
+    counter++;
+}, 1000);
 //#endregion
 
 //#region //. ---------------- Handy Features ----------------------
@@ -132,7 +247,8 @@ document.querySelector('#open-root-folder').addEventListener('click', e => {
 });
 
 document.querySelector('#open-modpack-folder').addEventListener('click', async e => {
-    let selected_modpack = await show_modpack_selection_menu();
+    let selected_modpack = await show_modpack_selection_menu().catch(err => { console.log(err); return; });
+    if (selected_modpack == undefined) return;
     console.log(selected_modpack);
 
     let path = verify_and_get_modpack_folder(selected_modpack);
@@ -140,7 +256,8 @@ document.querySelector('#open-modpack-folder').addEventListener('click', async e
 });
 
 document.querySelector('#delete-settings').addEventListener('click', async e => {
-    let selected_modpack = await show_modpack_selection_menu();
+    let selected_modpack = await show_modpack_selection_menu().catch(err => { console.log(err); return; });
+    if (selected_modpack == undefined) return;
     console.log(selected_modpack);
 
     let path = verify_and_get_modpack_folder(selected_modpack);
@@ -158,27 +275,18 @@ document.querySelector('#delete-settings').addEventListener('click', async e => 
         fs.unlinkSync(path + '\\knownkeys.txt');
 });
 
-document.querySelector('#delete-configs').addEventListener('click', async e => {
-    let selected_modpack = await show_modpack_selection_menu();
-    console.log(selected_modpack);
-
-    let path = verify_and_get_modpack_folder(selected_modpack);
-
-    if (fs.pathExistsSync(path + '\\config'))
-        rimraf.sync(path + '\\config');
-});
-
 document.querySelector('#reset-folder').addEventListener('click', async e => {
-    let selected_modpack = await show_modpack_selection_menu();
+    let selected_modpack = await show_modpack_selection_menu().catch(err => { console.log(err); return; });
+    if (selected_modpack == undefined) return;
     console.log(selected_modpack);
 
     let path = verify_and_get_modpack_folder(selected_modpack);
 
     fs.readdir(path, (err, files) => {
         files.forEach(file => {
-            if (file != 'mods' && file != 'libraries' && file != 'versions' && file != 'assets' && file != 'settings' && file != 'info.json')
+            if (file != 'mods' && file != 'libraries' && file != 'versions' && file != 'assets' && file != 'settings' && file != 'options' && file != 'info.json')
             {
-                if (file.toString().split('.').length > 1)
+                if (file.toString() != '.mixin.out' && file.toString().split('.').length > 1)
                 {
                     fs.unlinkSync(path + '\\' + file);
                 }
@@ -191,55 +299,76 @@ document.querySelector('#reset-folder').addEventListener('click', async e => {
     });
 });
 
-document.querySelector('#delete-additional-files').addEventListener('click', async e => {
-    let selected_modpack = await show_modpack_selection_menu();
-    console.log(selected_modpack);
-
-    let path = verify_and_get_modpack_folder(selected_modpack);
-
-    if (fs.pathExistsSync(path + '\\resources'))
-        rimraf.sync(path + '\\resources');
-
-    if (fs.pathExistsSync(path + '\\local'))
-        rimraf.sync(path + '\\local');
-
-    if (fs.pathExistsSync(path + '\\scripts'))
-        rimraf.sync(path + '\\scripts');
-
-    if (fs.pathExistsSync(path + '\\shaderpacks'))
-        rimraf.sync(path + '\\shaderpacks');
-
-    if (fs.pathExistsSync(path + '\\resourcepacks'))
-        rimraf.sync(path + '\\resourcepacks');
-
-    if (fs.pathExistsSync(path + '\\servers.dat'))
-        fs.unlinkSync(path + '\\servers.dat');
-});
-
-document.querySelector('#delete-reserved-files').addEventListener('click', async e => {
-    let selected_modpack = await show_modpack_selection_menu();
-    console.log(selected_modpack);
-
-    let path = verify_and_get_modpack_folder(selected_modpack);
-
-    if (fs.pathExistsSync(path + '\\asm'))
-        rimraf.sync(path + '\\asm');
-
-    if (fs.pathExistsSync(path + '\\journeymap'))
-        rimraf.sync(path + '\\journeymap');
-
-    if (fs.pathExistsSync(path + '\\CustomSkinLoader'))
-        rimraf.sync(path + '\\CustomSkinLoader');
-
-    if (fs.pathExistsSync(path + '\\server-resource-packs'))
-        rimraf.sync(path + '\\server-resource-packs');
-
-    if (fs.pathExistsSync(path + '\\.mixin.out'))
-        fs.unlinkSync(path + '\\.mixin.out');
-
-    if (fs.pathExistsSync(path + '\\crafttweaker.log'))
-        fs.unlinkSync(path + '\\crafttweaker.log');
-});
+if (settings['developer_mode']){
+    document.querySelector('#delete-configs').addEventListener('click', async e => {
+        let selected_modpack = await show_modpack_selection_menu().catch(err => { console.log(err); return; });
+        if (selected_modpack == undefined) return;
+        console.log(selected_modpack);
+    
+        let path = verify_and_get_modpack_folder(selected_modpack);
+    
+        if (fs.pathExistsSync(path + '\\config'))
+            rimraf.sync(path + '\\config');
+    });
+    
+    document.querySelector('#delete-additional-files').addEventListener('click', async e => {
+        let selected_modpack = await show_modpack_selection_menu().catch(err => { console.log(err); return; });
+        if (selected_modpack == undefined) return;
+        console.log(selected_modpack);
+    
+        let path = verify_and_get_modpack_folder(selected_modpack);
+    
+        if (fs.pathExistsSync(path + '\\resources'))
+            rimraf.sync(path + '\\resources');
+    
+        if (fs.pathExistsSync(path + '\\local'))
+            rimraf.sync(path + '\\local');
+    
+        if (fs.pathExistsSync(path + '\\scripts'))
+            rimraf.sync(path + '\\scripts');
+    
+        if (fs.pathExistsSync(path + '\\shaderpacks'))
+            rimraf.sync(path + '\\shaderpacks');
+    
+        if (fs.pathExistsSync(path + '\\resourcepacks'))
+            rimraf.sync(path + '\\resourcepacks');
+    
+        if (fs.pathExistsSync(path + '\\servers.dat'))
+            fs.unlinkSync(path + '\\servers.dat');
+    });
+    
+    document.querySelector('#delete-reserved-files').addEventListener('click', async e => {
+        let selected_modpack = await show_modpack_selection_menu().catch(err => { console.log(err); return; });
+        if (selected_modpack == undefined) return;
+        console.log(selected_modpack);
+    
+        let path = verify_and_get_modpack_folder(selected_modpack);
+    
+        if (fs.pathExistsSync(path + '\\asm'))
+            rimraf.sync(path + '\\asm');
+    
+        if (fs.pathExistsSync(path + '\\journeymap'))
+            rimraf.sync(path + '\\journeymap');
+    
+        if (fs.pathExistsSync(path + '\\CustomSkinLoader'))
+            rimraf.sync(path + '\\CustomSkinLoader');
+    
+        if (fs.pathExistsSync(path + '\\server-resource-packs'))
+            rimraf.sync(path + '\\server-resource-packs');
+    
+        if (fs.pathExistsSync(path + '\\.mixin.out'))
+            fs.unlinkSync(path + '\\.mixin.out');
+    
+        if (fs.pathExistsSync(path + '\\crafttweaker.log'))
+            fs.unlinkSync(path + '\\crafttweaker.log');
+    });
+    
+    document.querySelector('#link-consoles').checked = settings['link_consoles'];
+    document.querySelector('#link-consoles').addEventListener('input', () => {
+        settings['link_consoles'] = document.querySelector('#link-consoles').checked;
+        update_settings();
+    });
+}
 
 //#endregion
 
@@ -259,6 +388,8 @@ memory_range.addEventListener('input', e => {
     let input_stops = e.currentTarget.children[0].children[0].children;
 
     input_range.value = Math.max(Math.min(input_range.value, max_setable_ram), min_setable_ram);
+    document.querySelector('#settings-memory-header').innerHTML = `Выделение памяти: ${input_range.value}Gb`;
+    document.querySelector('#play-memory-header').innerHTML = `Выделение памяти: ${input_range.value}Gb`;
 
     // loop through all stops
     for (let i = 0; i < input_stops.length; i++) {
@@ -276,6 +407,8 @@ memory_range.addEventListener('input', e => {
 
 // Change from settings or update settings
 memory_range.children[0].children[1].children[0].value = Math.max(Math.min(settings['allocated_memory'], max_setable_ram), min_setable_ram);
+document.querySelector('#settings-memory-header').innerHTML = `Выделение памяти: ${settings['allocated_memory']}Gb`;
+document.querySelector('#play-memory-header').innerHTML = `Выделение памяти: ${settings['allocated_memory']}Gb`;
 memory_range.addEventListener('change', () => {
     settings['allocated_memory'] = memory_range.children[0].children[1].children[0].value;
     document.querySelector('#play-memory-range').children[0].children[1].children[0].value = memory_range.children[0].children[1].children[0].value; // Sync 2 memory ranges
@@ -472,7 +605,7 @@ function ascii_to_dumbass(keycode) {
 
 //#region //. ---------------- Select Functions --------------------
 
-//#region //. Modpack select ---------
+//#region //. List select ---------
 async function show_select_from_list(header, options)
 {
     return new Promise((resolve, reject) => {
@@ -519,7 +652,6 @@ async function show_modpack_selection_menu()
         let menu = document.querySelector('#modpack-select-menu');
         let modpack_parapraph = document.querySelector('#modpack-select-p');
         let modpack_header = document.querySelector('#modpack-select-h');
-        let modpack_input = document.querySelector('#modpack-select-input');
 
         let modpack_items = document.querySelectorAll('#modpack-select-p');
         let modpack_options = ['', '', '', ''];
@@ -527,6 +659,11 @@ async function show_modpack_selection_menu()
         {
             modpack_options[i] = modpack_items[i].getAttribute('data-name');
         }
+
+        menu.addEventListener('click', () => {
+            close_menu(menu);
+            reject('manually closed');
+        });
 
         function setval(e) {
             let el = e.currentTarget;
@@ -620,14 +757,14 @@ for (let addon_cb of play_addon_cbs) {
     });
 }
 
-let prev_click_event = undefined;
+let prev_click_event = function(e) {};
 UpdateSideModpackDir(modpack_name);
 // Modpack directory
 async function UpdateSideModpackDir(modpack)
 {
     let dir = settings['modpack_dirs'][modpack];
     let el = document.querySelector('#play-game-dir-input')
-    el.innerHTML = dir.replace('|ROOT|', '...') + '\\' + modpack;
+    el.innerHTML = dir.replace('|ROOT|', '...');
 
     el.removeEventListener('click', prev_click_event);
 
@@ -639,4 +776,52 @@ async function UpdateSideModpackDir(modpack)
     el.addEventListener('click', prev_click_event);
 }
 //#endregion 
+
+//#region //. ---------------- Launch screen -----------------------
+let launch_animator = setInterval(() => {
+    if (launch_update_counter % 3 == 0) {
+        document.querySelector('#launch-h').innerHTML = 'Запуск: ' + Capitalize_First_Letter(modpack_name) + '.';
+        launch_update_counter = 0;
+    } else {
+        document.querySelector('#launch-h').innerHTML += '.';
+    }
+    launch_update_counter++;
+}, 1000);
+//#endregion 
+
+//#region //. ---------------- Additional settings -----------------
+update_additional_settings();
+function update_additional_settings() {
+    if (is_video_on_bg()) {
+        document.querySelector('#muted-bg-container').classList.remove('invisible');
+    } else {
+        document.querySelector('#muted-bg-container').classList.add('invisible');
+    }
+}
+
+let muted_cb = document.querySelector('#muted-bg-cb');
+muted_cb.checked = settings['bg_muted'];
+check_muted_video();
+muted_cb.addEventListener('click', () => {
+    settings['bg_muted'] = muted_cb.checked;
+    update_settings();
+    check_muted_video();
+});
+
+let blurred_cb = document.querySelector('#bg-blurred-cb');
+blurred_cb.checked = settings['bg_blurred'];
+check_blurred_bg();
+blurred_cb.addEventListener('click', () => {
+    settings['bg_blurred'] = blurred_cb.checked;
+    update_settings();
+    check_blurred_bg();
+});
+
+let hide_upon_launch_cb = document.querySelector('#hide-upon-launch-cb');
+hide_upon_launch_cb.checked = settings['hide_upon_launch'];
+hide_upon_launch_cb.addEventListener('change', () => {
+    settings['hide_upon_launch'] = hide_upon_launch_cb.checked;
+    update_settings();
+});
+//#endregion
 

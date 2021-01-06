@@ -1,4 +1,4 @@
-//#region  //.Server selection ------------------------------------------
+//#region  //. Server selection ------------------------------------------
 
 const { ajax } = require("jquery");
 
@@ -6,7 +6,7 @@ let magicae_select_button = document.querySelector('#magicae-select');
 let fabrica_select_button = document.querySelector('#fabrica-select');
 let statera_select_button = document.querySelector('#statera-select');
 let insula_select_button = document.querySelector('#insula-select');
-let isekai_select_button = document.querySelector('#isekai-select');
+let odyssea_select_button = document.querySelector('#odyssea-select');
 
 let play_button = document.querySelector('#play-button');
 
@@ -15,7 +15,7 @@ let launched_modpacks = {
     'fabrica': false,
     'statera': false,
     'insula': false,
-    'isekai': false
+    'odyssea': false
 };
 
 let modpack_name = settings['selected_modpack'];
@@ -24,64 +24,80 @@ magicae_select_button.addEventListener('click', () => {
     modpack_name = 'magicae';
     settings['selected_modpack'] = modpack_name;
     update_settings();
-    UpdateServer();
     UpdateRedownloadCheckBox();
     UpdateSideModpackDir(modpack_name);
-    UpdateActiveButton();
+    UpdateButtons();
+    UpdateServer();
 });
 
 fabrica_select_button.addEventListener('click', () => {
     modpack_name = 'fabrica';
     settings['selected_modpack'] = modpack_name;
     update_settings();
-    UpdateServer();
     UpdateRedownloadCheckBox();
     UpdateSideModpackDir(modpack_name);
-    UpdateActiveButton();
+    UpdateButtons();
+    UpdateServer();
 });
 
 statera_select_button.addEventListener('click', () => {
     modpack_name = 'statera';
     settings['selected_modpack'] = modpack_name;
     update_settings();
-    UpdateServer();
     UpdateRedownloadCheckBox();
     UpdateSideModpackDir(modpack_name);
-    UpdateActiveButton();
+    UpdateButtons();
+    UpdateServer();
 });
 
 insula_select_button.addEventListener('click', () => {
     modpack_name = 'insula';
     settings['selected_modpack'] = modpack_name;
     update_settings();
-    UpdateServer();
     UpdateRedownloadCheckBox();
     UpdateSideModpackDir(modpack_name);
-    UpdateActiveButton();
+    UpdateButtons();
+    UpdateServer();
 });
 
-isekai_select_button.addEventListener('click', () => {
-    modpack_name = 'isekai';
+odyssea_select_button.addEventListener('click', () => {
+    modpack_name = 'odyssea';
     settings['selected_modpack'] = modpack_name;
     update_settings();
-    UpdateServer();
     UpdateRedownloadCheckBox();
     UpdateSideModpackDir(modpack_name);
-    UpdateActiveButton();
+    UpdateButtons();
+    UpdateServer();
 });
 
-function UpdateActiveButton() {
+function UpdateButtons() {
     let buttons = document.querySelectorAll('.select-button')
     let active_button = document.querySelector(`#${modpack_name}-select`)
     for (const button of buttons) {
         button.classList = 'select-button';
+
+        if (modpack_not_installed(button.getAttribute('data-name')))
+        {
+            button.innerHTML = 'Скачать';
+        }
+        else
+        {
+            button.innerHTML = 'Выбрать';
+        }
     }
 
     active_button.classList = 'select-button select-button-active';
-}
-UpdateActiveButton();
+    active_button.innerHTML = 'Выбрано';
 
-function UpdateServerSelectButton(server, button_el = document.querySelector(`#${server}-select`))
+    if (!settings['developer_mode']) {
+        for (const server_container of document.querySelectorAll('.server-unavailable')) {
+            server_container.querySelector('.select-button').innerHTML = 'Недоступно';
+        }
+    }
+}
+UpdateButtons();
+
+function UpdateOneButton(server, button_el = document.querySelector(`#${server}-select`))
 {
     if (modpack_not_installed(server))
     {
@@ -91,13 +107,13 @@ function UpdateServerSelectButton(server, button_el = document.querySelector(`#$
     {
         button_el.innerHTML = 'Выбрать';
     }
+
+    for (const server_container of document.querySelectorAll('.server-unavailable')) {
+        server_container.querySelector('.select-button').innerHTML = 'Недоступно';
+    }
 }
 
-UpdateServerSelectButton('magicae')
-UpdateServerSelectButton('fabrica')
-UpdateServerSelectButton('statera')
-UpdateServerSelectButton('insula')
-UpdateServerSelectButton('isekai')
+UpdateButtons();
 
 function Capitalize_First_Letter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -263,10 +279,11 @@ play_button.addEventListener('click', async () => {
             show_normal_footer();
 
             // Обновить натсройки
-            change_settings_preset(modpack_name, document.querySelector('#optimization-input').value);
-            document.querySelector('#play-button-assist-label').classList.remove('unactive');
+            if (!settings_exist())
+                change_settings_preset(modpack_name, document.querySelector('#optimization-input').value);
 
             // Запуск
+            document.querySelector('#play-button-assist-label').classList.remove('unactive');
             console.log(`Последняя версия ${Capitalize_First_Letter(modpack_name)} установлена. Запускаем...`);
 
             // Запустить штуку которая блокирует пользователю возможность запустить сборку еще раз
@@ -339,6 +356,11 @@ play_button.addEventListener('click', async () => {
                 });
 
                 await verify_user_skin(modpack_name);
+
+                // Обновить натсройки
+                if (!settings_exist())
+                    change_settings_preset(modpack_name, document.querySelector('#optimization-input').value);
+                await update_shader(modpack_name, settings['default_shader']);
 
                 // Запустить майнкрафт. Эта фнукция (Promise) заканчивается когда выключается майнкрафт.
                 let mem_input = document.querySelector('#memory-input');
@@ -542,6 +564,8 @@ play_memory_range.addEventListener('input', e => {
     let input_stops = e.currentTarget.children[0].children[0].children;
 
     input_range.value = Math.max(Math.min(input_range.value, max_setable_ram), min_setable_ram);
+    document.querySelector('#settings-memory-header').innerHTML = `Выделение памяти: ${input_range.value}Gb`;
+    document.querySelector('#play-memory-header').innerHTML = `Выделение памяти: ${input_range.value}Gb`;
 
     // loop through all stops
     for (let i = 0; i < input_stops.length; i++) {
