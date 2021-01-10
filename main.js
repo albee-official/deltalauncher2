@@ -1,6 +1,5 @@
 const { app, BrowserWindow, ipcMain, Tray, Menu } = require("electron");
 const { spawn } = require('child_process');
-const { download } = require("electron-dl");
 const { autoUpdater } = require("electron-updater");
 const { resolve } = require("path");
 const { data } = require("jquery");
