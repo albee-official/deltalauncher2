@@ -1,3 +1,40 @@
+const { remote, ipcRenderer } = require('electron');
+
+//. Globals
+Object.defineProperty(global, 'userInfo', {
+	get: function() {
+		return remote.getGlobal('sharedObject').userInfo;
+	},
+
+	set: function(val) {
+		remote.getGlobal('sharedObject').userInfo = val;
+	},
+});
+
+Object.defineProperty(global, 'rpc', {
+	get: function() {
+		return remote.getGlobal('sharedObject').rpc;
+	},
+
+	set: function(val) {
+		remote.getGlobal('sharedObject').rpc = val;
+		ipcRenderer.send('rpc-update');
+	},
+});
+
+Object.defineProperty(global, 'launchedModpacks', {
+	get: function() {
+		return remote.getGlobal('sharedObject').launchedModpacks;
+	},
+
+	set: function(val) {
+		console.log(`Setting launchedModpacks to: ${val}`);
+		remote.getGlobal('sharedObject').launchedModpacks = val;
+	},
+});
+
+//#region //. Handy
+
 String.prototype.replaceAt = function(index, replacement) {
     return this.substr(0, index) + replacement + this.substr(index + replacement.length);
 }
@@ -6,6 +43,10 @@ function remove_event_listeners(el) {
     elClone = el.cloneNode(true);
     el.parentNode.replaceChild(elClone, el);
 }
+
+//#endregion
+
+//#region //. Loading Animations (...)
 
 let loading_interval_updater = undefined;
 function update_loadings()
@@ -23,7 +64,10 @@ function update_loadings()
         }
     }, 1000);
 }
+
 update_loadings();
+
+//#endregion
 
 //#region //. Theme parsing
 

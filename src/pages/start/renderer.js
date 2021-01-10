@@ -1,6 +1,5 @@
 const { ajax } = require('jquery');
 
-const { remote, ipcRenderer } = require('electron');
 const win = remote.getCurrentWindow();
 
 ipcRenderer.on('update-message', (event, text) => {
@@ -309,15 +308,13 @@ function login() {
                 console.log('[LOGIN] Succesfull');
                 console.log(`[LOGIN] username: ${result['username']}`);
 
-                ipcRenderer.send('update-user-info', { 
-                    info: result, 
-                    password: document.getElementById('password').value 
-                });
+                userInfo = {
+                    ...userInfo,
+                    ...result,
+                };
 
-                ipcRenderer.on('user-info-updated', (event, args) => {
-                    closeLogin();
-                    resolve();
-                });
+                closeLogin();
+                resolve();
             }   
         });
     });
@@ -340,7 +337,11 @@ function finish() {
             },
             dataType: 'json'
         }).done(async (data) => {
-            ipcRenderer.send('update-user-server-info', data);
+            userInfo = {
+                ...userInfo,
+                servers_info: data,
+            }
+
             document.getElementById('finish-progress-bar').style.width = '80%';
 
             await download_user_icon();
