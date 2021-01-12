@@ -17,30 +17,35 @@ global.launchedModpacks = {
     pid: -1,
     launched: false,
     visible: false,
+    loaded: false,
   },
   fabrica: {
     process: undefined,
     pid: -1,
     launched: false,
     visible: false,
+    loaded: false,
   },
   insula: {
     process: undefined,
     pid: -1,
     launched: false,
     visible: false,
+    loaded: false,
   },
   statera: {
     process: undefined,
     pid: -1,
     launched: false,
     visible: false,
+    loaded: false,
   },
   odyssea: {
     process: undefined,
     pid: -1,
     launched: false,
     visible: false,
+    loaded: false,
   },
 };
 global.userInfo = {};
@@ -781,14 +786,14 @@ ipcMain.on('modpack-launch', async (event, {settings, _modpack_name, min_mem, ma
   let final_command = `${game_dir[0]}:&&cd "${cd_path}"&&"${java_path}" ${args}`;
   
   //. Spawn and run console line that starts minecraft
-  win.webContents.send('modpack-log', `[LAUNCH] [${modpack_name.toUpperCase()}] ${final_command}`);
+  win.webContents.send('modpack-log', `[LAUNCH] <${modpack_name.toUpperCase()}> Final starting command: ${final_command}`);
 
   launchedModpacks[modpack_name]['process'] = spawn(final_command, [], { 
       windowsHide: true,
       maxBuffer: 1024 * 1024 * 1024,
       shell: true
   }, err => {
-      if (!err) return; //# if return if launch encountered some error
+      if (!err) return; //# return if launch encountered some error
 
       win.webContents.send('modpack-update');
   });
@@ -802,9 +807,10 @@ ipcMain.on('modpack-launch', async (event, {settings, _modpack_name, min_mem, ma
         win.webContents.send('modpack-log', `[LAUNCH] <${modpack_name.toUpperCase()}> ${data.toString()}`);
       }
 
-      if (data.toString().split('Starts to replace vanilla recipe ingredients with ore ingredients.').length > 1)
+      if (!launchedModpacks[modpack_name]['visible'] && data.toString().split('Starts to replace vanilla recipe ingredients with ore ingredients.').length > 1)
       {
           launchedModpacks[modpack_name]['visible'] = true;
+          win.webContents.send('modpack-log', '[LAUNCH] Game window opened');
 
           if (BrowserWindow.getFocusedWindow() != undefined && BrowserWindow.getFocusedWindow() != null && settings['hide_upon_launch'])
           {
@@ -814,9 +820,10 @@ ipcMain.on('modpack-launch', async (event, {settings, _modpack_name, min_mem, ma
           win.webContents.send('modpack-update');
       }
 
-      if (data.toString().split('The game loaded in approximately').length > 1)
+      if (!launchedModpacks[modpack_name]['loaded'] && data.toString().split('The game loaded in approximately').length > 1)
       {
-        win.webContents.send('modpack-log', '[LAUNCH] Game window opened');
+        launchedModpacks[modpack_name]['loaded'] = true;
+        win.webContents.send('modpack-log', '[LAUNCH] Game Loaded');
 
           rpc = {
               ...rpc,
@@ -886,26 +893,29 @@ function integrate_java_parameters(settings, command)
 
 function get_latest_java_version_path(settings)
 {
-    return new Promise(async (resolve, reject) => {
-        let installed_java = await get_installed_java_path();
-        if (installed_java == 'No java found')
+  return new Promise(async (resolve, reject) => {
+      let installed_java = await get_installed_java_path();
+      if (installed_java == 'No java found' || settings['use_builtin_java'])
+      {
+        if (os.arch() == 'x64')
         {
-            if (os.arch() == 'x64')
-            {
-                log.info(`[LAUNCH] Latest java: ${path.join(app.getAppPath().split('app.asar')[0], '\\src\\res\\java\\runtime-windows-x64\\bin\\javaw.exe')}`);
-                resolve(path.join(app.getAppPath().split('app.asar')[0], '\\src\\res\\java\\runtime-windows-x64\\bin\\javaw.exe'));
-            }
-            else
-            {
-                log.info(`[LAUNCH] Latest java: ${path.join(app.getAppPath().split('app.asar')[0], '\\src\\res\\java\\runtime\\bin\\javaw.exe')}`);
-                resolve(path.join(app.getAppPath().split('app.asar')[0], '\\src\\res\\java\\runtime\\bin\\javaw.exe'));
-            }
+          const path_to_java = path.join(app.getAppPath().split('app.asar')[0], '\\src\\res\\java\\runtime-windows-x64\\bin\\javaw.exe');
+          log.info(`[LAUNCH] Using builtin java: ${path_to_java}`);
+          resolve(path_to_java);
         }
         else
         {
-            resolve(installed_java);
+          const path_to_java = path.join(app.getAppPath().split('app.asar')[0], '\\src\\res\\java\\runtime\\bin\\javaw.exe');
+          log.info(`[LAUNCH] Using builtin java: ${path_to_java}`);
+          resolve(path_to_java);
         }
-    });
+      }
+      else
+      {
+        log.info(`[LAUNCH] Using installed java: ${installed_java}`);
+        resolve(installed_java);
+      }
+  });
 }
 
 function get_installed_java_path(settings)
@@ -913,15 +923,33 @@ function get_installed_java_path(settings)
     return new Promise(async (resolve, reject) => {
         if ((await fs.readdir('C:\\Program Files')).includes('Java') )
         {
-            resolve(`C:\\Program Files\\Java\\${(await fs.readdir('C:\\Program Files\\Java'))[0]}\\bin\\javaw.exe`);
+          for (const version of (await fs.readdir('C:\\Program Files\\Java'))) {
+            if (await fs.pathExists(`C:\\Program Files\\Java\\${version}\\bin\\javaw.exe`))
+            {
+              resolve(`C:\\Program Files\\Java\\${version}\\bin\\javaw.exe`);
+              return;
+            }
+          }
+
+          resolve('No java found');
         }
         else if ((await fs.readdir('C:\\Program Files (x86)')).includes('Java'))
         {
-            resolve(`C:\\Program Files (x86)\\Java\\${(await fs.readdir('C:\\Program Files (x86)\\Java'))[0]}\\bin\\javaw.exe`);
+          for (const version of (await fs.readdir('C:\\Program Files (x86)\\Java'))) {
+            if (await fs.pathExists(`C:\\Program Files (x86)\\Java\\${version}\\bin\\javaw.exe`))
+            {
+              resolve(`C:\\Program Files (x86)\\Java\\${version}\\bin\\javaw.exe`);
+              return;
+            }
+          }
+
+          resolve('No java found');
+          return;
         }
         else
         {
-            resolve('No java found');
+          resolve('No java found');
+          return;
         }
     });
 }

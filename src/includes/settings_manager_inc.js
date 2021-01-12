@@ -20,6 +20,7 @@ const settings_pattern = {
         "shop": { "minecraft_key": "key_key.ftbmoney.shop", "minecraft_code": 35, "key_code": 12, "key_name": "H" }
     },
     "java_parameters": "",
+    "use_builtin_java": false,
     "link_consoles": false,
     "default_shader": "",
     "hide_upon_launch": true,
@@ -65,7 +66,7 @@ function update_settings()
 {
     let settings_string = JSON.stringify(settings, null, '\t');
     fs.writeFileSync(settings_file_path, settings_string);
-    console.log(settings);
+    console.log({settings});
 }
 
 function get_settings()

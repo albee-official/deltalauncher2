@@ -26,6 +26,13 @@ if (settings['developer_mode']) {
             <div class="checkmark">
                 <div class="checkmark-fill"></div>
             </div>
+        </label>
+        <label class="checkbox-left checkbox">
+            <span class="additional-setting-name">Использовать встроенную Java</span>
+            <input type="checkbox" id="use-builtin-java">
+            <div class="checkmark">
+                <div class="checkmark-fill"></div>
+            </div>
         </label>`.replace(/\s+/g, ' ');
 
     for (const server_container of document.querySelectorAll('.server')) {
@@ -366,6 +373,12 @@ if (settings['developer_mode']){
     document.querySelector('#link-consoles').checked = settings['link_consoles'];
     document.querySelector('#link-consoles').addEventListener('input', () => {
         settings['link_consoles'] = document.querySelector('#link-consoles').checked;
+        update_settings();
+    });
+
+    document.querySelector('#use-builtin-java').checked = settings['use_builtin_java'];
+    document.querySelector('#use-builtin-java').addEventListener('input', () => {
+        settings['use_builtin_java'] = document.querySelector('#use-builtin-java').checked;
         update_settings();
     });
 }

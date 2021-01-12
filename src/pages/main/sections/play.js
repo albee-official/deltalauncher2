@@ -441,7 +441,6 @@ function check_for_updates(_modpack_name)
 {
     return new Promise(async (resolve, reject) => {
         let latest_version = (await get_latest_release(_modpack_name))['name'].toString().split('v')[1].split('.');
-        console.log(_modpack_name);
         let installed_version = get_modpack_version_from_info(_modpack_name).toString().split('v')[1];
 
         if (installed_version == '' || installed_version == undefined || installed_version == null)
