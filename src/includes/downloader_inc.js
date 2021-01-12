@@ -107,6 +107,7 @@ async function download_from_github_illegally(folder, item_name, onProgress, ver
 
         let modpack_p = document.querySelector('#modpack-paragraph');
         let role_p = document.querySelector('#role-par');
+        let download_url = '';
 
         console.log(item_name);
         if (item_name == 'libraries')
@@ -125,6 +126,7 @@ async function download_from_github_illegally(folder, item_name, onProgress, ver
         {
             let latest_release;
             latest_release = await get_latest_release(Capitalize_First_Letter(item_name));
+            download_url = `https://github.com/Avandelta/${Capitalize_First_Letter(item_name)}/releases/download/${latest_release['name']}/${Capitalize_First_Letter(item_name)}-${latest_release['name']}.zip`;
             console.log(`Downloading release: ${latest_release['name']}`);
             
             modpack_p.innerHTML = `Начинаем загрузку: ${Capitalize_First_Letter(item_name)}`;
@@ -163,7 +165,6 @@ async function download_from_github_illegally(folder, item_name, onProgress, ver
         }
         else
         {
-            let download_url = modlinks[item_name];
             if (item_name == 'libraries') {
                 switch (version) {
                     case '1.12.2':
@@ -233,19 +234,19 @@ async function download_from_github_illegally(folder, item_name, onProgress, ver
                     // FINISH IT! (puts mods where they should be and deletes extras)
                     modpack_p.innerHTML = 'Завершение: Перенос файлов<span class="loading"></span>';
                     update_loadings();
-                    let folders = fs.readdirSync(folder);
-                    let found_folder;
-                    for (let el of folders)
-                    {
-                        if (el.startsWith(Capitalize_First_Letter(item_name)))
-                        {
-                            found_folder = el;
-                        }
-                    }
-                    await process_modpack(folder, found_folder);
-                    modpack_p.innerHTML = 'Завершение: Удаление архива загрузки<span class="loading"></span>';
-                    update_loadings();
-                    await clean_up(folder + `\\` + found_folder, zip_path);
+                    // let folders = fs.readdirSync(folder);
+                    // let found_folder;
+                    // for (let el of folders)
+                    // {
+                    //     if (el.startsWith(Capitalize_First_Letter(item_name)))
+                    //     {
+                    //         found_folder = el;
+                    //     }
+                    // }
+                    // await process_modpack(folder, found_folder);
+                    // modpack_p.innerHTML = 'Завершение: Удаление архива загрузки<span class="loading"></span>';
+                    // update_loadings();
+                    await clean_up(zip_path);
                     console.log(item_name);
                     resolve(folder);
                 }
@@ -281,6 +282,8 @@ function process_modpack(modpack_folder, found_folder) {
         console.log('Moving: CustomSkinLoader...');
         await fs.move(sub_folder + `\\CustomSkinLoader`, modpack_folder + `\\CustomSkinLoader`);
 
+        // console.log('Moving: Graphics...');
+        // await fs.move(sub_folder + `\\options`, modpack_folder + `\\options`);
         console.log('Moving: Graphics...');
         await fs.move(sub_folder + `\\Graphics`, modpack_folder + `\\Graphics`);
 
@@ -338,27 +341,21 @@ async function process_libs(libs_folder, found_folder) {
     });
 }
 
-async function clean_up(downloaded_folder, zip_path)
+async function clean_up(zip_path)
 {
-    console.log('Cleaning up...');
-    // Deletes leftovers
-    fs.unlink(zip_path, err => {
-        if (err) {
-            console.warn(err);
-            reject(err);
-        }
-    });
+    return new Promise((resolve, reject) => {
+        console.log('Cleaning up...');
+        // Deletes leftovers
+        fs.unlink(zip_path, err => {
+            if (err) {
+                console.warn(err);
+                reject(err);
+            }
+        });
 
-    console.log(`Removing ${downloaded_folder}`);
-    // removes downloaded folder (folder from zip)
-    await rimraf(downloaded_folder, err => {
-        if (err) {
-            console.warn(err);
-            reject(err);
-        }
-    });
-
-    console.log('All Clear! Ready to launch. Resolving...');
+        console.log('All Clear! Ready to launch. Resolving...');
+        resolve();
+    })
 }
 
 function init_ipc() {

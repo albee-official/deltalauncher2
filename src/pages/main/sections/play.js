@@ -276,17 +276,16 @@ play_button.addEventListener('click', async () => {
 
             // Запустить майнкрафт. Эта фнукция (Promise) заканчивается когда выключается майнкрафт.
             let mem_input = document.querySelector('#memory-input');
-            launch_minecraft(1000, mem_input.value * 1024, modpack_folder, userInfo['username'], userInfo['uuid'], modpack_name).then(res => {
-
-                // Манйкрафт завершился. Если 0, то все заебумба
-                console.log(`Minecraft exited with code: ${res}`);
-                UpdateRedownloadCheckBox();
-            }).catch(err => {
-
-                // Что то пошло не так при запуске.
-                console.log(`Launch encountered some errors: ${err}`);
-                UpdateRedownloadCheckBox();
-            });
+            launch_minecraft(1000, mem_input.value * 1024, modpack_folder, userInfo['username'], userInfo['uuid'], modpack_name);
+            //# .then(res => {
+            //     // Манйкрафт завершился. Если 0, то все заебумба
+            //     console.log(`Minecraft exited with code: ${res}`);
+            //     UpdateRedownloadCheckBox();
+            // }).catch(err => {
+            //     // Что то пошло не так при запуске.
+            //     console.log(`Launch encountered some errors: ${err}`);
+            //     UpdateRedownloadCheckBox();
+            //});
 
         } else { //. ЕСЛИ УСТАНОВЛЕННА
             console.log(`Найденна ${Capitalize_First_Letter(modpack_name)}. Проверка обновлений...`);

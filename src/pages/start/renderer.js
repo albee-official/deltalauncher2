@@ -6,6 +6,10 @@ ipcRenderer.on('update-message', (event, text) => {
     console.log(text);
 });
 
+window.addEventListener('beforeunload', () => {
+    win.webContents.emit('win-reload');
+});
+
 const body = document.body;
 console.log('Opened START');
 

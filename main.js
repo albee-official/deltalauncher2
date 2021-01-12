@@ -1,14 +1,14 @@
 const { app, BrowserWindow, ipcMain, Tray, Menu } = require("electron");
 const { spawn } = require('child_process');
 const { autoUpdater } = require("electron-updater");
-const { resolve } = require("path");
 const { data } = require("jquery");
+const path = require("path");
 const os = require('os');
 const fs = require('fs-extra');
 const keytar = require('keytar');
 const request = require('request');
 const merge_files = require('merge-files');
-const log = require('electron-log');
+const log = require('electron-log').create('main');
 
 //. Globals
 global.launchedModpacks = {
@@ -64,7 +64,7 @@ global.sharedObject = {
 
 //. Pre Init Logic
 let os_version = os.release().split('.')[0];
-console.log(`[MAIN] Running OS: ${os}`);
+log.info(`[MAIN] Running OS: ${os}`);
 autoUpdater.autoDownload = false;
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
@@ -113,13 +113,13 @@ function createWindow() {
 
   win.webContents.on('devtools-opened', err => {
     BrowserWindow.getAllWindows()[0].send('devtools-opened');
-    console.log('[MAIN] console opened');
+    log.info('[MAIN] console opened');
     // win.webContents.closeDevTools();
   });
 }
 
 function createTray() {
-  let appIcon = new Tray('src/res/icon.ico');
+  let appIcon = new Tray(path.join(__dirname, 'icon.ico'));
   const contextMenu = Menu.buildFromTemplate([
       {
           label: 'Открыть', click: () => { win.show(); },
@@ -156,8 +156,8 @@ function createTray() {
 
 let tray = undefined;
 app.whenReady().then(() => {
-  tray = createTray();
   createWindow(); 
+  tray = createTray();
 });
 
 app.commandLine.appendSwitch('js-flags', '--expose_gc --max-old-space-size=128')
@@ -178,6 +178,8 @@ app.on('before-quit', async () => {
 app.on("activate", () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow();
+    tray.destroy();
+    tray = createTray();
   }
 });
 //#endregion
@@ -221,7 +223,7 @@ function cancel_current_download()
 function threadless_download(event, url, path, filename)
 { 
   return new Promise((resolve, reject) => {
-    console.log(`Downloading from: ${url}`);
+    log.info(`[THREADLESS_DWNLD] Downloading from: ${url}`);
     let received_bytes = 0;
     let total_bytes = 0;
 
@@ -254,13 +256,12 @@ function threadless_download(event, url, path, filename)
         let percent = (received_bytes) / total_bytes;
         progress.percent = percent;
 
-        console.log(progress.percent);
-        console.log((progress.speed / 1024 / 1024).toPrecision(2));
+        log.info(`[THREADLESS_DWNLD] Percent: ${progress.percent}. Speed: ${(progress.speed / 1024 / 1024).toPrecision(2)}`);
         event.reply('download-progress', progress);
     });
 
     req.on('end', function() {
-      console.log(`Finished Download from: ${url}`);
+      log.info(`[THREADLESS_DWNLD] Finished Download from: ${url}`);
       resolve();
     });
   });
@@ -274,7 +275,7 @@ function create_download_thread({start_bytes, finish_bytes, url, path, thread_nu
     while (!thread_created_successfully)
     {
       thread_attempts++;
-      console.log(`[DWNTHRD ${thread_num}] - Attempting to create thread from: ${start_bytes} to: ${finish_bytes}. [${thread_attempts}]`);
+      log.info(`[DWNTHRD ${thread_num}] - Attempting to create thread from: ${start_bytes} to: ${finish_bytes}. [${thread_attempts}]`);
 
       let received_bytes = 0;
       let total_bytes = 0;
@@ -294,7 +295,7 @@ function create_download_thread({start_bytes, finish_bytes, url, path, thread_nu
         req.on('response', function ( data ) {
             // Change the total bytes value to get progress later.
             total_bytes = parseInt(data.headers['content-length']);
-            console.log(`[DWNTHRD ${thread_num}] - Got response. Size: ${data.headers['content-length']}`);
+            log.info(`[DWNTHRD ${thread_num}] - Got response. Size: ${data.headers['content-length']}`);
             if (total_bytes != undefined && total_bytes > (finish_bytes - start_bytes) / 2)
             {
               requests.push(req);
@@ -307,7 +308,7 @@ function create_download_thread({start_bytes, finish_bytes, url, path, thread_nu
               out.end();
             }
 
-            console.log(`[DWNTHRD ${thread_num}] - Total data in thread: ${data.headers['content-length']}`);
+            log.info(`[DWNTHRD ${thread_num}] - Total data in thread: ${data.headers['content-length']}`);
         });
 
         req.on('data', function(chunk) {
@@ -321,7 +322,7 @@ function create_download_thread({start_bytes, finish_bytes, url, path, thread_nu
       }).then(res => {
         resolve();
       }).catch(err => {
-        console.log(`[DWNTHRD ${thread_num}] = Broken thread`);
+        log.info(`[DWNTHRD ${thread_num}] = Broken thread`);
       });
     }
   });
@@ -367,7 +368,7 @@ function threaded_download(event, url, path, filename, threads, total_bytes) {
           bytes_received_total += received;
         }
       }).then(async (res) => { //. When Download Thread finsihed
-        console.log(`[DWNTHRD ${i}] - Finished`);
+        log.info(`[DWNTHRD ${i}] - Finished`);
         finished++;
 
         //. Num of finished threads is equal to num of started threads => All threads are finished
@@ -390,15 +391,15 @@ function threaded_download(event, url, path, filename, threads, total_bytes) {
 
           //. Merge files into one
           const status = await merge_files(inputPathList, outputPath);
-          console.log(status);
+          log.info(`[THREADED_DWNLD] Files merged: ${status}`);
 
           clear_thread_files(path, threads);
-          console.log("[THREADED_DWNLD] - Finished");
+          log.info("[THREADED_DWNLD] - Finished");
           //. 1 - success
           resolve(path);
         }
       })
-        .catch((err) => console.log(err));
+        .catch((err) => log.info(err));
     }
   })
 }
@@ -406,7 +407,7 @@ function threaded_download(event, url, path, filename, threads, total_bytes) {
 function fool_github_into_thinking_i_am_a_good_person(url)
 {
   return new Promise((resolve, reject) => {
-    console.log(`Faking download from: ${url}`);
+    log.info(`Faking download from: ${url}`);
 
     let req = request({
         method: 'GET',
@@ -438,7 +439,7 @@ function get_total_download_size(url)
       requests++;
       if (requests > 20)
       {
-        console.log('Github is being stubborn, lets try fooling it...');
+        log.info('[DNWLD] Github is being stubborn, lets try fooling it...');
         finally_got_that_size_from_github = true;
         resolve(-1);
         break;
@@ -455,7 +456,6 @@ function get_total_download_size(url)
 
         req.on('response', function ( data ) {
             // Change the total bytes value to get progress later.
-            console.log(data.headers);
             if (data.headers['content-length'] != undefined && data.headers['content-length'] > 16)
             {
               resolve(data.headers['content-length']);
@@ -471,10 +471,9 @@ function get_total_download_size(url)
         });
       });
 
-      console.log(content_length);
+      log.info(`[DNWLD] ${content_length}`);
       if (content_length != undefined)
       {
-        console.log(content_length);
         finally_got_that_size_from_github = true;
         resolve(content_length);
       } 
@@ -485,7 +484,7 @@ function get_total_download_size(url)
 function check_link(username, type)
 {
   return new Promise((resolve, reject) => {
-    console.log(`[GETLNK] Getting link for ${username}`);
+    log.info(`[GETLNK] Getting link for ${username}`);
     let req = request({
       method: 'POST',
       data: {
@@ -495,7 +494,7 @@ function check_link(username, type)
     });
 
     req.on('response', data => {
-      console.log(`[GETLNK] ${JSON.stringify()}`);
+      log.info(`[GETLNK] ${JSON.stringify()}`);
       if (!data.headers || data.headers[0] == 'HTTP/1.1 404 Not Found' || data.headers['x-content-type-options'] == undefined) {
         resolve(false);
       } else {
@@ -508,18 +507,18 @@ function check_link(username, type)
 
 ipcMain.on('get-link', async (event, {username, type}) => {
   let res = await check_link(username, type);
-  console.log(`[GETLNK] Got link for: ${username}`);
+  log.info(`[GETLNK] Got link for: ${username}`);
   event.reply('got-link', res);
 });
 
 ipcMain.on('download-from-link', async (event, {threads, path, url, filename}) => {
   if (downloading_item)
   {
-    console.log('another download is in progress...');
+    log.info('[DNWLD] another download is in progress...');
     event.reply('download-failed', 'download in progress'); 
   }
   //. Save variable to know progress
-  console.log(`Downloading from: ${url}`);
+  log.info(`[DNWLD] Downloading from: ${url}`);
   current_num_of_threads = threads;
   current_download_path = path;
   downloading_item = true;
@@ -534,9 +533,9 @@ ipcMain.on('download-from-link', async (event, {threads, path, url, filename}) =
     threaded_download(event, url, path, filename, threads, total_bytes)
     //. Download is finished
     .then(async res => {
-      console.log(`threaded download is finished. res: ${res}`);
+      log.info(`[THREADED_DWNLD] Threaded download is finished. res: ${res}`);
       event.reply('download-completed');
-    }).catch(err => console.log(err))
+    }).catch(err => log.info(err))
   }
   //. Github hasn't sent size properly. wait and retry...
   else
@@ -551,16 +550,16 @@ ipcMain.on('download-from-link', async (event, {threads, path, url, filename}) =
     threaded_download(event, url, path, filename, threads, total_bytes)
     //. Download is finished
     .then(async res => {
-      console.log(`threaded download is finished. res: ${res}`);
+      log.info(`[THREADED_DWNLD] Threaded download is finished. res: ${res}`);
       event.reply('download-completed');
-    }).catch(err => console.log(err))
+    }).catch(err => log.info(err))
   }
 });
 
 ipcMain.on('cancel-current-download', async (event, reason) => {
 
   // We can't cancel if we don't download anything D:
-  console.log(`Download is cancelled. Reason: ${reason}`);
+  log.info(`[DNWLD] Download is cancelled. Reason: ${reason}`);
   await cancel_current_download();
   download_canceled = false;
   event.reply('download-cancelled', 'success'); 
@@ -595,28 +594,28 @@ ipcMain.on('get-user-credentials', async (event) => {
 let client = require('discord-rich-presence')('732236615153483877');
 
 client.on('join', message => {
-  console.log(message);
+  log.info(`[RPC] Join message recieved: ${message}`);
   win.webContents.send('message', `RPC join: ${message}`);
   win.webContents.send('rpc-join', {server: message});
 });
 
 client.on('connected', message => {
-  console.log('RPC connected');
+  log.info('[RPC] RPC connected');
   win.webContents.send('message', 'RPC connected');
 });
 
 client.on('error', err => {
-  console.log(`RPC Error: ${err}`);
+  log.info(`[RPC] RPC Error: ${err}`);
   win.webContents.send('message', `RPC Error: ${err}`);
 });
 
 client.on('joinRequest', message => {
-  console.log(message);
+  log.info(`[RPC] Join request recieved: ${message}`);
   win.webContents.send('message', { 'RPC join request': message });
 });
 
 client.on('spectate', message => {
-  console.log(message);
+  log.info(`[RPC] Spectate message recieved: ${message}`);
   win.webContents.send('message', `RPC spectate: ${message}`);
 });
 
@@ -627,17 +626,17 @@ ipcMain.on('ping', (event, pong) => {
 client.updatePresence(rpc);
 
 ipcMain.on('rpc-update', (event, args) => {
-  console.log(`[RPC] Updating rpc`);
+  log.info(`[RPC] Updating rpc`);
   client.updatePresence(rpc);
 });
 
 ipcMain.on('rpc-disconnect', (event, reason) => {
-  console.log(reason);
+  log.info(`[RPC] RPC disconnected: ${reason}`);
   client.disconnect();
 });
 
 ipcMain.on('rpc-revive', (event, reason) => {
-  console.log(reason);
+  log.info(`[RPC] RPC revived: ${reason}`);
   client = require('discord-rich-presence')('732236615153483877');
 });
 //#endregion
@@ -717,7 +716,7 @@ ipcMain.on('logout', (event, args) => {
 
 //#region //. Window managment
 ipcMain.on('load-main-win', (event, args) => {
-  console.log('[MAIN] Opening main window');
+  log.info('[MAIN] Opening main window');
   win_pos = win.getPosition()
 
   win = new BrowserWindow({
@@ -742,7 +741,7 @@ ipcMain.on('load-main-win', (event, args) => {
 
   win.webContents.on('devtools-opened', err => {
     BrowserWindow.getAllWindows()[0].send('devtools-opened');
-    console.log('[MAIN] console opened');
+    log.info('[MAIN] console opened');
     // win.webContents.closeDevTools();
   });
 
@@ -861,16 +860,16 @@ function integrate_java_parameters(settings, command)
         if (parameter.includes('-Xmx'))
         {
             let par_prototype = `-Xmx${settings['allocated_memory'] * 1024}M`;
-            console.log(`[LAUNCH] ${par_prototype}`);
-            console.log(`[LAUNCH] ${parameter}`);
+            log.info(`[LAUNCH] ${par_prototype}`);
+            log.info(`[LAUNCH] ${parameter}`);
             command = command.replace(par_prototype, parameter);
             continue;
         }
         else if (parameter.includes('-Xms'))
         {
             let par_prototype = `-Xms1000M`;
-            console.log(`[LAUNCH] ${par_prototype}`);
-            console.log(`[LAUNCH] ${parameter}`);
+            log.info(`[LAUNCH] ${par_prototype}`);
+            log.info(`[LAUNCH] ${parameter}`);
             command = command.replace(par_prototype, parameter);
             continue;
         }
@@ -893,12 +892,12 @@ function get_latest_java_version_path(settings)
         {
             if (os.arch() == 'x64')
             {
-                console.log(`[LAUNCH] Latest java: ${path.join(app.getAppPath().split('app.asar')[0], '\\src\\res\\java\\runtime-windows-x64\\bin\\javaw.exe')}`);
+                log.info(`[LAUNCH] Latest java: ${path.join(app.getAppPath().split('app.asar')[0], '\\src\\res\\java\\runtime-windows-x64\\bin\\javaw.exe')}`);
                 resolve(path.join(app.getAppPath().split('app.asar')[0], '\\src\\res\\java\\runtime-windows-x64\\bin\\javaw.exe'));
             }
             else
             {
-                console.log(`[LAUNCH] Latest java: ${path.join(app.getAppPath().split('app.asar')[0], '\\src\\res\\java\\runtime\\bin\\javaw.exe')}`);
+                log.info(`[LAUNCH] Latest java: ${path.join(app.getAppPath().split('app.asar')[0], '\\src\\res\\java\\runtime\\bin\\javaw.exe')}`);
                 resolve(path.join(app.getAppPath().split('app.asar')[0], '\\src\\res\\java\\runtime\\bin\\javaw.exe'));
             }
         }

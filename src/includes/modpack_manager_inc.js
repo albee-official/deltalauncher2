@@ -87,7 +87,6 @@ function verify_and_get_themes_file()
     return themes_path;
 }
 
-
 function verify_and_get_modpack_folder(modpack_name)
 {
     let active_folder = modpack_folders[modpack_name.toLowerCase()].replace('|ROOT|', dir_root);
@@ -165,7 +164,7 @@ function change_settings_preset(modpack_name, settings_lvl) {
     let preset = settings_levels[settings_lvl];
     
     let modpack_folder = verify_and_get_modpack_folder(modpack_name);
-    let settings_folder = modpack_folder + '\\options';
+    let settings_folder = modpack_folder + '\\Graphics';
     let settings_preset_folder = settings_folder + '\\' + preset;
 
     fs.copySync(settings_preset_folder, modpack_folder);

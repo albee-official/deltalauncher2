@@ -5,7 +5,7 @@ const settings_pattern = {
     "selected_modpack": "magicae",
     "opened_settings": true,
     "on_page": "settings",
-    "allocated_memory": 3,
+    "allocated_memory": 4,
     "optimization_level": 2,
     "controls": {
         "crouch": { "minecraft_key": "key_key.sneak", "minecraft_code": 42, "key_code": 12, "key_name": "SHIFT" },
