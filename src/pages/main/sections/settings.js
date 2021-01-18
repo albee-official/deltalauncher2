@@ -9,6 +9,29 @@ let optimization_range = document.querySelector('#optimization-range');
 let controll_inputs = document.querySelectorAll('.controll-setting-input');
 
 //#region //. ---------------- Developer settings ------------------
+let dev_activate_timeout = false;
+let dev_activate_clicks = 0;
+document.querySelector('#launcher-version-p').addEventListener('click', e => {
+    if (settings['developer_mode']) {
+        return;
+    }
+
+    if (!dev_activate_timeout) {
+        dev_activate_timeout = true;
+        setTimeout(() => {
+            dev_activate_timeout = false;
+            dev_activate_clicks = 0;
+        }, 5000);
+    } else {
+        dev_activate_clicks++;
+        if (dev_activate_clicks > 5) {
+            console.log('[SETTINGS] You are now a developer!');
+            settings['developer_mode'] = true;
+            update_settings();
+        }
+    }
+});
+
 if (settings['developer_mode']) {
     document.querySelector('#handy-functions').innerHTML += 
         `<div id="delete-configs" class="handy-function">

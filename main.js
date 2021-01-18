@@ -9,9 +9,10 @@ const keytar = require('keytar');
 const request = require('request');
 const merge_files = require('merge-files');
 const log = require('electron-log').create('main');
+const isDev = require('electron-is-dev');
 
 //. Globals
-global.launchedModpacks = {
+let launchedModpacks = {
   magicae: {
     process: undefined,
     pid: -1,
@@ -48,8 +49,8 @@ global.launchedModpacks = {
     loaded: false,
   },
 };
-global.userInfo = {};
-global.rpc = {
+let userInfo = {};
+let rpc = {
   state: 'Разработка',
   details: 'Запуск',
   startTimestamp: Date.now(),
@@ -62,19 +63,19 @@ global.rpc = {
 };
 
 global.sharedObject = {
-  launchedModpacks: {...launchedModpacks},
-  userInfo: {...userInfo},
-  rpc: {...rpc},
+  launchedModpacks,
+  userInfo,
+  rpc,
 }
 
 //. Pre Init Logic
 let os_version = os.release().split('.')[0];
-log.info(`[MAIN] Running OS: ${os}`);
+log.info(`[MAIN] Running OS: ${os.platform}`);
 autoUpdater.autoDownload = false;
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
 keytar.findCredentials('Delta').then(res => {
-  userInfo = res;
+  userInfo['username'] = res['account'];
 });
 
 log.info('App starting...');
@@ -111,7 +112,6 @@ function createWindow() {
   win.webContents.on('did-finish-load', function() {
     win.show();
   });
-
 
   // Open the DevTools.
   //*   win.webContents.openDevTools()
@@ -165,7 +165,8 @@ app.whenReady().then(() => {
   tray = createTray();
 });
 
-app.commandLine.appendSwitch('js-flags', '--expose_gc --max-old-space-size=128')
+app.commandLine.appendSwitch('js-flags', '--expose_gc --max-old-space-size=128');
+app.allowRendererProcessReuse = false;
 
 // Quit when all windows are closed.
 app.on("window-all-closed", () => {
@@ -572,11 +573,12 @@ ipcMain.on('cancel-current-download', async (event, reason) => {
 //#endregion
 
 //#region //. User info
-ipcMain.on('update-user-info', (event, { info, password }) => {
+ipcMain.on('update-user-info', async (event, { info, password }) => {
 
     // overwrites userInfo variable to info
     userInfo = info;
-    keytar.setPassword('Delta', info['username'], password);
+    const res = await keytar.setPassword('Delta', info['username'], password);
+    log.info(`[MAIN] Set password res: ${res}`)
     event.reply('user-info-updated');
 });
 
@@ -585,13 +587,23 @@ ipcMain.on('update-user-server-info', (event, info) => {
   event.reply('updated');
 });
 
-ipcMain.on('get-user-info', (event) => {
-    // returns userInfo
-    event.returnValue = userInfo;
-});
-
 ipcMain.on('get-user-credentials', async (event) => {
   event.returnValue = await keytar.findCredentials('Delta');
+});
+
+ipcMain.on('logout', async (event, { login }) => {
+  // win.loadFile('src/pages/start/index.html');
+
+  log.info(JSON.stringify(login));
+  log.info(JSON.stringify(userInfo));
+  log.info(JSON.stringify(sharedObject));
+  log.info(JSON.stringify(global.sharedObject));
+
+  await keytar.deletePassword('Delta', login).catch((err) => {
+    log.error(err);
+  });
+  userInfo = {};
+  event.reply('succesfull-logout', { res });
 });
 //#endregion
 
@@ -648,7 +660,6 @@ ipcMain.on('rpc-revive', (event, reason) => {
 
 //#region //. Auto Updater
 function sendStatusToWindow(text) {
-  log.info(text);
   win.webContents.send('update-message', text);
 }
 
@@ -657,7 +668,12 @@ let downloading_update = false;
 ipcMain.on('check-for-updates', (event, src) => {
   if (!already_checking)
   {
-    autoUpdater.checkForUpdates();
+    if (isDev) {
+      log.info('No need to check for updates in dev mode');
+      win.webContents.send('update-not-available');
+    } else {
+      autoUpdater.checkForUpdates()
+    }
     already_checking = true;
   } else
   {
@@ -707,15 +723,6 @@ autoUpdater.on('download-progress', (progressObj) => {
 autoUpdater.on('update-downloaded', (info) => {
   sendStatusToWindow('Update downloaded');
   win.webContents.send('update-downloaded');
-});
-//#endregion
-
-//#region //. Log out
-ipcMain.on('logout', (event, args) => {
-  win.loadFile('src/pages/start/index.html');
-  keytar.deletePassword('Delta', userInfo['username']);
-  userInfo = {};
-  event.reply('succesfull logout')
 });
 //#endregion
 

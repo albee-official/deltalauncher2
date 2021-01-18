@@ -14,7 +14,9 @@ window.addEventListener('beforeunload', () => {
 //? LOGOUT
 
 document.querySelector('#profile-sub').addEventListener('click', async e => {
-    ipcRenderer.send('logout', {}).then( res => {
+    ipcRenderer.send('logout', { login: userInfo['username'] });
+
+    ipcRenderer.on('succesfull-logout', (event, { res }) => {
         console.log(res);
     });
 });

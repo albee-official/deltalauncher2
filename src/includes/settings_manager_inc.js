@@ -30,8 +30,18 @@ const settings_pattern = {
     "bg_blur_amount": '16px',
     "theme": "default",
     "addon_mods": { 
-        "aperture": false,
-        "dynamic surroundings": false
+        "aperture": {
+            "dependencies": [],
+            "on": false,
+        },
+        "dynamic surroundings": {
+            "dependencies": ["OreLib"],
+            "on": true,
+        },
+        "MoBends": {
+            "dependencies": ["McLib"],
+            "on": true,
+        },
     },
     "modpack_dirs": {
         "magicae": "|ROOT|\\modpacks\\magicae",
