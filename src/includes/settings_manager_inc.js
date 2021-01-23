@@ -118,5 +118,5 @@ function read_resources() {
 }
 
 function get_code(str) {
-	return str.split(' &')[1].split('.')[0];
+    return str.split(' &')[1].split('.')[0];
 }

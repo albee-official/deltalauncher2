@@ -363,8 +363,6 @@ function finish() {
     });
 }
 
-let resource_info = {icon: '', skin: ''};
-
 let downloading_icon = false;
 async function download_user_icon()
 {
@@ -398,7 +396,10 @@ async function download_user_icon()
             });
 
             ipcRenderer.on('download-progress', (event, progress) => {
-                document.getElementById('finish-progress-bar').style.width = (progress.percent * 50) + '%';
+                if (downloading_icon)
+                {
+                    document.getElementById('finish-progress-bar').style.width = ((progress.percent / 100) * 50) + '%';
+                }
             });
         
             ipcRenderer.on('download-completed', (event, args) => {
@@ -407,6 +408,8 @@ async function download_user_icon()
                     resolve();
                 }
             });
+        }).catch(err => {
+            console.error(err);
         });
     });
 }
@@ -444,7 +447,10 @@ async function download_user_skin()
             });
         
             ipcRenderer.on('download-progress', (event, progress) => {
-                document.getElementById('finish-progress-bar').style.width = (50 + progress.percent * 50) + '%';
+                if (downloading_skin)
+                {
+                    document.getElementById('finish-progress-bar').style.width = (50 + (progress.percent / 100) * 50) + '%';
+                }
             });
         
             ipcRenderer.on('download-completed', (event, args) => {
