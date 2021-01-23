@@ -35,3 +35,18 @@ body{
         opacity: 0;
     }
 }
+
+@keyframes close-window
+{
+    0%{
+        opacity: 0;
+    }
+
+    25%{
+        opacity: 0;
+    }
+
+    100%{
+        opacity: 1;
+    }
+}

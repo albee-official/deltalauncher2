@@ -242,7 +242,7 @@ body{
 
 .auth-locked{
     left: 24px;
-    opacity: .55;
+    opacity: .55 !important;
     pointer-events: none;
 }
 

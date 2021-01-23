@@ -70,5 +70,10 @@
       "perMachine": false,
       "allowToChangeInstallationDirectory": true
     }
+  },
+  "prettier": {
+    "printWidth": 320,
+    "tabWidth": 4,
+    "trailingComma": "es5"
   }
 }

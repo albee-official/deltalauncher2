@@ -1,3 +1,4 @@
+const { fstat } = require('fs-extra');
 const { ajax } = require('jquery');
 
 const win = remote.getCurrentWindow();
@@ -101,7 +102,7 @@ function checkPassword(e) {
 
 //#region //. -------------------------------- Top panel -----------------------------
 let exitLisHover = document.getElementById('close-btn').addEventListener('mouseover', () => {
-    document.getElementById('close-btn').style.backgroundColor = 'rgba(var(--global-clr-rgb), 1)';
+    document.getElementById('close-btn').style.backgroundColor = 'var(--global-clr)';
 });
 
 let exitLisLeave = document.getElementById('close-btn').addEventListener('mouseleave', () => {
@@ -150,6 +151,11 @@ function closeLogin() {
 }
 
 function hideTopContent() {
+    remote.getCurrentWindow().closable = false;
+
+    document.querySelector('.menu-buttons').style.transition = 'opacity .4s';
+    document.querySelector('.menu-buttons').style.opacity = '0';
+
     document.getElementById('top-container').style.animationPlayState = 'running';
     document.getElementById('top-container').style.opacity = '0 !important';
 
@@ -171,16 +177,16 @@ function hideTopContent() {
     document.getElementById('reload-btn').removeEventListener('mouseover', reloadLisHover);
     document.getElementById('reload-btn').removeEventListener('mouseleave', reloadLisLeave);
 
-    document.getElementById('exit-icon1').style.stroke = 'rgb(var(--header-sysbuttons-icon))';
-    document.getElementById('exit-icon1').style.transition = 'stroke 1s';
-    document.getElementById('exit-icon2').style.stroke = 'rgb(var(--header-sysbuttons-icon))';
-    document.getElementById('exit-icon2').style.transition = 'stroke 1s';
+    // document.getElementById('exit-icon1').style.stroke = 'rgb(var(--header-sysbuttons-icon))';
+    // document.getElementById('exit-icon1').style.transition = 'stroke 1s';
+    // document.getElementById('exit-icon2').style.stroke = 'rgb(var(--header-sysbuttons-icon))';
+    // document.getElementById('exit-icon2').style.transition = 'stroke 1s';
 
-    document.getElementById('minimize-icon').style.stroke = 'rgb(var(--header-sysbuttons-icon))';
-    document.getElementById('minimize-icon').style.transition = 'stroke 1s';
+    // document.getElementById('minimize-icon').style.stroke = 'rgb(var(--header-sysbuttons-icon))';
+    // document.getElementById('minimize-icon').style.transition = 'stroke 1s';
 
-    document.getElementById('reload-icon').style.fill = 'rgb(var(--header-sysbuttons-icon))';
-    document.getElementById('reload-icon').style.transition = 'fill 1s';
+    // document.getElementById('reload-icon').style.fill = 'rgb(var(--header-sysbuttons-icon))';
+    // document.getElementById('reload-icon').style.transition = 'fill 1s';
 
     document.getElementById('close-btn').addEventListener('mouseover', () => {
         document.getElementById('close-btn').style.backgroundColor = 'var(--header-sysbuttons-bg-hover)';
@@ -284,42 +290,30 @@ function checkUpdate() {
 
 //#region //. Login -------------------------------------------------
 function login() {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         console.log('-- Starting login --');
-
-        document.getElementById('auth-container').classList.remove('open-auth');
+        
         document.getElementById('auth-container').style.transition = 'all .2s linear';
+        document.getElementById('auth-container').classList.remove('open-auth');
         document.getElementById('auth-container').classList.add('auth-locked');
-        ajax({
-            url: 'https://deltaminecraft.000webhostapp.com/includes/launcher.login.inc.php',
-            method: 'POST',
-            data: {
-                mailuid: document.getElementById('login').value,
-                pwd: document.getElementById('password').value 
-            },
-            dataType: 'text'
-        }).done((data) => {
-            console.log(`got reply. data: \n ${data}`);
+
+        ipcRenderer.send('login', {
+            login: document.getElementById('login').value,
+            password: document.getElementById('password').value,
+        });
+
+        ipcRenderer.on('login-success', async (event, data) => {
             document.getElementById('auth-container').classList.add('open-auth');
             document.getElementById('auth-container').classList.remove('auth-locked');
             document.getElementById('auth-container').style.transition = 'all 1s cubic-bezier(0.645, 0.045, 0.355, 1)';
-            data.replaceAt(0, '{');
-            requestResult = JSON.parse(data);
-        }).then((result) => {
-            result = JSON.parse(result);
-            if (result['username'] != undefined && result['username'] != "" && result['username'] != null)
-            {
-                console.log('[LOGIN] Succesfull');
-                console.log(`[LOGIN] username: ${result['username']}`);
+            resolve(data);
+        });
 
-                userInfo = {
-                    ...userInfo,
-                    ...result,
-                };
-
-                closeLogin();
-                resolve();
-            }   
+        ipcRenderer.on('login-fail', async (event, { error }) => {
+            document.getElementById('auth-container').classList.add('open-auth');
+            document.getElementById('auth-container').classList.remove('auth-locked');
+            document.getElementById('auth-container').style.transition = 'all 1s cubic-bezier(0.645, 0.045, 0.355, 1)';
+            resolve({error});
         });
     });
 }
@@ -337,25 +331,39 @@ function finish() {
             url: 'https://deltaminecraft.000webhostapp.com/includes/launcher.getuserinfo.inc.php',
             method: 'POST',
             data: {
-                username: document.getElementById('login').value,
+                username: userInfo['username'],
             },
             dataType: 'json'
         }).done(async (data) => {
+            data['odyssea'] = data['isekai'];
+
             userInfo = {
                 ...userInfo,
                 servers_info: data,
             }
 
-            document.getElementById('finish-progress-bar').style.width = '80%';
+            document.getElementById('finish-progress-bar').style.transition = 'all .5s cubic-bezier(0.23, 1, 0.320, 1)';
+            document.getElementById('finish-progress-bar').style.width = '0%';
 
             await download_user_icon();
+            document.getElementById('finish-progress-bar').style.width = '50%';
+
             await download_user_skin();
+            document.getElementById('finish-progress-bar').style.width = '100%';
+
+            // Wait a bit so taht slider is in the end
+            await new Promise((resolve, reject) => { setTimeout(() => {resolve()}, 500) } );
+            ipcRenderer.send('freeze-user-info');
+
+            document.getElementById('finish-progress-container').classList.remove('active');
 
             hideTopContent();
             resolve();
         });
     });
 }
+
+let resource_info = {icon: '', skin: ''};
 
 let downloading_icon = false;
 async function download_user_icon()
@@ -365,28 +373,37 @@ async function download_user_icon()
             url: 'https://deltaminecraft.000webhostapp.com/includes/launcher.getlink.inc.php',
             method: 'POST',
             data: {
-                username: document.getElementById('login').value,
+                username: userInfo['username'],
                 type: 'icon',
             },
             dataType: 'text'
         }).then(res => {
-            console.log(`Got link: ${res}`);
+            console.log(`[FINISH] Got link for icon: ${res}`);
+
+            if (resources.icon.code == get_code(res)) {
+                console.log(`[FINISH] No need to redownload icon. `);
+                document.getElementById('finish-progress-bar').style.width = '50%';
+                resolve();
+                return;
+            } else {
+                fs.unlink(`${verify_and_get_resources_folder()}\\icon &${resources.icon.code}.png`);
+            }
 
             downloading_icon = true;
             ipcRenderer.send('download-from-link', {
-                threads: 2,
+                threads: 1,
                 path: verify_and_get_resources_folder(),
                 url: res,
-                filename: `user.png`
+                filename: `icon &${get_code(res)}.png`
+            });
+
+            ipcRenderer.on('download-progress', (event, progress) => {
+                document.getElementById('finish-progress-bar').style.width = (progress.percent * 50) + '%';
             });
         
             ipcRenderer.on('download-completed', (event, args) => {
                 if (downloading_icon)
                 {
-                    document.getElementById('finish-progress-container').classList.remove('active');
-                    console.log('done');
-            
-                    hideTopContent();
                     resolve();
                 }
             });
@@ -402,38 +419,44 @@ async function download_user_skin()
             url: 'https://deltaminecraft.000webhostapp.com/includes/launcher.getlink.inc.php',
             method: 'POST',
             data: {
-                username: document.getElementById('login').value,
+                username: userInfo['username'],
                 type: 'skin',
             },
             dataType: 'text'
         }).then(res => {
-            console.log(`Got link: ${res}`);
+            console.log(`[FINISH] Got link for skin: ${res}`);
+
+            if (resources.skin.code == get_code(res)) {
+                console.log(`[FINISH] No need to redownload skin. `);
+                document.getElementById('finish-progress-bar').style.width = '100%';
+                resolve();
+                return;
+            } else {
+                fs.unlink(`${verify_and_get_resources_folder()}\\skin &${resources.skin.code}.png`);
+            }
 
             downloading_skin = true;
             ipcRenderer.send('download-from-link', {
-                threads: 2,
+                threads: 1,
                 path: verify_and_get_resources_folder(),
                 url: res,
-                filename: `${document.getElementById('login').value}.png`
+                filename: `skin &${get_code(res)}.png`
             });
         
             ipcRenderer.on('download-progress', (event, progress) => {
-                document.getElementById('finish-progress-bar').style.width = progress.procentage * 100 + '%';
+                document.getElementById('finish-progress-bar').style.width = (50 + progress.percent * 50) + '%';
             });
         
             ipcRenderer.on('download-completed', (event, args) => {
                 if (downloading_skin)
                 {
-                    document.getElementById('finish-progress-container').classList.remove('active');
-                    console.log('done');
-            
-                    hideTopContent();
                     resolve();
                 }
             });
         });
     });
 }
+
 //#endregion
 //#endregion
 
@@ -441,31 +464,34 @@ async function download_user_skin()
 
 update_theme();
 
-checkUpdate().then(() => {
-    let user_credentials = ipcRenderer.sendSync('get-user-credentials');
+(async () => {
 
-    if (update_required) return;
-    if (user_credentials == {} || user_credentials == undefined)
-    {
-        openLogin(); 
-    }
-    else
-    {
-        openLogin(); 
-        document.getElementById('login').value = user_credentials[0]['account'];
-        document.getElementById('password').value = user_credentials[0]['password'];
-        login().then(() => {
-            finish();
-        });
-    }
-});
+    await checkUpdate();
 
-document.getElementById('login-button').addEventListener('click', (e) => {
-    e.preventDefault();
-    login().then(() => {
-        finish();
+    openLogin();
+
+    let loginButton = document.getElementById('login-button');
+    loginButton.addEventListener('click', async (e) => {
+        e.preventDefault();
+
+        const loginRes = await login();
+
+        if (loginRes['error'] != undefined) {
+            console.log(`[LOGIN] Error: ${loginRes['error']}`);
+
+        } else {
+            console.log(`[LOGIN] Success: ${JSON.stringify(loginRes)}`);
+
+            closeLogin();
+            document.getElementById('auth-container').classList.remove('open-auth');
+
+            await finish();
+        }
     });
-});
+
+    loginButton.click();
+
+})();
 //#endregion
 
 //#region  //. Console warning --------------------------------------------

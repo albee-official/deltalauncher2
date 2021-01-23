@@ -14,6 +14,14 @@ body{
     transition: backdrop-filter .8s cubic-bezier(0.23, 1, 0.320, 1);
 }
 
+p{
+    display: flex;
+}
+
+p .loading{
+    margin-left: 2px;
+}
+
 .noselect {
     -webkit-touch-callout: none; /* iOS Safari */
       -webkit-user-select: none; /* Safari */
@@ -192,4 +200,62 @@ button:hover{
     z-index: 0;
 
     transition: all .8s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.loading{
+    font-size: inherit;
+    font-weight: inherit;
+    display: flex;
+    opacity: 1;
+    color: inherit;
+    margin-left: 2px;
+}
+
+.loading *:nth-child(1) {
+    opacity: .25;
+    animation: pulse 1.5s 0s ease-in-out infinite;
+}
+
+.loading *:nth-child(2) {
+    animation: pulse 1.5s .5s ease-in-out infinite;
+}
+
+.loading *:nth-child(3) {
+    animation: pulse 1.5s 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: .25;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: .25;
+    }
+}
+
+@keyframes close {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
+.hint-container{
+    z-index: 420;
+    position: absolute;
+    padding: 2px 8px;
+    bottom: 0;
+    font-size: 14px;
+    border-radius: 2px;
+    font-weight: bold;
+    background-color: rgba(var(--global-text-rgb), .1);
+    color: var(--global-text);
 }

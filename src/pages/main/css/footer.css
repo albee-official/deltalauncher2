@@ -38,6 +38,7 @@ footer{
     justify-content: center;
     flex: 1;
     min-width: 344px;
+    max-width: 412px;
     transition: all 1s cubic-bezier(0.23, 1, 0.320, 1);
 }
 
@@ -57,9 +58,17 @@ footer{
     transition: all .16s cubic-bezier(0.39, 0.575, 0.565, 1);
 }
 
+.play-button .loading{
+    color: var(--footer-button-text) !important;
+}
+
 .play-button:hover{
     background: var(--footer-button-bg-active);
     color: var(--footer-button-text-active);
+}
+
+.play-button:hover .loading{
+    color: var(--footer-button-text-active) !important;
 }
 
 .play-button-unactive{
@@ -67,6 +76,10 @@ footer{
     background: var(--footer-button-bg) !important;
     color:  var(--footer-button-text) !important;
     pointer-events: none;
+}
+
+.play-button-unactive .loading{
+    color:  var(--footer-button-text) !important;
 }
 
 .footer-right{

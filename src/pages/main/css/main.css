@@ -108,6 +108,8 @@ section{
     display: flex;
     justify-content: center;
     align-items: flex-start;
+
+    transition: all .2s;
 }
 
 .select-button:hover{
@@ -120,6 +122,12 @@ section{
     color: var(--main-button-text-locked);
     border: var(--main-button-bg-locked) 2px solid;
     padding-top: 2px;
+}
+
+.select-button.select-locked{
+    opacity: .32;
+    /* pointer-events: none; */
+    cursor: not-allowed;
 }
 
 .select-button-active:hover{

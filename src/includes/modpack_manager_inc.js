@@ -17,29 +17,13 @@ const modpacks = [
     "odyssea"
 ];
 
-const modpack_versions = {
-    'magicae': '1.12.2',
-    'fabrica': '1.12.2',
-    'statera': '1.12.2',
-    'insula': '1.12.2',
-    'odyssea': '1.12.2'
-}
-
 const settings_levels = {
-    0: 'Ultra Low',
-    1: 'Low',
-    2: 'Medium',
-    3: 'High',
-    4: 'Ultra High'
+    0: 'low',
+    1: 'minor',
+    2: 'default',
+    3: 'high',
+    4: 'ultra'
 };
-
-let modpacks_started = {
-    'magicae': 'no',
-    'fabrica': 'no',
-    'statera': 'no',
-    'insula': 'no',
-    'odyssea': 'no'
-}
 
 let modpack_folders = {};
 
@@ -150,11 +134,16 @@ function modpack_folder_empty(modpack_name) {
     return is_directry_empty(active_folder);
 }
 
-function settings_exist() {
-    let modpack_folder = verify_and_get_modpack_folder(modpack_name);
+function settings_exist(modpack) {
+    let modpack_folder = verify_and_get_modpack_folder(modpack);
     return fs.pathExistsSync(modpack_folder + '\\options.txt') 
         && fs.pathExistsSync(modpack_folder + '\\optionsof.txt') 
         && fs.pathExistsSync(modpack_folder + '\\optionsshaders.txt');
+}
+
+function is_first_launch(modpack) {
+    let modpack_folder = verify_and_get_modpack_folder(modpack);
+    return fs.pathExistsSync(modpack_folder + '\\.mixin.out');
 }
 
 function change_settings_preset(modpack_name, settings_lvl) {
@@ -164,7 +153,7 @@ function change_settings_preset(modpack_name, settings_lvl) {
     let preset = settings_levels[settings_lvl];
     
     let modpack_folder = verify_and_get_modpack_folder(modpack_name);
-    let settings_folder = modpack_folder + '\\Graphics';
+    let settings_folder = modpack_folder + '\\options';
     let settings_preset_folder = settings_folder + '\\' + preset;
 
     fs.copySync(settings_preset_folder, modpack_folder);
@@ -272,57 +261,43 @@ function modpack_not_installed(modpack_name)
             !fs.pathExistsSync(modpack_folder + '\\mods');
 }
 
-function libs_folder_empty(modpack_name)
+async function libs_folder_empty(modpack_name)
 {
     let _libs_path = verify_and_get_libs_folder(modpack_name) + '\\' + modpack_versions[modpack_name];
-    console.log(`[SETTINGS] ${_libs_path}`);
-    if (!fs.pathExistsSync(`${_libs_path}\\assets`))
+    if (!(await fs.pathExists(`${_libs_path}\\assets`)))
     {
         return true;
     }
-    if (!fs.pathExistsSync(`${_libs_path}\\libraries`))
+    if (!(await fs.pathExists(`${_libs_path}\\libraries`)))
     {
         return true;
     }
-    if (!fs.pathExistsSync(`${_libs_path}\\versions`))
+    if (!(await fs.pathExists(`${_libs_path}\\versions`)))
     {
         return true;
     }
     return false;
 }
 
-function check_libs_in_mod(modpack_name)
+async function check_libs_in_modpack(modpack_name)
 {
     let _modpack_path = verify_and_get_modpack_folder(modpack_name);
-    console.log(`[SETTINGS] ${_modpack_path}`);
-    if (!fs.pathExistsSync(`${_modpack_path}\\assets`))
+    if (!(await fs.pathExists(`${_modpack_path}\\assets`)))
     {
         return false;
     }
-    if (!fs.pathExistsSync(`${_modpack_path}\\libraries`))
+    if (!(await fs.pathExists(`${_modpack_path}\\libraries`)))
     {
         return false;
     }
-    if (!fs.pathExistsSync(`${_modpack_path}\\versions`))
+    if (!(await fs.pathExists(`${_modpack_path}\\versions`)))
     {
         return false;
     }
     return true;
 }
 
-function copy_libs_to_modpack(modpack_name)
-{
-    let _modpack_path = verify_and_get_modpack_folder(modpack_name);
-    console.log(`[SETTINGS] ${_modpack_path}`);
-    fs.copySync(libs_path + '\\' + modpack_versions[modpack_name] + '\\libraries', _modpack_path + '\\libraries');
-    fs.copySync(libs_path + '\\' + modpack_versions[modpack_name] + '\\assets', _modpack_path + '\\assets');
-    fs.copySync(libs_path + '\\' + modpack_versions[modpack_name] + '\\versions', _modpack_path + '\\versions');
-    
-}
-
-let minecraftLaunched = false;
-
-function verify_and_get_path_to_info(item_name, version = '')
+function verify_and_get_path_to_info(item_name, version = '1.12.2')
 {
     let path;
     if (item_name == 'libraries')
@@ -342,16 +317,16 @@ function verify_and_get_path_to_info(item_name, version = '')
     return path;
 }
 
-async function get_available_shaders(modpack_name)
-{
-    let dir = verify_and_get_modpack_folder(modpack_name) + '\\shaderpacks';
-    let shaders = {};
-    let shader_names = await fs.readdir(dir)
-    shader_names.push('Без шейдера')
+// async function get_available_shaders(modpack_name)
+// {
+//     let dir = verify_and_get_modpack_folder(modpack_name) + '\\shaderpacks';
+//     let shaders = {};
+//     let shader_names = await fs.readdir(dir)
+//     shader_names.push('Без шейдера')
 
-    let selected_shader = await show_select_from_list('Выберите шейдер по умолчанию', shader_names);
-    await update_shader(modpack_name, selected_shader);
-}
+//     let selected_shader = await show_select_from_list('Выберите шейдер по умолчанию', shader_names);
+//     await update_shader(modpack_name, selected_shader);
+// }
 
 async function update_shader(modpack_name, shader_name)
 {
@@ -392,47 +367,37 @@ async function update_shader(modpack_name, shader_name)
     }
 }
 
-function get_modpack_version_from_info(modpack_name)
-{
-    let path = verify_and_get_path_to_info(modpack_name);
-    console.log(`[SETTINGS] Reading from ${path}`);
+function get_item_version_from_info(item_name) {
+    let path = verify_and_get_path_to_info(item_name);
     let json = JSON.parse(fs.readFileSync(path));
-    console.log(`[SETTINGS] ${json}`);
-    if (json['version'] == undefined || json['version'] == '' || json['version'] == null)
+    if (!json['version'])
     {
         json['version'] = 'v0.0.0.0';
     }
     return json['version'];
 }
 
-function set_modpack_version_to_info(modpack_name, version)
+async function set_item_version_to_info(item_name, version)
 {
-    let path = verify_and_get_path_to_info(modpack_name);
+    let path = verify_and_get_path_to_info(item_name);
     console.log(`[SETTINGS] Writing to ${path}`);
-    let json = JSON.parse(fs.readFileSync(path));
+    let json = JSON.parse(await fs.readFile(path));
     json['version'] = version;
-    fs.writeFileSync(path, JSON.stringify(json));
+    await fs.writeFile(path, JSON.stringify(json));
 }
 
-function set_libs_version_to_info(modpack_name, version, libs_version)
-{
-    let path = verify_and_get_path_to_info(modpack_name, libs_version);
-    console.log(`[SETTINGS] Writing to ${path}`);
-    let json = JSON.parse(fs.readFileSync(path));
-    json['version'] = version;
-    fs.writeFileSync(path, JSON.stringify(json));
-}
+async function verify_user_skin(modpack) {
+    await fs.ensureDir(verify_and_get_modpack_folder(modpack) + `\\CustomSkinLoader`);
+    await fs.ensureDir(verify_and_get_modpack_folder(modpack) + `\\CustomSkinLoader\\Local`);
+    await fs.ensureDir(verify_and_get_modpack_folder(modpack) + `\\CustomSkinLoader\\Local\\skins`);
+    await fs.copyFile(verify_and_get_resources_folder() + `\\${resources.skin.full_name}`, verify_and_get_modpack_folder(modpack) + `\\CustomSkinLoader\\Local\\skins\\${userInfo['username']}.png`);
 
-function verify_user_skin(modpack_name)
-{
-    return new Promise(async (resolve, reject) => {
-        await fs.ensureDir(verify_and_get_modpack_folder(modpack_name) + `\\CustomSkinLoader`);
-        await fs.ensureDir(verify_and_get_modpack_folder(modpack_name) + `\\CustomSkinLoader\\Local`);
-        await fs.ensureDir(verify_and_get_modpack_folder(modpack_name) + `\\CustomSkinLoader\\Local\\Skin`);
-        await fs.copyFile(verify_and_get_resources_folder() + `\\${userInfo['username']}.png`, verify_and_get_modpack_folder(modpack_name) + `\\CustomSkinLoader\\Local\\Skin\\${userInfo['username']}.png`);
-        
-        resolve();
-    });
+    await fs.ensureDir(verify_and_get_modpack_folder(modpack) + `\\CustomSkinLoader`);
+    await fs.ensureDir(verify_and_get_modpack_folder(modpack) + `\\CustomSkinLoader\\LocalSkin`);
+    await fs.ensureDir(verify_and_get_modpack_folder(modpack) + `\\CustomSkinLoader\\LocalSkin\\skins`);
+    await fs.copyFile(verify_and_get_resources_folder() + `\\${resources.skin.full_name}`, verify_and_get_modpack_folder(modpack) + `\\CustomSkinLoader\\LocalSkin\\skins\\${userInfo['username']}.png`);
+    
+    return;
 }
 
 function launch_minecraft(min_mem, max_mem, game_dir, username, uuid, _modpack_name)
@@ -448,39 +413,33 @@ function launch_minecraft(min_mem, max_mem, game_dir, username, uuid, _modpack_n
     });
 }
 
-async function absolutely_utterly_obliterate_minecraft() {
+async function absolutely_utterly_obliterate_minecraft(hardkill = false) {
     return new Promise((resolve, reject) => {
-        // Get all processes
-        exec('tasklist', function(err, stdout, stderr) {
-            // Parse
-            let processes = stdout.trim().split('\n');
+        pid = launchedModpacks[modpack_name]['pid'];
+        if (pid == null) resolve();
 
-            // Find needed process among others
-            let pid = null;
-            for (let process_info of processes) {
-                // Parse
-                process_info = process_info.trim().split(/\s+/g);
-
-                if (process_info[0] == 'javaw.exe' && process_info[2] == 'Console') {
-                    pid = process_info[1];
-                    break;
-                }
-            }
-
-            // ANNIHILATE found process
-            if (pid == null) resolve();
-            process.kill(pid, 'SIGKILL');
-
-            launchedModpacks[modpack_name]['process'] = undefined;
-            launchedModpacks[modpack_name]['pid'] = -1;
-            launchedModpacks[modpack_name]['launched'] = false;
-            launchedModpacks[modpack_name]['visible'] = false;
-            launchedModpacks = launchedModpacks;
-
+        if (pid == -1) {
+            console.log('[LAUNCH] Minecraft hasnt launched yet, wait until it is at least half loaded');
             resolve();
-        });
+        }
+
+        if (hardkill) {
+            process.kill(pid, 'SIGKILL');
+        } else {
+            process.kill(pid);
+        }
+
+        launchedModpacks[modpack_name]['process'] = undefined;
+        launchedModpacks[modpack_name]['pid'] = -1;
+        launchedModpacks[modpack_name]['launched'] = false;
+        launchedModpacks[modpack_name]['visible'] = false;
+        launchedModpacks = launchedModpacks;
+
+        console.log('[LAUNCH] Minecraft was successfully annihilated');
+        resolve();
     });
 }
+
 
 //#region
 if (true == false) {
@@ -498,14 +457,14 @@ if (true == false) {
     verify_and_get_resources_folder();
     libs_folder_empty();
     verify_libs_in_mod();
-    check_libs_in_mod();
+    check_libs_in_modpack();
     copy_libs_to_modpack();
     clear_modpack_folder();
     launch_minecraft();
     modpack_not_installed();
     verify_and_get_settings_file();
     change_settings_preset();
-    set_modpack_version_to_info();
+    set_item_version_to_info();
     get_modpack_version_from_info();
 }
 //#endregion

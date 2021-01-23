@@ -9,6 +9,7 @@
     <script src="../../includes/downloader_inc.js"></script>
     <script src="../../includes/modpack_manager_inc.js"></script>
     <script src="../../includes/settings_manager_inc.js"></script>
+    <script src="../../includes/copy_with_progress_inc.js"></script>
     <script defer src="../global.js"></script>
 
     <link rel="stylesheet" href="../global.css">
@@ -172,7 +173,7 @@
                         <p class="server-vipe">• Вайп каждые 12 месяцев</p>
                         <button data-name="magicae" id="magicae-select" class="select-button">Выбрать</button>
                     </div>
-                    <div class="server server-unavailable">
+                    <div class="server">
                         <p class="server-name">Fabrica</p>
                         <div class="server-pros">
                             <p>Игровая сборка технического направления. Делает упор на технические процессы по типу: автоматизация, технологический прогресс и развитие.</p>
@@ -180,7 +181,7 @@
                         <p class="server-vipe">• Вайп каждые 12 месяцев</p>
                         <button data-name="fabrica" id="fabrica-select" class="select-button">Выбрать</button>
                     </div>
-                    <div class="server server-unavailable">
+                    <div class="server">
                         <p class="server-name">Statera</p>
                         <div class="server-pros">
                             <p>Игровая сборка техно-магического направления. Делает упор на баланс между магией и технологией, включает в себя меньше крупных модификаций на каждую тематику.</p>
@@ -188,7 +189,7 @@
                         <p class="server-vipe">• Вайп каждые 12 месяцев</p>
                         <button data-name="statera" id="statera-select" class="select-button">Выбрать</button>
                     </div>
-                    <div class="server server-unavailable">
+                    <div class="server">
                         <p class="server-name">Insula</p>
                         <div class="server-pros">
                             <p>Игровая сборка неопределённого направления. Делает упор на выживание на острове среди пустоты, включая как технологическое, так и магическое развития.</p>
@@ -273,7 +274,7 @@
                         </div>
                         <div class="range-bar">
                             <input class="range-slider" id="memory-input" list="memlist" type="range" name="memory"
-                                min="0" max="16" step="1">
+                                min="4" max="20" step="1">
                         </div>
                     </div>
                 </div>
@@ -356,19 +357,6 @@
                         <div class="range-visuals">
                             <div class="range-stops">
                                 <div class="range-stop active-stop">
-                                    1Gb
-                                    <div class="range-stop-markers">
-                                        <div class="marker"></div>
-                                        <div class="marker"></div>
-                                    </div>
-                                </div>
-                                <div class="range-stop empty-stop">
-                                    <div class="range-stop-markers">
-                                        <div class="marker"></div>
-                                        <div class="marker"></div>
-                                    </div>
-                                </div>
-                                <div class="range-stop">
                                     4Gb
                                     <div class="range-stop-markers">
                                         <div class="marker"></div>
@@ -414,15 +402,27 @@
                                         <div class="marker"></div>
                                     </div>
                                 </div>
+                                <div class="range-stop empty-stop">
+                                    <div class="range-stop-markers">
+                                        <div class="marker"></div>
+                                        <div class="marker"></div>
+                                    </div>
+                                </div>
+                                <div class="range-stop">
+                                    20Gb
+                                    <div class="range-stop-markers">
+                                        <div class="marker"></div>
+                                        <div class="marker"></div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="range-bar">
                                 <input class="range-slider" id="memory-input" list="memlist" type="range" name="memory"
-                                    min="0" max="16" step="1">
+                                    min="4" max="20" step="1">
                             </div>
-                            <div class="tip">
+                            <div id="memory-tip" class="tip tip-hidden">
                                 Внимание!<br>
-                                <span>Значения ниже 4 ГБ могут повлечь проблемы с запуском! <br>
-                                    Не советуем играть при таких значениях</span>
+                                <span>Значения ниже 6 ГБ могут привести к проблемам при продолжительной игре!</span>
                             </div>
                         </div>
                     </div>
@@ -434,14 +434,14 @@
                         <div class="range-visuals">
                             <div class="range-stops">
                                 <div class="range-stop active-stop">
-                                    Низкая
+                                    Минимальная
                                     <div class="range-stop-markers">
                                         <div class="marker"></div>
                                         <div class="marker"></div>
                                     </div>
                                 </div>
                                 <div class="range-stop">
-                                    Средняя-
+                                    Низкая
                                     <div class="range-stop-markers">
                                         <div class="marker"></div>
                                         <div class="marker"></div>
@@ -455,14 +455,14 @@
                                     </div>
                                 </div>
                                 <div class="range-stop">
-                                    Средняя+
+                                    Высокая
                                     <div class="range-stop-markers">
                                         <div class="marker"></div>
                                         <div class="marker"></div>
                                     </div>
                                 </div>
                                 <div class="range-stop">
-                                    Высокая
+                                    Высочайшая
                                     <div class="range-stop-markers">
                                         <div class="marker"></div>
                                         <div class="marker"></div>
@@ -473,8 +473,8 @@
                                 <input class="range-slider" id="optimization-input" list="optimization_levels"
                                     type="range" name="memory" min="0" max="4" step="1">
                             </div>
-                            <div class="tip">
-                                Внимание!<br>
+                            <div id="optimization-tip" class="tip tip-hidden">
+                                Важно!<br>
                                 <span>Данная степень оптимизации отключает всевозможные графические улучшения по типу:
                                     тени, динамическое освещение и т.д.</span>
                             </div>
@@ -611,7 +611,7 @@
                             <p>Сбросить настройки</p>
                         </div>
                         <div id="reset-folder" class="handy-function">
-                            <p>Восстановить папку</p>
+                            <p>Удалить сборку</p>
                         </div>
                     </div>
                 </div>
@@ -646,7 +646,7 @@
 
                 <div class="settings-element">
                     <h1 class="settings-element-header">Информация</h1>
-                    <p id="launcher-version-p" class="settings-element-p cursor-default">Версия лаунчера: <span id="version-span"></span></p>
+                    <p id="launcher-version-p" class="settings-element-p cursor-pointer noselect"><span id="version-span"></span></p>
                 </div>
             </div>
         </section>
@@ -654,7 +654,6 @@
 
         <section id="account-section" class="account-section main-right">Ну так на будущее))</section>
     </main>
-
     <footer class="noselect">
         <div class="footer-left">
             <div class="footer-left-container">
@@ -666,7 +665,7 @@
             </div>
         </div>
         <div class="footer-center">
-            <button id="play-button" class="play-button">Играть</button>
+            <button id="play-button" class="play-button"><span class="loading"><p>.</p><p>.</p><p>.</p></span></button>
         </div>
         <div class="footer-right">
             <div class="footer-right-container">
@@ -696,18 +695,12 @@
         require("jquery-mousewheel")($);
         require("malihu-custom-scrollbar-plugin")($);
 
-        (function ($) {
-            $(window).load(function () {
-                $(".horizontalScrollbar").mCustomScrollbar({
-                    scrollButtons: {
-                        enable: false
-                    },
-                    horizontalScroll: true,
-                    advanced: {
-                        autoExpandHorizontalScroll: true
-                    }
-                });
-            });
+        $(document.querySelectorAll('.mCustomScrollbar')).mCustomScrollbar({
+            autoHideScrollbar: true,
+            scrollInertia: 700,
+            mouseWheel: {
+                preventDefault: true,
+            }
         });
     </script>
 </body>

@@ -116,14 +116,23 @@
 }
 
 .range .tip{
+    position: relative;
     font-size: 12px;
     font-weight: bold;
     opacity: .4;
+    left: 0;
     cursor: default;
+
+    transition: all .4s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 .range .tip span{
     opacity: .6;
+}
+
+.tip-hidden{
+    left: 32px !important;
+    opacity: 0 !important;
 }
 
 .range:hover .range-slider{
@@ -553,6 +562,7 @@
     font-weight: bold;
     font-size: 32px;
     cursor: pointer;
+    display: flex;
 }
 
 .open{

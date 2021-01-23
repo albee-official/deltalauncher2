@@ -1,4 +1,5 @@
 const { remote, ipcRenderer } = require('electron');
+let LOADING_SPAN = '<span class="loading"><p>.</p><p>.</p><p>.</p></span>';
 
 //. Globals
 Object.defineProperty(global, 'userInfo', {
@@ -35,6 +36,21 @@ Object.defineProperty(global, 'launchedModpacks', {
 
 //#region //. Handy
 
+function deepFreeze(o) {
+	Object.freeze(o);
+  
+	Object.getOwnPropertyNames(o).forEach(function(prop) {
+	  if (o.hasOwnProperty(prop)
+	  && o[prop] !== null
+	  && (typeof o[prop] === "object" || typeof o[prop] === "function")
+	  && !Object.isFrozen(o[prop])) {
+		  deepFreeze(o[prop]);
+		}
+	});
+  
+	return o;
+  }
+
 String.prototype.replaceAt = function(index, replacement) {
     return this.substr(0, index) + replacement + this.substr(index + replacement.length);
 }
@@ -47,25 +63,6 @@ function remove_event_listeners(el) {
 //#endregion
 
 //#region //. Loading Animations (...)
-
-let loading_interval_updater = undefined;
-function update_loadings()
-{
-    if (loading_interval_updater != undefined)
-        clearInterval(loading_interval_updater)
-    let loadings = document.querySelectorAll('span[class="loading"]');
-    loading_interval_updater = setInterval(() => {
-        for (let loading_thing of loadings) {
-            if (loading_thing.innerHTML.length > 2) {
-                loading_thing.innerHTML = '';
-            }
-
-            loading_thing.innerHTML += '.'
-        }
-    }, 1000);
-}
-
-update_loadings();
 
 //#endregion
 
@@ -424,12 +421,12 @@ function update_theme()
     set_theme_colours(settings['theme']);
     if (is_video_on_bg())
     {
-        document.querySelector('#bg-video').src = `${bg_path}?${new Date()}`;
+        document.querySelector('#bg-video').src = `${bg_path}?${Date.now()}`;
         check_muted_video();
     }
     else
     {
-        body.style.backgroundImage = `url("${bg_path}?${new Date()}")`;
+        body.style.backgroundImage = `url("${bg_path}?${Date.now()}")`;
     }
 }
 

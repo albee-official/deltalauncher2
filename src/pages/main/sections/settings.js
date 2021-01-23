@@ -2,7 +2,11 @@ const { dialog } = require('electron').remote;
 const { electron } = require('process');
 const { param } = require('jquery');
 
-document.querySelector('#version-span').innerHTML = app.getVersion();
+if (settings['developer_mode']) {
+    document.querySelector('#version-span').innerHTML = `Версия лаунчера: ${app.getVersion()} [ Режим разработчика ]`;
+} else {
+    document.querySelector('#version-span').innerHTML = `Версия лаунчера: ${app.getVersion()}`;
+}
 
 let memory_range = document.querySelector('#memory-range');
 let optimization_range = document.querySelector('#optimization-range');
@@ -12,10 +16,6 @@ let controll_inputs = document.querySelectorAll('.controll-setting-input');
 let dev_activate_timeout = false;
 let dev_activate_clicks = 0;
 document.querySelector('#launcher-version-p').addEventListener('click', e => {
-    if (settings['developer_mode']) {
-        return;
-    }
-
     if (!dev_activate_timeout) {
         dev_activate_timeout = true;
         setTimeout(() => {
@@ -24,9 +24,16 @@ document.querySelector('#launcher-version-p').addEventListener('click', e => {
         }, 5000);
     } else {
         dev_activate_clicks++;
-        if (dev_activate_clicks > 5) {
+        if (dev_activate_clicks > 8) {
+            dev_activate_clicks = 0;
             console.log('[SETTINGS] You are now a developer!');
-            settings['developer_mode'] = true;
+            settings['developer_mode'] = !settings['developer_mode'];
+            if (settings['developer_mode']) {
+                document.querySelector('#version-span').innerHTML = `Версия лаунчера: ${app.getVersion()} [ Режим разработчика ]`;
+            } else {
+                document.querySelector('#version-span').innerHTML = `Версия лаунчера: ${app.getVersion()}`;
+            }
+            win.reload();
             update_settings();
         }
     }
@@ -193,6 +200,12 @@ if (settings['default_shader'] != '' && settings['default_shader'] != undefined)
     default_shader.innerHTML = `Шейдер по умолчанию не установлен`;
 }
 default_shader.addEventListener('click', async e => {
+    if (e.ctrlKey) {
+        settings['default_shader'] = '';
+        default_shader.innerHTML = `Шейдер по умолчанию не установлен`;
+        update_settings();
+        return;
+    }
 
     const win = BrowserWindow.getFocusedWindow();
     dialog.showOpenDialog(win, {
@@ -232,6 +245,11 @@ for (let jojo of modpack_dirs)
 {
     jojo.children[1].innerHTML = verify_and_get_modpack_folder(jojo.children[0].innerHTML.toLowerCase());
     jojo.addEventListener('click', e => {
+        if (e.ctrlKey) {
+            shell.openItem(verify_and_get_modpack_folder(e.currentTarget.children[0].innerHTML.toLowerCase()));
+            return;
+        }
+
         let current_modpack_dir = e.currentTarget;
         let modpack_dir_p = current_modpack_dir.children[1];
         if (current_modpack_dir.classList.contains('updating')) return;
@@ -247,11 +265,9 @@ for (let jojo of modpack_dirs)
             modpack_dir_p.innerHTML = path;
             path = path.replace(dir_root, '|ROOT|');
             settings['modpack_dirs'][current_modpack] = path;
-            update_settings();
-            UpdateServer();
-            UpdateRedownloadCheckBox();
-            UpdateSideModpackDir(current_modpack);
-            UpdateButtons();
+            needs_an_update[current_modpack] = false;
+            if (current_modpack == modpack_name) // Just to update the footer if needed (thats not dumb okay)
+                setModpack(modpack_name);
         });
     });
 }
@@ -286,23 +302,8 @@ document.querySelector('#open-modpack-folder').addEventListener('click', async e
 });
 
 document.querySelector('#delete-settings').addEventListener('click', async e => {
-    let selected_modpack = await show_modpack_selection_menu().catch(err => { console.log(err); return; });
-    if (selected_modpack == undefined) return;
-    console.log(selected_modpack);
-
-    let path = verify_and_get_modpack_folder(selected_modpack);
-
-    if (fs.pathExistsSync(path + '\\options.txt'))
-        fs.unlinkSync(path + '\\options.txt');
-
-    if (fs.pathExistsSync(path + '\\optionsof.txt'))
-        fs.unlinkSync(path + '\\optionsof.txt');
-
-    if (fs.pathExistsSync(path + '\\optionsshaders.txt'))
-        fs.unlinkSync(path + '\\optionsshaders.txt');
-
-    if (fs.pathExistsSync(path + '\\knownkeys.txt'))
-        fs.unlinkSync(path + '\\knownkeys.txt');
+    fs.unlink(settings_path);
+    reloadWin(true);
 });
 
 document.querySelector('#reset-folder').addEventListener('click', async e => {
@@ -311,21 +312,10 @@ document.querySelector('#reset-folder').addEventListener('click', async e => {
     console.log(selected_modpack);
 
     let path = verify_and_get_modpack_folder(selected_modpack);
-
-    fs.readdir(path, (err, files) => {
-        files.forEach(file => {
-            if (file != 'mods' && file != 'libraries' && file != 'versions' && file != 'assets' && file != 'settings' && file != 'options' && file != 'info.json')
-            {
-                if (file.toString() != '.mixin.out' && file.toString().split('.').length > 1)
-                {
-                    fs.unlinkSync(path + '\\' + file);
-                }
-                else
-                {
-                    rimraf.sync(path + '\\' + file);
-                }
-            }
-        });
+    await rimraf(path, (err) => {
+        if (err) console.log(err);
+        console.log(`[SETTINGS] Successfully deleted ${selected_modpack}`);
+        setModpack(modpack_name);
     });
 });
 
@@ -433,10 +423,16 @@ memory_range.addEventListener('input', e => {
         // if stop index is the same as input value, then it is active
         // otherwise it is not
         // we devide value by 2 because 'step' between stops is 2
-        if (i == input_range.value / 2) {
+        if (i == (input_range.value - 4) / 2) {
             input_stops[i].classList.add('active-stop');
         } else {
             input_stops[i].classList.remove('active-stop');
+        }
+
+        if (input_range.value < 6) {
+            document.querySelector('#memory-tip').classList.remove('tip-hidden');
+        } else {
+            document.querySelector('#memory-tip').classList.add('tip-hidden');
         }
     }
 });
@@ -450,6 +446,12 @@ memory_range.addEventListener('change', () => {
     document.querySelector('#play-memory-range').children[0].children[1].children[0].value = memory_range.children[0].children[1].children[0].value; // Sync 2 memory ranges
     update_settings();
 })
+
+if (settings['allocated_memory'] < 6) {
+    document.querySelector('#memory-tip').classList.remove('tip-hidden');
+} else {
+    document.querySelector('#memory-tip').classList.add('tip-hidden');
+}
 
 //#endregion
 
@@ -474,6 +476,12 @@ optimization_range.addEventListener('input', e => {
             input_stops[i].classList.remove('active-stop');
         }
     }
+
+    if (input_range.value == 0) {
+        document.querySelector('#optimization-tip').classList.remove('tip-hidden');
+    } else {
+        document.querySelector('#optimization-tip').classList.add('tip-hidden');
+    }
 });
 
 // Change from settings or update settings
@@ -484,6 +492,12 @@ optimization_range.addEventListener('change', e => {
     change_settings_preset(modpack_name, input_range.value);
     update_settings();
 });
+
+if (settings['optimization_level'] == 0) {
+    document.querySelector('#optimization-tip').classList.remove('tip-hidden');
+} else {
+    document.querySelector('#optimization-tip').classList.add('tip-hidden');
+}
 
 //#endregion
 
@@ -544,7 +558,7 @@ async function show_key_select(el) {
                 close_menu(menu);
                 changing_some_key = false;
 
-                // if we pressed ecape, we want to exit and not asign it.
+                //~ if we pressed ecape, we want to exit and not asign it.
                 if (display_key == 'ESCAPE') {
                     changing_some_key = false;
                     key_parapraph.innerHTML = 'Нажмите любую клавишу';
@@ -589,7 +603,7 @@ function ascii_to_dumbass(keycode) {
         case 66: return 48; // b
         case 67: return 46; // c
         case 68: return 32; // d
-        case 69: return 18; // e
+        case 69: return 18; // e NICE
         case 70: return 33; // f
         case 71: return 34; // g
         case 72: return 35; // h
@@ -794,9 +808,8 @@ for (let addon_cb of play_addon_cbs) {
 }
 
 let prev_click_event = function(e) {};
-UpdateSideModpackDir(modpack_name);
 // Modpack directory
-async function UpdateSideModpackDir(modpack)
+async function updateSideModpackDir(modpack)
 {
     let dir = settings['modpack_dirs'][modpack];
     let el = document.querySelector('#play-game-dir-input')
@@ -811,18 +824,6 @@ async function UpdateSideModpackDir(modpack)
 
     el.addEventListener('click', prev_click_event);
 }
-//#endregion 
-
-//#region //. ---------------- Launch screen -----------------------
-let launch_animator = setInterval(() => {
-    if (launch_update_counter % 3 == 0) {
-        document.querySelector('#launch-h').innerHTML = 'Запуск: ' + Capitalize_First_Letter(modpack_name) + '.';
-        launch_update_counter = 0;
-    } else {
-        document.querySelector('#launch-h').innerHTML += '.';
-    }
-    launch_update_counter++;
-}, 1000);
 //#endregion 
 
 //#region //. ---------------- Additional settings -----------------

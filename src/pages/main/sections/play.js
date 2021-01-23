@@ -1,5 +1,3 @@
-//#region  //. Server selection ------------------------------------------
-
 const { ajax } = require("jquery");
 
 let magicae_select_button = document.querySelector('#magicae-select');
@@ -10,64 +8,61 @@ let odyssea_select_button = document.querySelector('#odyssea-select');
 
 let play_button = document.querySelector('#play-button');
 
+// So that we dont check EVERY time we press the button
+let update_check_timeout = 30; // Seconds
+let checked_update = {
+    magicae: false,
+    fabrica: false,
+    statera: false,
+    insula: false,
+    odyssea: false,
+};
+
+// Modpacks that have updates available (man, dont try to run old versions, they wont be able to join servers anyway :) )
+let needs_an_update = {
+    magicae: false,
+    fabrica: false,
+    statera: false,
+    insula: false,
+    odyssea: false,
+};
+
+let select_locked = false;
+let modpack_installed = false;
+let download_in_progress = false;
+let show_progress_footer = false;
 let modpack_name = settings['selected_modpack'];
+setModpack(modpack_name);
 
-magicae_select_button.addEventListener('click', () => {
-    modpack_name = 'magicae';
-    settings['selected_modpack'] = modpack_name;
+magicae_select_button.addEventListener('click', () => { if (select_locked) return; setModpack('magicae') });
+fabrica_select_button.addEventListener('click', () => { if (select_locked) return; setModpack('fabrica') });
+statera_select_button.addEventListener('click', () => { if (select_locked) return; setModpack('statera') });
+insula_select_button.addEventListener('click', () => { if (select_locked) return; setModpack('insula') });
+odyssea_select_button.addEventListener('click', () => { if (select_locked) return; setModpack('odyssea') });
+
+
+async function setModpack(modpack) {
+    modpack_name = modpack;
+    settings['selected_modpack'] = modpack;
     update_settings();
-    UpdateRedownloadCheckBox();
-    UpdateSideModpackDir(modpack_name);
-    UpdateButtons();
-    UpdateServer();
-    update_footer();
-});
+    updateRedownloadCheckBox();
+    // updateSideModpackDir(modpack);
+    updateButtons();
+    updateServer();
 
-fabrica_select_button.addEventListener('click', () => {
-    modpack_name = 'fabrica';
-    settings['selected_modpack'] = modpack_name;
-    update_settings();
-    UpdateRedownloadCheckBox();
-    UpdateSideModpackDir(modpack_name);
-    UpdateButtons();
-    UpdateServer();
-    update_footer();
-});
+    play_button.innerHTML = LOADING_SPAN;
+    if (!checked_update[modpack] && modpack_installed && needs_an_update[modpack_name] == false) {
+        console.log(`[PLAY] Checking for updates for ${modpack}`);
+        needs_an_update[modpack] = await checkForUpdates(modpack);
+        checked_update[modpack] = true;
+        setTimeout(() => {
+            checked_update[modpack] = false;
+        }, 1000 * update_check_timeout);
+    }
+    updateFooter();
+}
 
-statera_select_button.addEventListener('click', () => {
-    modpack_name = 'statera';
-    settings['selected_modpack'] = modpack_name;
-    update_settings();
-    UpdateRedownloadCheckBox();
-    UpdateSideModpackDir(modpack_name);
-    UpdateButtons();
-    UpdateServer();
-    update_footer();
-});
-
-insula_select_button.addEventListener('click', () => {
-    modpack_name = 'insula';
-    settings['selected_modpack'] = modpack_name;
-    update_settings();
-    UpdateRedownloadCheckBox();
-    UpdateSideModpackDir(modpack_name);
-    UpdateButtons();
-    UpdateServer();
-    update_footer();
-});
-
-odyssea_select_button.addEventListener('click', () => {
-    modpack_name = 'odyssea';
-    settings['selected_modpack'] = modpack_name;
-    update_settings();
-    UpdateRedownloadCheckBox();
-    UpdateSideModpackDir(modpack_name);
-    UpdateButtons();
-    UpdateServer();
-    update_footer();
-});
-
-function UpdateButtons() {
+function updateButtons() {
     let buttons = document.querySelectorAll('.select-button')
     let active_button = document.querySelector(`#${modpack_name}-select`)
     for (const button of buttons) {
@@ -91,32 +86,13 @@ function UpdateButtons() {
         }
     }
 }
-UpdateButtons();
 
-function UpdateOneButton(server, button_el = document.querySelector(`#${server}-select`))
-{
-    if (modpack_not_installed(server))
-    {
-        button_el.innerHTML = 'Скачать';
-    }
-    else
-    {
-        button_el.innerHTML = 'Выбрать';
-    }
-
-    for (const server_container of document.querySelectorAll('.server-unavailable')) {
-        server_container.querySelector('.select-button').innerHTML = 'Недоступно';
-    }
-}
-
-UpdateButtons();
-
-function Capitalize_First_Letter(string) {
+function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-function UpdateServer() {
-    document.querySelector('#modpack-paragraph').innerHTML = `Сервер: ${Capitalize_First_Letter(modpack_name)}`;
+function updateServer() {
+    document.querySelector('#modpack-paragraph').innerHTML = `Сервер: ${capitalizeFirstLetter(modpack_name)}`;
     let admin_role = userInfo['servers_info'][modpack_name]['adminrole'];
     let privilege = userInfo['servers_info'][modpack_name]['privilege'];
     if (privilege == 'Player') privilege = 'Игрок';
@@ -137,394 +113,384 @@ function UpdateServer() {
     } else {
         document.getElementById('role-par').innerHTML = `${privilege} [${admin_role}]`;
     }
-
-    rpc = {
-        ...rpc,
-        joinSecret: modpack_name,
-    };
 }
 
-UpdateServer();
-
-function UpdateRedownloadCheckBox() {
+let redownload_memory = false;
+function updateRedownloadCheckBox() {
     // cb stands for checkbox
     let cb = document.querySelector('#redownload-client-cb');
     let label = document.querySelector('#redownload-client-label');
-    let modpack_installed_bool = !modpack_not_installed(modpack_name);
+    modpack_installed = !modpack_not_installed(modpack_name);
 
     let secondary_text = document.querySelector('#play-button-assist-label span');
 
-    cb.checked = !modpack_installed_bool;
-
-    if (!modpack_installed_bool)
+    if (!modpack_installed)
     {
-        secondary_text.innerHTML = 'Быстрое скачивание';
-        document.querySelector('#play-button').innerHTML = 'Скачать';
+        secondary_text.innerHTML = 'Запустить по завершении';
     }
     else
     {
         secondary_text.innerHTML = 'Автозаход на сервер';
-        document.querySelector('#play-button').innerHTML = 'Играть';
     }
 
     if (launchedModpacks[modpack_name]['launched'])
     {
-        deactivate_play_button();
+        deactivatePlayButton();
     }
     else
     {
-        activate_play_button();
+        activatePlayButton();
     }
 
-    if (!modpack_installed_bool) {
+    if (!modpack_installed) {
         label.className = 'checkbox unactive';
+        cb.checked = true;
     } else {
         label.className = 'checkbox';
+        cb.checked = false;
     }
 }
 
-UpdateRedownloadCheckBox();
-//#endregion
-
-//#region //. Server Play Button ------------------------------------------
-
 ipcRenderer.on('rpc-join', (event, info) => {
-    modpack_name = info.server;
+    setModpack(info.server);
     settings['selected_modpack'] = modpack_name;
     update_settings();
-    UpdateServer();
-    UpdateRedownloadCheckBox();
+    updateServer();
+    updateRedownloadCheckBox();
     console.log(modpack_name);
     play_button.click();
 });
 
-let download_in_progress = false;
+// Prevent from cicking the button, until it finished it's job 
+let button_pressed_thing = false;
+play_button.addEventListener('click', play_buttonClick);
+async function play_buttonClick(e) {
+    if (!download_in_progress && button_pressed_thing) return;
+    button_pressed_thing = true;
 
-//. MAIN PLAY BUTTON
-play_button.addEventListener('click', async () => {
-    if (launchedModpacks[modpack_name]['launched'])
-    {
-        console.log(`[LAUNCH] ${modpack_name} is already launched`);
-        deactivate_play_button();
+    //# Check if modpack is already launched
+    if (launchedModpacks[modpack_name]['launched']) {
+        console.log(`[LAUNCH] ${capitalizeFirstLetter(modpack_name)} is already launched`);
+        deactivatePlayButton();
+        return;
+
+    } else {
+        activatePlayButton();
+
+    }
+
+    // Cancel current download if it is happening rn
+    if (download_in_progress) {
+        console.log(`[LAUNCH] Download in progress, canceling it`);
+        cancelCurrentDownload();
         return;
     }
-    else
-    {
-        activate_play_button();
+
+    // Clear modpack folder if reinstall checkbox is checked
+    if (document.getElementById('redownload-client-cb').checked) {
+        console.log(`[LAUNCH] Redownloading ${modpack_name}...`);
+        document.getElementById('redownload-client-cb').checked = false;
+        deactivatePlayButton();
+        show_progress_footer = true;
+        updateFooter();
+        await clear_modpack_folder(modpack_name);
     }
 
-    // Verifyies if folder exists. creates if not. 
-    // modpack_folder - folder in which modpack is located
-    let modpack_folder = verify_and_get_modpack_folder(modpack_name);
+    // Ensure that latest version of libs exist
+    await ensureLibs(modpack_name);
 
-    if (!download_in_progress) {
-        if (document.querySelector('#redownload-client-cb').checked) { 
-            //. ЕСЛИ НЕ УСТАНОВЛЕННА
+    // Ensure that latest version of modpack is installed
+    let downloaded_smth = await ensureModpack(modpack_name);
 
-            show_progress_footer();
+    // Ensure that everything is ready for launch
+    await preLaunchConfig(modpack_name, e.ctrlKey);
 
-            console.log(`${modpack_name} is uninstalled. Downloading`);
-            
-            document.querySelector('#play-button-assist-label').classList.add('unactive');
-
-            // Если мы уж перекачиваем то уж лучше подчистить все, а то не дай бох чо произойдет
-            await clear_modpack_folder(modpack_name);
-
-            // Скачать либы если их нету
-            let libs_installed = await download_libs(modpack_name);
-            if (libs_installed)
-            {
-                console.log('installed libs');
-            }
-            else
-            {
-                console.log('libs are already installed');
-            }
-
-            // Скачать сборку
-            await download_mods_and_stuff(modpack_folder);
-
-            // Если либов нету то вставить их
-            console.log('Checking libs...');
-            if (!check_libs_in_mod(modpack_name)) {
-                copy_libs_to_modpack(modpack_name);
-            }
-
-            // Вернуть все на своим места а то чо там кнопка не играть а например загрузка, а?
-            show_normal_footer();
-
-            // Обновить натсройки
-            if (!settings_exist())
-                change_settings_preset(modpack_name, document.querySelector('#optimization-input').value);
-
-            // Запуск
-            document.querySelector('#play-button-assist-label').classList.remove('unactive');
-            console.log(`Последняя версия ${Capitalize_First_Letter(modpack_name)} установлена. Запускаем...`);
-
-            // Запустить штуку которая блокирует пользователю возможность запустить сборку еще раз
-            show_launch_menu();
-
-            // Поменять Rich Presence
-            rpc = {
-                ...rpc,
-                details: `Запускает ${Capitalize_First_Letter(modpack_name)}...`,
-                largeImageKey: `rpc_${modpack_name}`,
-                smallImageKey: 'rich_presence_light',
-            };
-
-            await verify_user_skin(modpack_name);
-
-            // Запустить майнкрафт. Эта фнукция (Promise) заканчивается когда выключается майнкрафт.
-            let mem_input = document.querySelector('#memory-input');
-            launch_minecraft(1000, mem_input.value * 1024, modpack_folder, userInfo['username'], userInfo['uuid'], modpack_name);
-            //# .then(res => {
-            //     // Манйкрафт завершился. Если 0, то все заебумба
-            //     console.log(`Minecraft exited with code: ${res}`);
-            //     UpdateRedownloadCheckBox();
-            // }).catch(err => {
-            //     // Что то пошло не так при запуске.
-            //     console.log(`Launch encountered some errors: ${err}`);
-            //     UpdateRedownloadCheckBox();
-            //});
-
-        } else { //. ЕСЛИ УСТАНОВЛЕННА
-            console.log(`Найденна ${Capitalize_First_Letter(modpack_name)}. Проверка обновлений...`);
-            if (libs_folder_empty(modpack_name))
-            {
-                show_progress_footer();
-            }
-
-            // Скачать либы если их нету
-            let libs_installed = await download_libs(modpack_name);
-            if (libs_installed)
-            {
-                console.log('[LAUNCH] Installed libs');
-                play_button.click();
-                return;
-            }
-            else
-            {
-                console.log('[LAUNCH] Libs are already installed');
-            }
-
-            // Скопировать либы если их нету
-            if (!check_libs_in_mod(modpack_name)) {
-                copy_libs_to_modpack(modpack_name);
-            }
-
-            // Проверка обновления, если есть, то перезапускаем функцию с перекачиванием
-            if ( !(await check_for_updates(modpack_name).catch(err => {console.log(err); return;})))
-            {
-                console.log(`Последняя версия ${Capitalize_First_Letter(modpack_name)} установлена. Запускаем...`);
-
-                // Отключить Rich Presence потому что у майна свой
-                rpc = {
-                    ...rpc,
-                    details: `Запускает ${Capitalize_First_Letter(modpack_name)}...`,
-                    largeImageKey: `rpc_${modpack_name}`,
-                    smallImageKey: 'rich_presence_light',
-                }
-
-                await verify_user_skin(modpack_name);
-
-                // Обновить настройки
-                if (!settings_exist())
-                    change_settings_preset(modpack_name, document.querySelector('#optimization-input').value);
-                await update_shader(modpack_name, settings['default_shader']);
-
-                // Запустить майнкрафт. Эта фнукция (Promise) заканчивается когда выключается майнкрафт.
-                let mem_input = document.querySelector('#memory-input');
-                launch_minecraft(1000, mem_input.value * 1024, modpack_folder, userInfo['username'], userInfo['uuid'], modpack_name);
-
-                // Запустить штуку которая блокирует пользователю возможность запустить сборку еще раз
-                update_footer();
-            }
-            else
-            {
-                console.log('Найдена новая версия, скачавание...');
-                document.querySelector('#redownload-client-cb').checked = true;
-                play_button.click();
-            }
-        }
-    } else {
-        cancel_current_download();
+    if (document.querySelector('#play-button-assist-cb').checked || !downloaded_smth) {
+        // Launch minecraft!
+        let mem_input = document.querySelector('#memory-input');
+        let modpack_folder = verify_and_get_modpack_folder(modpack_name);
+        launch_minecraft(1000, mem_input.value * 1024, modpack_folder, userInfo['username'], userInfo['uuid'], modpack_name);
     }
-});
+
+    // Show normal footer again
+    show_progress_footer = false;
+    download_in_progress = false;
+    setModpack(modpack_name);
+    activatePlayButton();
+
+    // Allow for button to bre pressed again
+    button_pressed_thing = false;
+}
 
 ipcRenderer.on('modpack-exit', (event, {modpack_name, code, error}) => {
     if (error) {
         // Что то пошло не так при запуске.
         console.log(`[LAUNCH] <${modpack_name}> Launch encountered some errors: ${code}`);
-        UpdateRedownloadCheckBox();
+        updateRedownloadCheckBox();
     } else {
         // Манйкрафт завершился. Если 0, то все заебумба
         console.log(`[LAUNCH] <${modpack_name}> Minecraft exited with code: ${code}`);
-        UpdateRedownloadCheckBox();
+        updateRedownloadCheckBox();
     }
-    update_footer();
+    updateFooter();
 });
 
-ipcRenderer.on('modpack-log', (event, message) => {
+ipcRenderer.on('modpack-log', (event, { modpack_name, message }) => {
     console.log(message);
 });
 
-ipcRenderer.on('modpack-update', (event) => {
-    update_footer();
+ipcRenderer.on('modpack-update', (event, { modpack_name }) => {
+    updateFooter();
 });
 
-//#region Визуал
+async function ensureLibs(modpack) {
+    if (await libs_folder_empty(modpack)) {
+        console.log(`[LAUNCH] No libraries found on this computer. Downloading...`);
+        activatePlayButton();
+        show_progress_footer = true;
+        download_in_progres = true;
+        updateFooter();
 
-function update_footer() {
-    if (!launchedModpacks[modpack_name]['visible'] && launchedModpacks[modpack_name]['launched']) {
-        show_launch_menu();
-    } else {
-        document.querySelector('#launch-menu').classList.remove('open');
+        await downloadLibs(modpack);
+        deactivatePlayButton();
     }
 
-    if (launchedModpacks[modpack_name]['launched']) {
-        play_button.innerHTML = 'Запущена';
+    if (await checkForUpdates('libraries')) {
+        console.log(`[LAUNCH] New version of libraries detected. Downloading...`);
+        activatePlayButton();
+        show_progress_footer = true;
+        download_in_progres = true;
+        updateFooter();
 
-        deactivate_play_button();
-    } else {
-        play_button.innerHTML = 'Играть';
+        await downloadLibs(modpack, true);
+        deactivatePlayButton();
+    }
 
-        activate_play_button();
+    console.log('[LAUNCH] Latest libraries are installed');
+    download_in_progress = false;
+    updateFooter();
+}
+
+async function ensureModpack(modpack) {
+    let downloaded_smth = false;
+    if (await modpack_not_installed(modpack)) {
+        console.log(`[LAUNCH] ${capitalizeFirstLetter(modpack)} is not installed. Downloading...`);
+        downloaded_smth = true;
+        activatePlayButton();
+        download_in_progress = true;
+        updateFooter();
+
+        await downloadModpack(modpack);
+        deactivatePlayButton();
+    }
+
+    if (await checkForUpdates(modpack)) {
+        console.log(`[LAUNCH] New version of ${modpack} detected. Downloading...`);
+        downloaded_smth = true;
+        activatePlayButton();
+        await clear_modpack_folder(modpack);
+        download_in_progress = true;
+        updateFooter();
+
+        await downloadModpack(modpack, true);
+        deactivatePlayButton();
+    }
+
+    if (!(await check_libs_in_modpack(modpack))) {
+        console.log(`[LAUNCH] No libraries found in ${modpack}. Moving...`);
+        show_progress_footer = true;
+        updateFooter();
+        document.getElementById('modpack-paragraph').innerHTML = `Завершение: Перенос библиотек ${LOADING_SPAN}`
+        document.getElementById('role-par').innerHTML = `Не закрывайте лаунчер!`
+        await copy_libs_to_modpack(modpack);
+    }
+    
+    console.log(`[LAUNCH] Latest version of ${modpack} is installed and ready for launch`);
+    needs_an_update[modpack] = false;
+    download_in_progress = false;
+    updateFooter();
+    return downloaded_smth;
+}
+
+async function preLaunchConfig(modpack, force_reconfig) {
+    show_progress_footer = true;
+    updateFooter();
+    document.getElementById('modpack-paragraph').innerHTML = `Завершение: Подготовка к запуску ${LOADING_SPAN}`
+    document.getElementById('role-par').innerHTML = `Не закрывайте лаунчер!`
+
+    //# Verify skin
+    await verify_user_skin(modpack);
+
+    //# Verify settings
+    if (!is_first_launch(modpack) || force_reconfig) {
+        console.log(`[LAUNCH] This is the first launch, setting everything up`);
+
+        change_settings_preset(modpack_name, document.querySelector('#optimization-input').value);
+        await apply_control_settings();
+
+        //# Verify settings
+        await update_shader(modpack_name, settings['default_shader']);
     }
 }
-update_footer();
 
-function activate_play_button()
+function updateFooter() {
+    if (download_in_progress || show_progress_footer) {
+        showProgressFooter();
+        
+    } else {
+        showNormalFooter();
+
+        if (!launchedModpacks[modpack_name]['visible'] && launchedModpacks[modpack_name]['launched']) {
+            showLaunchMenu();
+        } else {
+            document.querySelector('#launch-menu').classList.remove('open');
+        }
+    
+        if (launchedModpacks[modpack_name]['launched']) {
+            play_button.innerHTML = 'Запущена';
+    
+            deactivatePlayButton();
+        } else {
+            play_button.innerHTML = 'Играть';
+    
+            activatePlayButton();
+        }
+
+        if (!modpack_installed) {
+            play_button.innerHTML = 'Скачать';
+    
+        } else if (needs_an_update[modpack_name]) {
+            play_button.innerHTML = 'Обновить';
+        }
+    }
+}
+
+function activatePlayButton()
 {
     play_button.classList = 'play-button';
 }
 
-function deactivate_play_button()
+function deactivatePlayButton()
 {
     play_button.classList = 'play-button play-button-unactive';
 }
 
-function show_progress_footer()
+function showLaunchMenu()
 {
+    play_button.innerHTML = `Запуск ${LOADING_SPAN}`;
+    document.querySelector('#launch-menu').classList.add('open');
+    document.querySelector('#launch-h').innerHTML = `Запуск: ${capitalizeFirstLetter(modpack_name)} ${LOADING_SPAN}`;
+}
+
+function showProgressFooter()
+{
+    lockSelectButtons()
     // Show progress bar in footer
     document.querySelector('footer').className = 'noselect downloading';
-    play_button.innerHTML = 'Отмена';
+    play_button.innerHTML = 'Отменить';
     download_in_progress = true;
     document.querySelector(`#modpack-dir[data-name=${modpack_name}]`).classList.add('updating');
 }
 
-function show_launch_menu()
+function showNormalFooter()
 {
-    play_button.innerHTML = 'Запуск<span class="loading"></span>';
-    document.querySelector('#launch-menu').classList.add('open');
-    document.querySelector('#launch-h').innerHTML = `Запуск: ${Capitalize_First_Letter(modpack_name)}<span class="loading"></span>`;
-}
-
-//# Ну чтобы там все выглядело как до скачивания
-function show_normal_footer()
-{
+    unlockSelectButtons();
     // Show normal footer again
-    download_in_progress = false;
     play_button.innerHTML = 'Играть';
-    UpdateServer();
+    updateServer();
     document.querySelector('.download-filler').style.width = `100%`;
     document.querySelector('footer').className = 'noselect';
     document.querySelector(`#modpack-dir[data-name=${modpack_name}]`).classList.remove('updating');
-    document.querySelector('#redownload-client-cb').checked = false;
 }
 
-//#endregion
+function lockSelectButtons() {
+    select_locked = true;
+    for (const button of document.querySelectorAll('.select-button')) {
+        button.classList.add('select-locked');
+    }
+}
 
-//#region Вспомогательное для кнопочки
+function unlockSelectButtons() {
+    select_locked = false;
+    for (const button of document.querySelectorAll('.select-button')) {
+        button.classList.remove('select-locked');
+    }
+}
 
-// True - нада обновлять, False - ненадо
-function check_for_updates(_modpack_name)
+async function checkForUpdates(item_name)
 {
-    return new Promise(async (resolve, reject) => {
-        let latest_version = (await get_latest_release(_modpack_name))['name'].toString().split('v')[1].split('.');
-        let installed_version = get_modpack_version_from_info(_modpack_name).toString().split('v')[1];
+    let latest_version = (await get_latest_release(item_name))['name'].toString().split('v')[1].split('.');
+    let installed_version = get_item_version_from_info(item_name).toString().split('v')[1];
 
-        if (installed_version == '' || installed_version == undefined || installed_version == null)
-        {
-            resolve(true);
+    if (!installed_version) {
+        return true;
+    }
+
+    installed_version = installed_version.split('.');
+
+    console.log(`[${item_name.toUpperCase()}] Installed: ${installed_version.join('.')} Latest: ${latest_version.join('.')}`);
+
+    for (let i = 0; i < 4; i++) {
+        if (latest_version[i] > installed_version[i]) {
+            return true;
         }
+    }
 
-        installed_version = installed_version.split('.');
-
-        console.log(latest_version);
-        console.log(installed_version);
-
-        for (let i = 0; i < 4; i++)
-        {
-            if (latest_version[i] > installed_version[i])
-            {
-                resolve(true);
-            }
-        }
-
-        resolve(false);
-    });
+    return false;
 }
 
-function download_mods_and_stuff(modpack_folder)
+async function downloadModpack(modpack, updating = false) {
+
+    let modpack_folder = verify_and_get_modpack_folder(modpack);
+
+    // Downloads modpack if core is installed
+    // Input function runs every progress update (batch of bytes recieved)
+    let mods_path = await download_from_github_illegally(
+        modpack_folder,
+        modpack_name,
+        (progress) => {
+            let speed_in_mbps = (progress.speed / 1024 / 1024).toPrecision(2);
+
+            console.log(`Download speed: ${speed_in_mbps} Mb / s`);
+            console.log(progress);
+
+            document.querySelector('#modpack-paragraph').innerHTML = `Загрузка сборки ${capitalizeFirstLetter(modpack_name)}: ${(progress.percent).toFixed()}%`
+            document.querySelector('#role-par').innerHTML = `Скорость: ${speed_in_mbps} Мб в секунду`;
+            document.querySelector('.download-filler').style.width = `${progress.percent}%`;
+        },
+        updating
+    );
+    
+    // Осведомить о том что все скачалось
+    console.log(`Modpack installed: ${mods_path}`);
+    return;
+}
+
+async function downloadLibs(modpack, updating = false)
 {
-    return new Promise(async (resolve, reject) => {
+    let core_path = verify_and_get_libs_folder() + '\\' + modpack_versions[modpack];
+    let libs_path = await download_from_github_illegally(
+        core_path,
+        'libraries',
+        (progress) => {
+            let speed_in_mbps = (progress.speed / 1024 / 1024).toPrecision(2);
 
-        // Downloads modpack if core is installed
-        // Input function runs every progress update (batch of bytes resieved)
-        let mods_path = await download_from_github_illegally(
-            modpack_folder,
-            modpack_name,
-            (progress) => {
-                let speed_in_mbps = (progress.speed / 1024 / 1024).toPrecision(2);
+            console.log(`Download speed: ${speed_in_mbps} Mb / s`);
+            console.log(progress);
 
-                console.log(`Download speed: ${speed_in_mbps} Mb / s`);
-                console.log(progress);
+            document.querySelector('#modpack-paragraph').innerHTML = `Скачивание Библиотек: ${(progress.percent).toFixed()}%`
+            document.querySelector('#role-par').innerHTML = `Скорость: ${speed_in_mbps * 8} Мб в секунду`;
+            document.querySelector('.download-filler').style.width = `${progress.percent}%`;
+        },
+        modpack_versions[modpack],
+        updating
+    );
 
-                document.querySelector('#modpack-paragraph').innerHTML = `Загрузка сборки ${Capitalize_First_Letter(modpack_name)}: ${(progress.percent).toFixed()}%`
-                document.querySelector('#role-par').innerHTML = `Скорость: ${speed_in_mbps} Мб в секунду`;
-                document.querySelector('.download-filler').style.width = `${progress.percent}%`;
-            }
-        );
-        
-        // Осведомить о том что все скачалось
-        console.log(`Modpack installed: ${mods_path}`);
-        resolve();
-    });
+    console.log(`Libraries installed: ${libs_path}`);
+    return true;
 }
 
-function download_libs(item_name)
-{
-    return new Promise(async (resolve, reject) => {
-        let core_path = verify_and_get_libs_folder() + '\\' + modpack_versions[item_name];
-        if (libs_folder_empty(modpack_name)) {
-            console.log(`No libraries found on this computer. Downloading...`);
-            let libs_path = await download_from_github_illegally(
-                core_path,
-                'libraries',
-                (progress) => {
-                    let speed_in_mbps = (progress.speed / 1024 / 1024).toPrecision(2);
-
-                    console.log(`Download speed: ${speed_in_mbps} Mb / s`);
-                    console.log(progress);
-
-                    document.querySelector('#modpack-paragraph').innerHTML = `Скачивание Библиотек: ${(progress.percent).toFixed()}%`
-                    document.querySelector('#role-par').innerHTML = `Скорость: ${speed_in_mbps * 8} Мб в секунду`;
-                    document.querySelector('.download-filler').style.width = `${progress.percent}%`;
-                },
-                modpack_versions[item_name]
-            );
-
-            console.log(`Libraries installed: ${libs_path}`);
-            resolve(true);
-        }
-        else
-        {
-            resolve(false);
-        }
-    });
-}
-
-function cancel_current_download()
+function cancelCurrentDownload()
 {
     // Send message to main process to stop download 
     ipcRenderer.send('cancel-current-download', 'user cancelled');
@@ -541,23 +507,19 @@ function cancel_current_download()
             document.querySelector(`#modpack-dir[data-name=${modpack_name}]`).classList.remove('updating');
             download_in_progress = false;
             play_button.innerHTML = 'Играть';
-            UpdateServer();
+            updateServer();
             document.querySelector('footer').className = 'noselect';
-            UpdateRedownloadCheckBox();
+            updateRedownloadCheckBox();
         }
     });
 }
 
-//#endregion
-
-//#endregion
-
 //#region //. ---------------- Play Memory range ------------------------
 let play_memory_range = document.querySelector('#play-memory-range');
 
-let max_setable_ram = Math.floor(os.freemem() / 1024 / 1024 / 1024);
+let max_setable_ram = Math.min(Math.ceil(os.freemem() / 1024 / 1024 / 1024) + 1, Math.ceil(os.totalmem() / 1024 / 1024 / 1024));
 console.log(`[SETTINGS] Ram available to allocate: ${max_setable_ram}`);
-let min_setable_ram = 4; 
+let min_setable_ram = 4;
 
 // runs when user moves the slider
 play_memory_range.addEventListener('input', e => {
@@ -577,16 +539,24 @@ play_memory_range.addEventListener('input', e => {
         // if stop index is the same as input value, then it is active
         // otherwise it is not
         // we devide value by 2 because 'step' between stops is 2
-        if (i == input_range.value / 2) {
+        if (i == (input_range.value - 4) / 2) {
             input_stops[i].classList.add('active-stop');
         } else {
             input_stops[i].classList.remove('active-stop');
+        }
+
+        if (input_range.value < 6) {
+            document.querySelector('#memory-tip').classList.remove('tip-hidden');
+        } else {
+            document.querySelector('#memory-tip').classList.add('tip-hidden');
         }
     }
 });
 
 // Change from settings or update settings
-play_memory_range.children[0].children[1].children[0].value = Math.max(Math.min(settings['allocated_memory'], max_setable_ram), min_setable_ram);
+settings['allocated_memory'] = Math.max(Math.min(settings['allocated_memory'], max_setable_ram), min_setable_ram);
+update_settings();
+play_memory_range.children[0].children[1].children[0].value = settings['allocated_memory'];
 play_memory_range.addEventListener('change', () => {
     settings['allocated_memory'] = play_memory_range.children[0].children[1].children[0].value;
     document.querySelector('#memory-range').children[0].children[1].children[0].value = play_memory_range.children[0].children[1].children[0].value; // Sync 2 memory ranges
