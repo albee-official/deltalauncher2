@@ -68,7 +68,7 @@ async function download_from_github_illegally(folder, item_name, onProgress, ver
                 // modpack_p.innerHTML = `Завершение: Перенос файлов ${LOADING_SPAN}`;
                 // await process_libs(folder);
 
-                modpack_p.innerHTML = `Завершение: Удаление архива загрузки ${LOADING_SPAN}`;c
+                modpack_p.innerHTML = `Завершение: Удаление архива загрузки ${LOADING_SPAN}`;
                 await clean_up(folder + `\\` + fs.readdirSync(folder)[0], zip_path);
                 console.log(item_name);
                 resolve(folder);
