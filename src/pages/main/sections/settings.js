@@ -124,7 +124,10 @@ document.querySelector('#change-theme-button').addEventListener('click', async e
 //#endregion
 
 //#region //. Set Custom BG
+let changing_bg = false;
 document.querySelector('#bg-select-input').addEventListener('click', e => {
+    if (changing_bg) return;
+    changing_bg = true;
     const win = BrowserWindow.getFocusedWindow();
     dialog.showOpenDialog(win, {
         title: 'Выберите изображение',
@@ -132,11 +135,20 @@ document.querySelector('#bg-select-input').addEventListener('click', e => {
         buttonLabel: 'Выбрать',
         properties: ['openFile']
     }).then(async res => {
-        if (res.canceled) return;
+        if (res.canceled) { 
+            changing_bg = false;
+            return;
+        }
 
         let selected_file = res.filePaths[0];
         let splitted = selected_file.split('.');
         let extension = splitted[splitted.length - 1];
+
+        let size = (await fs.stat(selected_file)).size;
+
+        console.log(size);
+
+        showTopLoading();
 
         if (extension == 'mov' || extension == 'webm' || extension == 'mp4' || extension == 'ogg' || extension == 'png' || extension == 'jpeg' || extension == 'jpg' || extension == 'gif' || extension == 'bmp') {}
         else
@@ -177,6 +189,9 @@ document.querySelector('#bg-select-input').addEventListener('click', e => {
         settings['bg_extension'] = extension;
         update_additional_settings();
         update_settings();
+
+        hideTopLoading();
+        changing_bg = false;
     });
 });
 //#endregion

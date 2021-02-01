@@ -220,13 +220,17 @@ function hideTopContent() {
         document.getElementById('reload-icon').style.fill = 'var(--header-sysbuttons-icon)';
     });
 
+    let opened_main_win = false;
     setInterval(() => {
-        ipcRenderer.send('load-main-win');
-
-        ipcRenderer.on('main-win-opened', () => {
-            win.destroy();
-            resolve();
-        });
+        if (!opened_main_win) {
+            opened_main_win = true;
+            ipcRenderer.send('load-main-win');
+        
+            ipcRenderer.on('main-win-opened', () => {
+                win.destroy();
+                resolve();
+            });
+        }
     }, 2000);
 }
 
@@ -375,7 +379,7 @@ async function download_user_icon()
                 type: 'icon',
             },
             dataType: 'text'
-        }).then(res => {
+        }).then(async res => {
             console.log(`[FINISH] Got link for icon: ${res}`);
 
             if (resources.icon.code == get_code(res)) {
@@ -384,7 +388,7 @@ async function download_user_icon()
                 resolve();
                 return;
             } else {
-                fs.unlink(`${verify_and_get_resources_folder()}\\icon &${resources.icon.code}.png`);
+                await fs.unlink(`${verify_and_get_resources_folder()}\\icon &${resources.icon.code}.png`);
             }
 
             downloading_icon = true;
@@ -396,15 +400,13 @@ async function download_user_icon()
             });
 
             ipcRenderer.on('download-progress', (event, progress) => {
-                if (downloading_icon)
-                {
+                if (downloading_icon) {
                     document.getElementById('finish-progress-bar').style.width = ((progress.percent / 100) * 50) + '%';
                 }
             });
         
             ipcRenderer.on('download-completed', (event, args) => {
-                if (downloading_icon)
-                {
+                if (downloading_icon) {
                     resolve();
                 }
             });
@@ -426,7 +428,7 @@ async function download_user_skin()
                 type: 'skin',
             },
             dataType: 'text'
-        }).then(res => {
+        }).then(async res => {
             console.log(`[FINISH] Got link for skin: ${res}`);
 
             if (resources.skin.code == get_code(res)) {
@@ -435,7 +437,7 @@ async function download_user_skin()
                 resolve();
                 return;
             } else {
-                fs.unlink(`${verify_and_get_resources_folder()}\\skin &${resources.skin.code}.png`);
+                await fs.unlink(`${verify_and_get_resources_folder()}\\skin &${resources.skin.code}.png`);
             }
 
             downloading_skin = true;
@@ -447,15 +449,13 @@ async function download_user_skin()
             });
         
             ipcRenderer.on('download-progress', (event, progress) => {
-                if (downloading_skin)
-                {
+                if (downloading_skin) {
                     document.getElementById('finish-progress-bar').style.width = (50 + (progress.percent / 100) * 50) + '%';
                 }
             });
         
             ipcRenderer.on('download-completed', (event, args) => {
-                if (downloading_skin)
-                {
+                if (downloading_skin) {
                     resolve();
                 }
             });
@@ -482,7 +482,7 @@ update_theme();
 
         const loginRes = await login();
 
-        if (loginRes['error'] != undefined) {
+        if (loginRes['error'] != undefined || loginRes.length == 0) {
             console.log(`[LOGIN] Error: ${loginRes['error']}`);
 
         } else {

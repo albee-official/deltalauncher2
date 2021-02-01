@@ -1,12 +1,14 @@
 const { ajax } = require("jquery");
 
-let magicae_select_button = document.querySelector('#magicae-select');
-let fabrica_select_button = document.querySelector('#fabrica-select');
-let statera_select_button = document.querySelector('#statera-select');
-let insula_select_button = document.querySelector('#insula-select');
-let odyssea_select_button = document.querySelector('#odyssea-select');
+let top_loading_bar = document.getElementById('top-loading-bar');
 
-let play_button = document.querySelector('#play-button');
+let magicae_select_button = document.getElementById('magicae-select');
+let fabrica_select_button = document.getElementById('fabrica-select');
+let statera_select_button = document.getElementById('statera-select');
+let insula_select_button = document.getElementById('insula-select');
+let odyssea_select_button = document.getElementById('odyssea-select');
+
+let play_button = document.getElementById('play-button');
 
 // So that we dont check EVERY time we press the button
 let update_check_timeout = 30; // Seconds
@@ -64,7 +66,7 @@ async function setModpack(modpack) {
 
 function updateButtons() {
     let buttons = document.querySelectorAll('.select-button')
-    let active_button = document.querySelector(`#${modpack_name}-select`)
+    let active_button = document.getElementById(`${modpack_name}-select`)
     for (const button of buttons) {
         button.classList = 'select-button';
 
@@ -365,6 +367,18 @@ function updateFooter() {
     }
 }
 
+function showTopLoading() {
+    top_loading_bar.classList.remove('smth-happening-hidden');
+    top_loading_bar.children[0].classList.add('smth-happening-animation');
+}
+
+function hideTopLoading() {
+    top_loading_bar.classList.add('smth-happening-hidden');
+    setTimeout( () => {
+        top_loading_bar.children[0].classList.remove('smth-happening-animation');
+    }, 800);
+}
+
 function activatePlayButton()
 {
     play_button.classList = 'play-button';
@@ -439,12 +453,24 @@ async function checkForUpdates(item_name)
     return false;
 }
 
+function show_notification(params) {
+    const notification = new Notification(params.title || 'Delta', {
+        icon: '../../../icon.ico',
+        ...params,
+    });
+
+    notification.onclick = () => {
+        win.focus();
+    };
+}
+
 async function downloadModpack(modpack, updating = false) {
 
     let modpack_folder = verify_and_get_modpack_folder(modpack);
 
     // Downloads modpack if core is installed
     // Input function runs every progress update (batch of bytes recieved)
+    let notification_shown = false;
     let mods_path = await download_from_github_illegally(
         modpack_folder,
         modpack_name,
@@ -457,6 +483,16 @@ async function downloadModpack(modpack, updating = false) {
             document.querySelector('#modpack-paragraph').innerHTML = `Загрузка сборки ${capitalizeFirstLetter(modpack_name)}: ${(progress.percent).toFixed()}%`
             document.querySelector('#role-par').innerHTML = `Скорость: ${speed_in_mbps} Мб в секунду`;
             document.querySelector('.download-filler').style.width = `${progress.percent}%`;
+
+            if (progress.percent > 90 && !notification_shown) {
+                notification_shown = true;
+                if (!(BrowserWindow.getFocusedWindow() == null)) {
+                    show_notification(
+                        `Загрузка ${capitalizeFirstLetter(modpack)} почти законченна!`,
+                        ``,
+                    );
+                }
+            }
         },
         updating
     );
@@ -505,7 +541,10 @@ function cancelCurrentDownload()
         if (status == 'success') {
             document.querySelector('#play-button-assist-label').classList.remove('unactive');
             document.querySelector(`#modpack-dir[data-name=${modpack_name}]`).classList.remove('updating');
+            unlockSelectButtons();
+            button_pressed_thing = false;
             download_in_progress = false;
+            show_progress_footer = false;
             play_button.innerHTML = 'Играть';
             updateServer();
             document.querySelector('footer').className = 'noselect';

@@ -62,10 +62,6 @@ function remove_event_listeners(el) {
 
 //#endregion
 
-//#region //. Loading Animations (...)
-
-//#endregion
-
 //#region //. Theme parsing
 
 //. Default themes so if user looses them they will be restored
@@ -396,7 +392,7 @@ function check_blurred_bg() {
     if (settings['bg_blurred'])
     {
 		document.querySelector('body').style.backdropFilter = `blur(${settings['bg_blur_amount']})`;
-		document.querySelector('#bg-video').style = `filter: blur(${settings['bg_blur_amount']})`;
+		document.querySelector('#bg-video').style = `filter: blur(../../res/bg.jpg${settings['bg_blur_amount']})`;
 		
     }
     else
@@ -421,7 +417,8 @@ function update_theme()
     set_theme_colours(settings['theme']);
     if (is_video_on_bg())
     {
-        document.querySelector('#bg-video').src = `${bg_path}?${Date.now()}`;
+		document.querySelector('#bg-video').src = `${bg_path}?${Date.now()}`;
+		body.style.backgroundImage = `url("${Date.now()}")`;
         check_muted_video();
     }
     else
