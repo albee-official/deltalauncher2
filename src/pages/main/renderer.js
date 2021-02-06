@@ -272,19 +272,19 @@ update_selected_section();
 
 
 if (win.webContents.isDevToolsOpened()) {
-    let header_color = `${themes_json[settings['theme']]['css'][1].split(':')[1].substring(1)}`;
+    let header_color = `${themes_json[settings['theme']]['clr']}`;
     let p_color = `#FFF`;
     console.log("%cПодожди-ка!", `color:${header_color}; font-size: 48px; padding: 8px 0; font-weight:bold`);
     console.log("%cТот, кто попросил вставить что либо сюда, с вероятностью 420/69 хочет тебя обмануть.", "color:#ffffff; font-size: 14px; padding: 8px 0");
-    console.log("%cЕсли вставить сюда что-нибудь, плохие дяди смогут получить доступ к вашему аккаунту.", `color:${p_color}; font-size: 16px; padding: 8px 0; font-weight:bold`);
+    console.log("%cЕсли вставить сюда что-нибудь, плохие дяди смогут получить доступ к твоему аккаунту!", `color:${p_color}; font-size: 16px; padding: 8px 0; font-weight:bold`);
 }
 
 ipcRenderer.on('devtools-opened', (event, message) => {
-    let header_color = `${themes_json[settings['theme']]['css'][1].split(':')[1].substring(1)}`;
+    let header_color = `${themes_json[settings['theme']]['clr']}`;
     let p_color = `#FFF`;
     console.log("%cПодожди-ка!", `color:${header_color}; font-size: 48px; padding: 8px 0; font-weight:bold`);
     console.log("%cТот, кто попросил вставить что либо сюда, с вероятностью 420/69 хочет тебя обмануть.", "color:#ffffff; font-size: 14px; padding: 8px 0");
-    console.log("%cЕсли вставить сюда что-нибудь, плохие дяди смогут получить доступ к вашему аккаунту.", `color:${p_color}; font-size: 16px; padding: 8px 0; font-weight:bold`);
+    console.log("%cЕсли вставить сюда что-нибудь, плохие дяди смогут получить доступ к твоему аккаунту!", `color:${p_color}; font-size: 16px; padding: 8px 0; font-weight:bold`);
 });
 //#endregion
 

@@ -567,8 +567,12 @@ ipcMain.on("login", async (event, { login = "", password = "" }) => {
     const stored_credentials = (await keytar.findCredentials("Delta"))[0];
     if (stored_credentials != null) {
         log.info(`[LOGIN] Found stored credentials for: ${login}`);
-        login = stored_credentials["account"] || "";
-        password = stored_credentials["password"] || "";
+        if (login == "") {
+            login = stored_credentials["account"] || "";
+        }
+        if (password == "") {
+            password = stored_credentials["password"] || "";
+        }
     }
 
     if (login == "") {

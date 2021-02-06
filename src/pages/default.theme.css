@@ -1,0 +1,66 @@
+:root {
+	--global-bg: #5a1331;
+	--global-bg-rgb: 90, 19, 49;
+	--global-bg-accent: #2d132c;
+	--global-bg-accent-rgb: 45, 19, 44;
+	--global-clr: #DF3B40;
+	--global-clr-rgb: 223, 59, 64;
+	--global-clr-accent: #ff454b;
+	--global-clr-accent-rgb: 255, 69, 75;
+	--global-text: #FFF;
+	--global-text-rgb: 255, 255, 255;
+	--global-text-accent: #C9C9C9;
+	--global-text-accent-rgb: 201, 201, 201;
+
+	--checkbox-text: var(--global-text);
+	--checkbox-filler: var(--global-text);
+	--slider-bg: rgba(var(--global-text-rgb), .16);
+	--slider-bg-hover: rgba(var(--global-text-rgb), .32);
+
+	--start-logo-clr: var(--global-text);
+	--start-bg: var(--global-text);
+	--start-bg-decoration: rgba(var(--global-text-accent-rgb), .5);
+	--start-text: rgba(var(--global-bg-dark-rgb), .32);
+	--start-text-active: rgba(var(--global-bg-dark-rgb), 1);
+	--start-progress-bg: rgba(var(--global-bg-dark-rgb), .16);
+	--start-progress-filler: var(--global-clr);
+	--start-button-bg: var(--global-clr);
+	--start-button-text: var(--global-text);
+	--start-button-bg-active: rgba(var(--global-clr-accent-rgb), 1);
+	--start-button-text-active: var(--global-text);
+
+	--header-bg: var(--global-text);
+	--header-text: var(--global-text-accent);
+	--header-text-active: var(--global-clr);
+	--header-profile-username: var(--header-text-active);
+	--header-profile-logout: var(--header-text);
+	--header-profile-border: var(--header-text-active) 4px solid;
+	--header-sysbuttons-bg: rgba(var(--global-clr-rgb), 0);
+	--header-sysbuttons-bg-hover: rgba(var(--global-clr-rgb), 1);
+	--header-sysbuttons-icon: var(--global-bg);
+	--header-sysbuttons-icon-hover: var(--global-text);
+
+	--main-bg: rgba(var(--global-bg-rgb), .85);
+	--main-text: var(--global-text);
+	--main-text-rgb: var(--global-text-rgb);
+	--main-h1: var(--main-text);
+	--main-text-p-opacity: .32;
+	--main-text-p-opacity-hover: .5;
+	--main-button-bg: var(--global-clr);
+	--main-button-text: var(--global-text);
+	--main-button-bg-active: var(--global-text);
+	--main-button-text-active: var(--global-clr);
+	--main-button-bg-locked: var(--global-clr);
+	--main-button-text-locked: var(--global-text);
+	--main-sidepanel-bg: rgba(var(--global-bg-dark-rgb), .32);
+
+	--footer-bg: rgba(var(--global-bg-dark-rgb), .32);
+	--footer-h1: var(--global-text);
+	--footer-p: rgba(var(--global-text-rgb), .32);
+	--footer-download-bg: rgba(var(--global-text-rgb), .08);
+	--footer-download-filler: var(--global-clr);
+	--footer-button-bg: var(--global-clr);
+	--footer-button-text: var(--global-text);
+	--footer-button-bg-active: var(--global-text);
+	--footer-button-text-active: var(--global-clr);
+}

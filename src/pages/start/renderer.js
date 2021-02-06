@@ -467,9 +467,6 @@ async function download_user_skin()
 //#endregion
 
 //#region //. -------------------------------- CODE ----------------------------------
-
-update_theme();
-
 (async () => {
 
     await checkUpdate();

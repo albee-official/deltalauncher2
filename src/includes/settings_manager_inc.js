@@ -32,7 +32,7 @@ function read_settings() {
         link_consoles: false,
         default_shader: "",
         hide_upon_launch: true,
-        bg_extension: "",
+        bg_path: "",
         bg_muted: true,
         bg_blurred: false,
         bg_blur_amount: '16px',
