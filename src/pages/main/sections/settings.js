@@ -96,10 +96,10 @@ java_parameters.addEventListener('change', e => {
 theme_select_options_container = document.querySelector('#theme-select-options');
 for (let theme_key of Object.keys(themes_json)) {
     let theme_thing = themes_json[theme_key];
-    theme_select_options_container.innerHTML += `<div id="theme-select-option" class="theme-select-option" data-name="${theme_thing['name']}">
-            <p>${Capitalize_First_Letter(theme_thing['name'])}</p>
-            <img src="${theme_thing['bg_path']}" alt="">
-            <div class="theme-bg-preview-filter" style="${theme_thing['theme_select_options']}"></div>
+    theme_select_options_container.innerHTML += `<div id="theme-select-option" class="theme-select-option" data-name="${theme_key}">
+            <p>${theme_thing['name']}</p>
+            <img src="${theme_thing['bg']}" alt="">
+            <div class="theme-bg-preview-filter" style="background-color: ${theme_thing['bg-filter']}"></div>
         </div>`
 }
 
@@ -108,7 +108,7 @@ let theme_select_options = document.querySelectorAll('#theme-select-option');
 for (let item of theme_select_options)
 {
     item.addEventListener('mouseover', () => {
-        set_theme_colours(item.getAttribute('data-name'));
+        set_theme(item.getAttribute('data-name'));
     });
 }
 
@@ -117,14 +117,17 @@ document.querySelector('#change-theme-button').addEventListener('click', async e
 
     settings['theme'] = selected_theme;
     update_settings();
-    update_theme();
+    update_theme_with_bg();
 
     // BrowserWindow.getFocusedWindow().reload();
 });
 //#endregion
 
 //#region //. Set Custom BG
+let changing_bg = false;
 document.querySelector('#bg-select-input').addEventListener('click', e => {
+    if (changing_bg) return;
+    changing_bg = true;
     const win = BrowserWindow.getFocusedWindow();
     dialog.showOpenDialog(win, {
         title: 'Выберите изображение',
@@ -132,61 +135,37 @@ document.querySelector('#bg-select-input').addEventListener('click', e => {
         buttonLabel: 'Выбрать',
         properties: ['openFile']
     }).then(async res => {
-        if (res.canceled) return;
+        if (res.canceled) { 
+            changing_bg = false;
+            return;
+        }
 
         let selected_file = res.filePaths[0];
         let splitted = selected_file.split('.');
         let extension = splitted[splitted.length - 1];
 
+        let size = (await fs.stat(selected_file)).size;
+
+        console.log(size);
+        showTopLoading();
+
         if (extension == 'mov' || extension == 'webm' || extension == 'mp4' || extension == 'ogg' || extension == 'png' || extension == 'jpeg' || extension == 'jpg' || extension == 'gif' || extension == 'bmp') {}
-        else
-        {
+        else {
             return;
         }
 
-        //. Stop using this video or idk
-        let video_el = document.querySelector('#bg-video');
-        video_el.src = '';
-        video_el.pause();
-        video_el.removeAttribute('src'); // empty source
-        video_el.load();
-        
-        //. Run garbage collector to stop using the file
-        window.gc();
+        await set_bg(selected_file);
 
-        //. Delete previous BG
-        let resources_path = verify_and_get_resources_folder();
-        if (await fs.pathExists(resources_path + '\\custom_bg.' + settings['bg_extension']))
-            await fs.unlink(resources_path + '\\custom_bg.' + settings['bg_extension']);
-
-        //. Copy new BG to resources and apply
-        let bg_path = resources_path + '\\custom_bg.' + extension;
-        await fs.copy(selected_file, bg_path);
-        bg_path = bg_path.replace(/\\/g, '/')
-        console.log(bg_path);
-        if (extension == 'mov' || extension == 'webm' || extension == 'mp4' || extension == 'ogg')
-        {
-            document.querySelector('#bg-video').src = `${bg_path}?${new Date()}`;
-            check_muted_video();
-        }
-        else
-        {
-            document.body.style.backgroundImage = `url("${bg_path}?${new Date()}")`;
-        }
-
-        settings['bg_extension'] = extension;
-        update_additional_settings();
-        update_settings();
+        hideTopLoading();
+        changing_bg = false;
     });
 });
 //#endregion
 
 //#region //. Remove custom BG
 document.querySelector('#bg-reset-input').addEventListener('click', e => {
-    settings['bg_extension'] = '';
-    update_settings();
-
-    update_theme();
+    set_bg('');
+    apply_theme(settings['theme']);
 });
 //#endregion
 
@@ -829,7 +808,7 @@ async function updateSideModpackDir(modpack)
 //#region //. ---------------- Additional settings -----------------
 update_additional_settings();
 function update_additional_settings() {
-    if (is_video_on_bg()) {
+    if (is_video(get_bg_path())) {
         document.querySelector('#muted-bg-container').classList.remove('invisible');
     } else {
         document.querySelector('#muted-bg-container').classList.add('invisible');

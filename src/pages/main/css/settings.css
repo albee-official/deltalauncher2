@@ -323,6 +323,10 @@
     transition: all .1s cubic-bezier(0.23, 1, 0.320, 1);
 }
 
+.more-accurate {
+    width: fit-content;
+}
+
 .handy-function:hover {
     opacity: var(--main-text-p-opacity-hover);
 }

@@ -248,7 +248,7 @@ button:hover{
     }
 }
 
-.hint-container{
+/* .hint-container{
     z-index: 420;
     position: absolute;
     padding: 2px 8px;
@@ -258,4 +258,53 @@ button:hover{
     font-weight: bold;
     background-color: rgba(var(--global-text-rgb), .1);
     color: var(--global-text);
+} */
+
+.smth-happening {
+    display: flex;
+    position: fixed;
+    top: 92px;
+    left: 0;
+    width: 100vw;
+    height: 4px;
+    z-index: 42069;
+    opacity: 1;
+
+    transition: opacity .8s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.smth-happening-hidden {
+    opacity: 0;
+}
+
+.smth-happening-bar {
+    position: relative;
+    left: -16%;
+    width: 16%;
+    height: 100%;
+    background-color: var(--global-clr);
+}
+
+.smth-happening-animation {
+    animation: smth-happening 2.4s infinite linear;
+}
+
+@keyframes smth-happening {
+    0% {
+        left: -16%;
+        width: 16%;
+        animation-timing-function: cubic-bezier(0.47, 0, 0.745, 0.715);
+    }
+
+    50% {
+        left:  40%;
+        width: 20%;
+        animation-timing-function: cubic-bezier(0.39, 0.575, 0.565, 1);
+    }
+
+    100% {
+        left: 100%;
+        width: 16%;
+        animation-timing-function: cubic-bezier(0.39, 0.575, 0.565, 1);
+    }
 }

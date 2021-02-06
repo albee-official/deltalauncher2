@@ -202,7 +202,7 @@ let progressUpdateInterval = undefined;
 let downloading_item = false;
 let download_canceled = false;
 let total_download_size = 0;
-let current_num_of_threads = 0;
+let current_num_of_threads = 8;
 let current_download_path = "";
 let requests = [];
 
@@ -221,6 +221,7 @@ function cancel_current_download() {
         if (requests.length > 1) {
             clear_thread_files(current_download_path, current_num_of_threads);
         }
+
         if (fs.pathExistsSync(`${current_download_path}\\modpack.zip`)) fs.unlinkSync(`${current_download_path}\\modpack.zip`);
 
         resolve();
@@ -398,6 +399,13 @@ function threaded_download(event, url, path, filename, threads, total_bytes) {
 
                         clear_thread_files(path, threads);
                         log.info("[THREADED_DWNLD] - Finished");
+                        progressUpdateInterval = undefined;
+                        downloading_item = false;
+                        download_canceled = false;
+                        total_download_size = 0;
+                        current_num_of_threads = 8;
+                        current_download_path = "";
+                        requests = [];
                         //. 1 - success
                         resolve(path);
                     }
@@ -559,8 +567,12 @@ ipcMain.on("login", async (event, { login = "", password = "" }) => {
     const stored_credentials = (await keytar.findCredentials("Delta"))[0];
     if (stored_credentials != null) {
         log.info(`[LOGIN] Found stored credentials for: ${login}`);
-        login = stored_credentials["account"] || "";
-        password = stored_credentials["password"] || "";
+        if (login == "") {
+            login = stored_credentials["account"] || "";
+        }
+        if (password == "") {
+            password = stored_credentials["password"] || "";
+        }
     }
 
     if (login == "") {

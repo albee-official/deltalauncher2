@@ -43,6 +43,7 @@ async function download_from_github_illegally(folder, item_name, onProgress, ver
     // Returns promise cuz you know.. download isn't instant.
     return new Promise(async (resolve, reject) => {
 
+        deactivatePlayButton();
         let modpack_p = document.querySelector('#modpack-paragraph');
         let role_p = document.querySelector('#role-par');
         let download_url = '';
@@ -64,27 +65,21 @@ async function download_from_github_illegally(folder, item_name, onProgress, ver
         if ((await fs.pathExists(zip_path))) {
             if (item_name == 'libraries')
             {
-                // // FINISH IT! (puts mods where they should be and deletes extras)
-                // modpack_p.innerHTML = `Завершение: Перенос файлов ${LOADING_SPAN}`;
-                // await process_libs(folder);
-
+                // FINISH IT! (puts mods where they should be and deletes extras)
                 modpack_p.innerHTML = `Завершение: Удаление архива загрузки ${LOADING_SPAN}`;
-                await clean_up(folder + `\\` + fs.readdirSync(folder)[0], zip_path);
-                console.log(item_name);
+                await clean_up(zip_path);
+                console.log(`[DOWMLOAD] Downloaded: ${item_name}`);
                 resolve(folder);
             }
             else
             {
-                // // FINISH IT! (puts mods where they should be and deletes extras)
-                // modpack_p.innerHTML = `Завершение: Перенос файлов ${LOADING_SPAN}`;
-                // await process_modpack(folder, item_name);
-
+                // FINISH IT! (puts mods where they should be and deletes extras)
                 modpack_p.innerHTML = `Завершение: Удаление архива загрузки ${LOADING_SPAN}`;
-                await clean_up(folder + `\\` + fs.readdirSync(folder)[0], zip_path);
+                await clean_up(zip_path);
 
                 modpack_p.innerHTML = `Завершение: Перенос библиотек ${LOADING_SPAN}`;
                 await copy_libs_to_modpack(item_name);
-                console.log(item_name);
+                console.log(`[DOWMLOAD] Downloaded: ${item_name}`);
                 resolve(folder);
             }
         }
@@ -103,6 +98,7 @@ async function download_from_github_illegally(folder, item_name, onProgress, ver
 
             ipcRenderer.on('got-download-size', (event) => {
                 // Finally got some size
+                activatePlayButton();
             }); 
 
             ipcRenderer.on('download-cancelled', (event) => {
