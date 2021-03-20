@@ -3,7 +3,7 @@ const Path = require('path');
 
 let LOADING_SPAN = '<span class="loading"><p>.</p><p>.</p><p>.</p></span>';
 
-//. Globals
+//#region  //. Globals
 Object.defineProperty(global, 'userInfo', {
 	get: function() {
 		return remote.getGlobal('sharedObject').userInfo;
@@ -35,6 +35,7 @@ Object.defineProperty(global, 'launchedModpacks', {
 		remote.getGlobal('sharedObject').launchedModpacks = val;
 	},
 });
+//#endregion
 
 //#region //. Handy
 
@@ -134,21 +135,24 @@ async function set_bg(path)
 {
 	path = path.replace(/\\/g, '/');
 	if (path == '') {
-		path = get_bg_path();
+		path = get_bg_path(true);
+		settings['bg_path'] = '';
+
 	}
-    if (is_video(path))
+	else if (is_video(path))
     {
 		document.querySelector('#bg-video').src = `${path}?${Date.now()}`;
 		document.body.style.backgroundImage = ``;
         check_muted_video();
+		settings['bg_path'] = path;
     }
     else
     {
 		document.querySelector('#bg-video').src = ``;
         document.body.style.backgroundImage = `url("${path}?${Date.now()}")`;
+		settings['bg_path'] = path;
 	}
-	
-	settings['bg_path'] = path;
+
 	update_settings();
 }
 
@@ -177,8 +181,8 @@ function check_blurred_bg() {
     }
 }
 
-function get_bg_path() {
-    if (settings['bg_path'] == undefined || settings['bg_path'] == '') {
+function get_bg_path(default_bg = false) {
+    if (settings['bg_path'] == undefined || settings['bg_path'] == '' || default_bg) {
         return themes_json[settings['theme']]['bg'];
 	} else {
 		return settings['bg_path'].replace(/\\/g, '/');
