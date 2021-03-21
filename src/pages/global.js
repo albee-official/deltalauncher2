@@ -85,6 +85,7 @@ function read_themes() {
 			'path': '../default.theme.css',
 		}
 	};
+	fs.ensureDirSync(themes_path);
 	let themes = fs.readdirSync(themes_path);
 	for (const theme of themes) {
 		if (!theme.endsWith('.theme.css')) {
