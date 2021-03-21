@@ -80,13 +80,16 @@ function read_themes() {
 			'author': 'Albee',
 			'version': '1.0.0',
 			'bg': '../../res/bg.jpg',
-			'bg-filter': 'var(--global-bg)',
+			'bg-filter': '#5a1331',
 			'clr': '#ff454b',
 			'path': '../default.theme.css',
 		}
 	};
 	let themes = fs.readdirSync(themes_path);
 	for (const theme of themes) {
+		if (!theme.endsWith('.theme.css')) {
+			continue;
+		}
 		const path = themes_path + '\\' + theme;
 		const contents = fs.readFileSync(path).toString();
 
@@ -105,7 +108,7 @@ function read_themes() {
 			'author': author,
 			'version': version,
 			'bg': bg,
-			'bg-filter': 'var(--global-bg)',
+			'bg-filter': bg_filter,
 			'clr': clr,
 			'path': path,
 		}
@@ -131,11 +134,14 @@ function set_theme(theme)
 	settings['theme'] = theme;
 }
 
+// let default_bg = '../../res/bg.jpg';
 async function set_bg(path)
 {
 	path = path.replace(/\\/g, '/');
 	if (path == '') {
 		path = get_bg_path(true);
+		document.querySelector('#bg-video').src = ``;
+        document.body.style.backgroundImage = `url("${path}?${Date.now()}")`;
 		settings['bg_path'] = '';
 
 	}
@@ -202,6 +208,9 @@ function apply_theme(_theme)
 	const theme = _theme;
 	
 	let bg_path = get_bg_path();
+	if (settings['bg_path'].length == 0) {
+		bg_path = '';
+	}
 	
     set_theme(settings['theme']);
 	set_bg(bg_path);

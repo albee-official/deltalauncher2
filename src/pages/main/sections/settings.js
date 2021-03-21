@@ -116,10 +116,8 @@ document.querySelector('#change-theme-button').addEventListener('click', async e
     let selected_theme = await show_theme_selection_menu();
 
     settings['theme'] = selected_theme;
+    set_bg('');
     update_settings();
-    update_theme_with_bg();
-
-    // BrowserWindow.getFocusedWindow().reload();
 });
 //#endregion
 
