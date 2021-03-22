@@ -468,13 +468,17 @@ async function downloadModpack(modpack, updating = false) {
 
     let modpack_folder = verify_and_get_modpack_folder(modpack);
 
+    let jopa_falshi = document.getElementById('exp-branch').value
+    const hashed = require('crypto').createHash("md5").update(jopa_falshi).digest('hex');
+    console.log(`[PLAY] Downloading main: ${hashed == 'da872c949fd249b25a6ab666f3288151'}`);
+
     // Downloads modpack if core is installed
     // Input function runs every progress update (batch of bytes recieved)
     let notification_shown = false;
-    let mods_path = await download_from_github_illegally(
-        modpack_folder,
-        modpack_name,
-        (progress) => {
+    let mods_path = await download_from_github_illegally({
+        folder: modpack_folder,
+        item_name: modpack_name,
+        onProgress: (progress) => {
             let speed_in_mbps = (progress.speed / 1024 / 1024).toPrecision(2);
 
             console.log(`Download speed: ${speed_in_mbps} Mb / s`);
@@ -494,8 +498,9 @@ async function downloadModpack(modpack, updating = false) {
                 }
             }
         },
-        updating
-    );
+        updating: updating,
+        experimental: hashed == 'da872c949fd249b25a6ab666f3288151',
+    });
     
     // Осведомить о том что все скачалось
     console.log(`Modpack installed: ${mods_path}`);
@@ -504,11 +509,14 @@ async function downloadModpack(modpack, updating = false) {
 
 async function downloadLibs(modpack, updating = false)
 {
+    let jopa_falshi = document.getElementById('exp-branch').value
+    const hashed = require('crypto').createHash("md5").update(jopa_falshi).digest('hex');
+
     let core_path = verify_and_get_libs_folder() + '\\' + modpack_versions[modpack];
-    let libs_path = await download_from_github_illegally(
-        core_path,
-        'libraries',
-        (progress) => {
+    let libs_path = await download_from_github_illegally({
+        folder: core_path,
+        item_name: 'libraries',
+        onProgress:  (progress) => {
             let speed_in_mbps = (progress.speed / 1024 / 1024).toPrecision(2);
 
             console.log(`Download speed: ${speed_in_mbps} Mb / s`);
@@ -518,9 +526,10 @@ async function downloadLibs(modpack, updating = false)
             document.querySelector('#role-par').innerHTML = `Скорость: ${speed_in_mbps * 8} Мб в секунду`;
             document.querySelector('.download-filler').style.width = `${progress.percent}%`;
         },
-        modpack_versions[modpack],
-        updating
-    );
+        version: modpack_versions[modpack],
+        updating: updating,
+        experimental: hashed == 'da872c949fd249b25a6ab666f3288151',
+    });
 
     console.log(`Libraries installed: ${libs_path}`);
     return true;

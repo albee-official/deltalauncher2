@@ -202,7 +202,7 @@ let progressUpdateInterval = undefined;
 let downloading_item = false;
 let download_canceled = false;
 let total_download_size = 0;
-let current_num_of_threads = 8;
+let current_num_of_threads = 16;
 let current_download_path = "";
 let requests = [];
 
